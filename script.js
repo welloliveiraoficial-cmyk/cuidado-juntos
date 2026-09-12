@@ -62,11 +62,32 @@ let notificacaoAtiva =
   localStorage.getItem(CHAVE_NOTIFICACAO) === "true";
 
 let ultimoAviso =
-  localStorage.getItem("cuidadoJuntos_ultimoAviso") || "";
+  localStorage.getItem(
+    "cuidadoJuntos_ultimoAviso"
+  ) || "";
 
 let unsubscribeHoje = null;
 
 let unsubscribeHistorico = null;
+
+let firebaseAutenticado = false;
+
+
+/* =========================================================
+   HORÁRIOS DOS MEDICAMENTOS
+========================================================= */
+
+const HORARIOS = [
+  "08:00",
+  "09:00",
+  "10:00",
+  "12:00",
+  "16:00",
+  "20:00",
+  "21:00",
+  "22:00",
+  "00:00"
+];
 
 
 /* =========================================================
@@ -134,13 +155,19 @@ const paginaHistorico =
   document.getElementById("pagina-historico");
 
 const botaoPaginaMedicamentos =
-  document.getElementById("btn-pagina-medicamentos");
+  document.getElementById(
+    "btn-pagina-medicamentos"
+  );
 
 const botaoPaginaHistorico =
-  document.getElementById("btn-pagina-historico");
+  document.getElementById(
+    "btn-pagina-historico"
+  );
 
 const botaoVoltarMedicamentos =
-  document.getElementById("btn-voltar-medicamentos");
+  document.getElementById(
+    "btn-voltar-medicamentos"
+  );
 
 
 /* =========================================================
@@ -215,7 +242,7 @@ function salvarNome(nome) {
 
 
 /* =========================================================
-   MOSTRAR APP
+   MOSTRAR APLICATIVO
 ========================================================= */
 
 function mostrarAplicativo() {
@@ -235,11 +262,13 @@ function mostrarAplicativo() {
 
   atualizarBotaoNotificacao();
 
-  carregarRegistrosHoje();
-
   definirDataHistorico();
 
   mostrarPaginaMedicamentos();
+
+  if (firebaseAutenticado) {
+    carregarRegistrosHoje();
+  }
 }
 
 
@@ -280,6 +309,11 @@ function mostrarPaginaMedicamentos() {
   botaoPaginaHistorico.classList.remove(
     "ativo"
   );
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 
@@ -303,9 +337,13 @@ function mostrarPaginaHistorico() {
 
   definirDataHistorico();
 
-  carregarHistorico(
-    dataHistorico.value
-  );
+  if (firebaseAutenticado) {
+
+    carregarHistorico(
+      dataHistorico.value
+    );
+
+  }
 
   window.scrollTo({
     top: 0,
@@ -314,22 +352,34 @@ function mostrarPaginaHistorico() {
 }
 
 
-botaoPaginaMedicamentos.addEventListener(
-  "click",
-  mostrarPaginaMedicamentos
-);
+if (botaoPaginaMedicamentos) {
+
+  botaoPaginaMedicamentos.addEventListener(
+    "click",
+    mostrarPaginaMedicamentos
+  );
+
+}
 
 
-botaoPaginaHistorico.addEventListener(
-  "click",
-  mostrarPaginaHistorico
-);
+if (botaoPaginaHistorico) {
+
+  botaoPaginaHistorico.addEventListener(
+    "click",
+    mostrarPaginaHistorico
+  );
+
+}
 
 
-botaoVoltarMedicamentos.addEventListener(
-  "click",
-  mostrarPaginaMedicamentos
-);
+if (botaoVoltarMedicamentos) {
+
+  botaoVoltarMedicamentos.addEventListener(
+    "click",
+    mostrarPaginaMedicamentos
+  );
+
+}
 
 
 /* =========================================================
@@ -338,109 +388,194 @@ botaoVoltarMedicamentos.addEventListener(
 
 function definirDataHistorico() {
 
-  if (!dataHistorico.value) {
+  if (
+    dataHistorico &&
+    !dataHistorico.value
+  ) {
 
     dataHistorico.value =
       obterDataHoje();
 
   }
+
 }
 
 
-dataHistorico.addEventListener(
-  "change",
-  function () {
+if (dataHistorico) {
 
-    const dataSelecionada =
-      dataHistorico.value;
+  dataHistorico.addEventListener(
+    "change",
+    function () {
 
-    if (!dataSelecionada) {
-      return;
+      const dataSelecionada =
+        dataHistorico.value;
+
+      if (!dataSelecionada) {
+        return;
+      }
+
+      if (firebaseAutenticado) {
+
+        carregarHistorico(
+          dataSelecionada
+        );
+
+      }
+
     }
+  );
 
-    carregarHistorico(
-      dataSelecionada
-    );
-
-  }
-);
+}
 
 
 /* =========================================================
    ENTRAR
 ========================================================= */
 
-botaoEntrar.addEventListener(
-  "click",
-  function () {
+if (botaoEntrar) {
 
-    const nomeDigitado =
-      nomeInput.value.trim();
+  botaoEntrar.addEventListener(
+    "click",
+    function () {
 
-    if (nomeDigitado === "") {
+      const nomeDigitado =
+        nomeInput.value.trim();
 
-      erroLogin.textContent =
-        "Digite seu primeiro nome para entrar.";
+      if (nomeDigitado === "") {
 
-      nomeInput.focus();
+        erroLogin.textContent =
+          "Digite seu primeiro nome para entrar.";
 
-      return;
+        nomeInput.focus();
+
+        return;
+      }
+
+      erroLogin.textContent = "";
+
+      salvarNome(nomeDigitado);
+
+      mostrarAplicativo();
+
     }
+  );
 
-    erroLogin.textContent = "";
-
-    salvarNome(nomeDigitado);
-
-    mostrarAplicativo();
-  }
-);
+}
 
 
 /* =========================================================
    ENTER NO LOGIN
 ========================================================= */
 
-nomeInput.addEventListener(
-  "keydown",
-  function (evento) {
+if (nomeInput) {
 
-    if (evento.key === "Enter") {
-      botaoEntrar.click();
+  nomeInput.addEventListener(
+    "keydown",
+    function (evento) {
+
+      if (evento.key === "Enter") {
+        botaoEntrar.click();
+      }
+
     }
+  );
 
-  }
-);
+}
 
 
 /* =========================================================
    SAIR
 ========================================================= */
 
-botaoSair.addEventListener(
-  "click",
-  function () {
+if (botaoSair) {
 
-    const confirmarSaida =
-      confirm(
-        "Deseja sair e trocar o familiar deste aparelho?"
+  botaoSair.addEventListener(
+    "click",
+    function () {
+
+      const confirmarSaida =
+        confirm(
+          "Deseja sair e trocar o familiar deste aparelho?"
+        );
+
+      if (!confirmarSaida) {
+        return;
+      }
+
+      localStorage.removeItem(
+        CHAVE_USUARIO
       );
 
-    if (!confirmarSaida) {
-      return;
+      nomeUsuario = "";
+
+      nomeInput.value = "";
+
+      if (unsubscribeHoje) {
+        unsubscribeHoje();
+        unsubscribeHoje = null;
+      }
+
+      if (unsubscribeHistorico) {
+        unsubscribeHistorico();
+        unsubscribeHistorico = null;
+      }
+
+      mostrarLogin();
+
     }
+  );
 
-    localStorage.removeItem(
-      CHAVE_USUARIO
-    );
+}
 
-    nomeUsuario = "";
 
-    nomeInput.value = "";
+/* =========================================================
+   FIREBASE - AUTENTICAÇÃO
+========================================================= */
 
-    mostrarLogin();
+onAuthStateChanged(
+  auth,
+  function (usuario) {
+
+    if (usuario) {
+
+      firebaseAutenticado = true;
+
+      console.log(
+        "Firebase autenticado."
+      );
+
+      if (nomeUsuario) {
+
+        mostrarAplicativo();
+
+      }
+
+    }
 
   }
 );
+
+
+signInAnonymously(auth)
+  .then(function () {
+
+    console.log(
+      "Autenticação anônima iniciada."
+    );
+
+  })
+  .catch(function (erro) {
+
+    console.error(
+      "Erro na autenticação Firebase:",
+      erro
+    );
+
+    alert(
+      "Não foi possível conectar ao Firebase. Verifique sua conexão com a internet."
+    );
+
+  });
 
 
 /* =========================================================
@@ -448,6 +583,10 @@ botaoSair.addEventListener(
 ========================================================= */
 
 function carregarRegistrosHoje() {
+
+  if (!firebaseAutenticado) {
+    return;
+  }
 
   const dataHoje =
     obterDataHoje();
@@ -492,8 +631,9 @@ function carregarRegistrosHoje() {
             const dados =
               documento.data();
 
-            registros[dados.horario] =
-              dados;
+            registros[
+              dados.horario
+            ] = dados;
 
           }
         );
@@ -524,7 +664,10 @@ function carregarRegistrosHoje() {
 
 function carregarHistorico(dataISO) {
 
-  if (!dataISO) {
+  if (
+    !dataISO ||
+    !firebaseAutenticado
+  ) {
     return;
   }
 
@@ -616,6 +759,7 @@ function abrirModal(horario) {
   modalConfirmacao.classList.remove(
     "escondido"
   );
+
 }
 
 
@@ -626,122 +770,141 @@ function fecharModal() {
   modalConfirmacao.classList.add(
     "escondido"
   );
+
 }
 
 
-botaoCancelar.addEventListener(
-  "click",
-  fecharModal
-);
+if (botaoCancelar) {
+
+  botaoCancelar.addEventListener(
+    "click",
+    fecharModal
+  );
+
+}
 
 
 /* =========================================================
    CONFIRMAR MEDICAMENTO
 ========================================================= */
 
-botaoConfirmar.addEventListener(
-  "click",
-  async function () {
+if (botaoConfirmar) {
 
-    if (!horarioSelecionado) {
-      return;
+  botaoConfirmar.addEventListener(
+    "click",
+    async function () {
+
+      if (!horarioSelecionado) {
+        return;
+      }
+
+      if (!firebaseAutenticado) {
+
+        alert(
+          "Aguarde a conexão com o Firebase."
+        );
+
+        return;
+      }
+
+      const horario =
+        horarioSelecionado;
+
+      const agora =
+        new Date();
+
+      const dataISO =
+        obterDataHoje();
+
+      const horaRegistro =
+        agora.toLocaleTimeString(
+          "pt-BR",
+          {
+            hour: "2-digit",
+            minute: "2-digit"
+          }
+        );
+
+      const dataRegistro =
+        agora.toLocaleDateString(
+          "pt-BR"
+        );
+
+      const idRegistro =
+        `${dataISO}_${horario.replace(
+          ":",
+          "-"
+        )}`;
+
+      const registro = {
+
+        horario: horario,
+
+        nome: nomeUsuario,
+
+        horaRegistro: horaRegistro,
+
+        dataRegistro: dataRegistro,
+
+        dataISO: dataISO,
+
+        dataCompleta:
+          agora.toISOString()
+
+      };
+
+
+      try {
+
+        botaoConfirmar.disabled =
+          true;
+
+        botaoConfirmar.textContent =
+          "Salvando...";
+
+
+        await setDoc(
+
+          doc(
+            db,
+            "registros",
+            idRegistro
+          ),
+
+          registro
+
+        );
+
+
+        fecharModal();
+
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao salvar registro:",
+          erro
+        );
+
+        alert(
+          "Não foi possível salvar o registro no Firebase."
+        );
+
+
+      } finally {
+
+        botaoConfirmar.disabled =
+          false;
+
+        botaoConfirmar.textContent =
+          "Confirmar";
+
+      }
+
     }
+  );
 
-    const horario =
-      horarioSelecionado;
-
-    const agora =
-      new Date();
-
-    const dataISO =
-      obterDataHoje();
-
-    const horaRegistro =
-      agora.toLocaleTimeString(
-        "pt-BR",
-        {
-          hour: "2-digit",
-          minute: "2-digit"
-        }
-      );
-
-    const dataRegistro =
-      agora.toLocaleDateString(
-        "pt-BR"
-      );
-
-    const idRegistro =
-      `${dataISO}_${horario.replace(
-        ":",
-        "-"
-      )}`;
-
-    const registro = {
-
-      horario: horario,
-
-      nome: nomeUsuario,
-
-      horaRegistro: horaRegistro,
-
-      dataRegistro: dataRegistro,
-
-      dataISO: dataISO,
-
-      dataCompleta:
-        agora.toISOString()
-    };
-
-
-    try {
-
-      botaoConfirmar.disabled =
-        true;
-
-      botaoConfirmar.textContent =
-        "Salvando...";
-
-
-      await setDoc(
-
-        doc(
-          db,
-          "registros",
-          idRegistro
-        ),
-
-        registro
-
-      );
-
-
-      fecharModal();
-
-
-    } catch (erro) {
-
-      console.error(
-        "Erro ao salvar registro:",
-        erro
-      );
-
-      alert(
-        "Não foi possível salvar o registro no Firebase."
-      );
-
-
-    } finally {
-
-      botaoConfirmar.disabled =
-        false;
-
-      botaoConfirmar.textContent =
-        "Confirmar";
-
-    }
-
-  }
-);
+}
 
 
 /* =========================================================
@@ -770,14 +933,28 @@ function atualizarTela() {
     );
 
 
-  totalMedicamentos.textContent =
-    total;
+  if (totalMedicamentos) {
 
-  totalDados.textContent =
-    dados;
+    totalMedicamentos.textContent =
+      total;
 
-  totalPendentes.textContent =
-    pendentes;
+  }
+
+
+  if (totalDados) {
+
+    totalDados.textContent =
+      dados;
+
+  }
+
+
+  if (totalPendentes) {
+
+    totalPendentes.textContent =
+      pendentes;
+
+  }
 
 
   cartoes.forEach(
@@ -925,7 +1102,6 @@ function atualizarHistorico() {
 
             </div>
 
-
             <div class="historico-detalhes">
 
               <strong>
@@ -944,7 +1120,6 @@ function atualizarHistorico() {
               </small>
 
             </div>
-
 
             <div class="historico-check">
               ✓
@@ -1066,169 +1241,4 @@ async function ativarNotificacoes() {
         true;
 
       localStorage.setItem(
-        CHAVE_NOTIFICACAO,
-        "true"
-      );
-
-      atualizarBotaoNotificacao();
-
-
-      new Notification(
-        "Cuidado Juntos ❤️",
-        {
-          body:
-            "Notificações ativadas! Você receberá os lembretes dos medicamentos.",
-
-          icon:
-            "img/notificacao.png"
-        }
-      );
-
-
-    } else {
-
-      notificacaoAtiva =
-        false;
-
-      localStorage.setItem(
-        CHAVE_NOTIFICACAO,
-        "false"
-      );
-
-      atualizarBotaoNotificacao();
-
-
-      alert(
-        "A permissão para notificações não foi concedida."
-      );
-
-    }
-
-
-  } catch (erro) {
-
-    console.error(
-      "Erro nas notificações:",
-      erro
-    );
-
-    alert(
-      "Não foi possível ativar as notificações."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   BOTÃO NOTIFICAÇÃO
-========================================================= */
-
-if (botaoNotificacao) {
-
-  botaoNotificacao.addEventListener(
-    "click",
-    function () {
-
-      if (
-        Notification.permission ===
-        "granted"
-      ) {
-
-        notificacaoAtiva =
-          !notificacaoAtiva;
-
-        localStorage.setItem(
-          CHAVE_NOTIFICACAO,
-          String(
-            notificacaoAtiva
-          )
-        );
-
-        atualizarBotaoNotificacao();
-
-
-        if (notificacaoAtiva) {
-
-          new Notification(
-            "Cuidado Juntos ❤️",
-            {
-              body:
-                "Lembretes de medicamentos ativados.",
-
-              icon:
-                "img/notificacao.png"
-            }
-          );
-
-        }
-
-        return;
-
-      }
-
-
-      ativarNotificacoes();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   ENVIAR LEMBRETE
-========================================================= */
-
-function enviarNotificacao(horario) {
-
-  if (!notificacaoAtiva) {
-    return;
-  }
-
-  if (
-    !("Notification" in window)
-  ) {
-    return;
-  }
-
-  if (
-    Notification.permission !==
-    "granted"
-  ) {
-    return;
-  }
-
-
-  const dataHoje =
-    obterDataHoje();
-
-  const chaveAviso =
-    `${dataHoje}_${horario}`;
-
-
-  if (
-    ultimoAviso === chaveAviso
-  ) {
-    return;
-  }
-
-
-  if (registros[horario]) {
-    return;
-  }
-
-
-  ultimoAviso =
-    chaveAviso;
-
-
-  localStorage.setItem(
-    "cuidadoJuntos_ultimoAviso",
-    chaveAviso
-  );
-
-
-  new Notification(
-    "💊 Hora do medicamento"
+        CHA
