@@ -13,7 +13,7 @@ jobs:
 
     steps:
 
-      # 1. Baixar o código do repositório
+      # 1. Baixar o código
       - name: Baixar código
         uses: actions/checkout@v4
 
@@ -27,7 +27,7 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
-      # 4. Preparar pasta www
+      # 4. Preparar pasta do aplicativo web
       - name: Preparar aplicativo web
         run: |
           rm -rf www
@@ -40,7 +40,7 @@ jobs:
 
           cp -r img www/
 
-      # 5. Criar projeto Android do Capacitor
+      # 5. Criar projeto Android
       - name: Adicionar Android
         run: npx cap add android
 
@@ -48,14 +48,14 @@ jobs:
       - name: Sincronizar Capacitor
         run: npx cap sync android
 
-      # 7. Preparar pasta de recursos
-      - name: Preparar recursos do aplicativo
+      # 7. Preparar logo
+      - name: Preparar logo
         run: |
           mkdir -p assets
           cp img/logo.png assets/logo.png
 
       # 8. Gerar ícones Android
-      - name: Gerar ícones
+      - name: Gerar ícones Android
         run: |
           npx @capacitor/assets generate \
             --android \
@@ -63,7 +63,7 @@ jobs:
             --splashBackgroundColor "#2563eb"
 
       # 9. Sincronizar novamente
-      - name: Sincronizar recursos
+      - name: Sincronizar depois dos ícones
         run: npx cap sync android
 
       # 10. Preparar ícone das notificações
@@ -73,8 +73,8 @@ jobs:
           cp img/notificacao.png \
             android/app/src/main/res/drawable/notificacao.png
 
-      # 11. Configurar permissão de notificações
-      - name: Configurar permissões Android
+      # 11. Adicionar permissão de notificações
+      - name: Adicionar permissão POST_NOTIFICATIONS
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -86,33 +86,45 @@ jobs:
           texto = manifest.read_text()
 
           permissao = (
-              '<uses-permission '
+              '    <uses-permission '
               'android:name="android.permission.POST_NOTIFICATIONS" />'
           )
 
-          if permissao not in texto:
-              pos = texto.find(">")
+          if "android.permission.POST_NOTIFICATIONS" not in texto:
+              marcador = "</manifest>"
 
-              texto = (
-                  texto[:pos + 1]
-                  + "\n    "
-                  + permissao
-                  + texto[pos + 1:]
+              if marcador not in texto:
+                  raise SystemExit(
+                      "AndroidManifest.xml não possui </manifest>"
+                  )
+
+              texto = texto.replace(
+                  marcador,
+                  permissao + "\n" + marcador
               )
 
           manifest.write_text(texto)
+
+          print("Permissão POST_NOTIFICATIONS configurada.")
           PY
 
-      # 12. Permitir execução do Gradle
+      # 12. Mostrar o Manifest para diagnóstico
+      - name: Verificar AndroidManifest
+        run: |
+          echo "===== ANDROID MANIFEST ====="
+          cat android/app/src/main/AndroidManifest.xml
+          echo "===== FIM MANIFEST ====="
+
+      # 13. Permitir execução do Gradle
       - name: Permitir Gradle
         run: chmod +x android/gradlew
 
-      # 13. Gerar APK
+      # 14. Gerar APK
       - name: Gerar APK Debug
         working-directory: android
         run: ./gradlew assembleDebug
 
-      # 14. Disponibilizar APK
+      # 15. Publicar APK
       - name: Publicar APK
         uses: actions/upload-artifact@v4
         with:
