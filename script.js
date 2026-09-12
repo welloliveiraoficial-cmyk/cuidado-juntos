@@ -18,7 +18,7 @@ import {
 
 
 // ======================================================
-// CONFIGURAÇÃO DO FIREBASE
+// FIREBASE
 // ======================================================
 
 const firebaseConfig = {
@@ -29,11 +29,6 @@ const firebaseConfig = {
   messagingSenderId: "453583954077",
   appId: "1:453583954077:web:c55a6fd18f107a0c447474"
 };
-
-
-// ======================================================
-// INICIALIZAÇÃO
-// ======================================================
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -52,7 +47,7 @@ let horarioSelecionado = null;
 
 
 // ======================================================
-// ELEMENTOS DA TELA
+// ELEMENTOS
 // ======================================================
 
 const telaLogin = document.getElementById("tela-login");
@@ -79,23 +74,15 @@ const totalPendentes = document.getElementById("total-pendentes");
 // ======================================================
 // DATA DO CICLO
 // ======================================================
-//
-// O "dia" do aplicativo começa às 06:00.
-//
-// 06:00 até 23:59 = ciclo do dia atual
-// 00:00 até 05:59 = ainda pertence ao ciclo anterior
-//
-// Exemplo:
-// 13/09 às 05:30 -> ciclo 12/09
-// 13/09 às 06:00 -> ciclo 13/09
-//
+// O ciclo diário começa às 06:00.
+// De 06:00 até 23:59 = ciclo do dia atual.
+// De 00:00 até 05:59 = ciclo do dia anterior.
 // ======================================================
 
 function obterDataHoje() {
 
   const agora = new Date();
 
-  // Antes das 06:00, ainda estamos no ciclo do dia anterior
   if (agora.getHours() < 6) {
     agora.setDate(agora.getDate() - 1);
   }
@@ -115,19 +102,7 @@ function obterDataHoje() {
 
 
 // ======================================================
-// FORMATAR DATA
-// ======================================================
-
-function formatarData(dataISO) {
-
-  const partes = dataISO.split("-");
-
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
-
-
-// ======================================================
-// SALVAR NOME DO FAMILIAR
+// SALVAR NOME
 // ======================================================
 
 function salvarNome(nome) {
@@ -170,7 +145,7 @@ function mostrarLogin() {
 
 
 // ======================================================
-// LOGIN
+// ENTRAR
 // ======================================================
 
 botaoEntrar.addEventListener(
@@ -202,7 +177,7 @@ botaoEntrar.addEventListener(
 
 
 // ======================================================
-// ENTER NO CAMPO DO NOME
+// ENTER NO NOME
 // ======================================================
 
 nomeInput.addEventListener(
@@ -210,7 +185,6 @@ nomeInput.addEventListener(
   function (evento) {
 
     if (evento.key === "Enter") {
-
       botaoEntrar.click();
     }
   }
@@ -251,10 +225,11 @@ botaoSair.addEventListener(
 
 function carregarRegistrosHoje() {
 
-  const dataHoje = obterDataHoje();
+  const dataHoje =
+    obterDataHoje();
 
   console.log(
-    "Ciclo atual do aplicativo:",
+    "Ciclo atual:",
     dataHoje
   );
 
@@ -308,7 +283,8 @@ function carregarRegistrosHoje() {
 
 function abrirModal(horario) {
 
-  horarioSelecionado = horario;
+  horarioSelecionado =
+    horario;
 
   textoConfirmacao.textContent =
     "Você está registrando o medicamento das " +
@@ -336,7 +312,7 @@ function fecharModal() {
 
 
 // ======================================================
-// BOTÃO CANCELAR
+// CANCELAR
 // ======================================================
 
 botaoCancelar.addEventListener(
@@ -363,8 +339,6 @@ botaoConfirmar.addEventListener(
     const agora =
       new Date();
 
-    // IMPORTANTE:
-    // Usa o ciclo que começa às 06:00
     const dataISO =
       obterDataHoje();
 
@@ -383,12 +357,9 @@ botaoConfirmar.addEventListener(
       );
 
 
-    // O ID contém a data do ciclo
-    // e o horário do medicamento.
-    //
-    // Portanto, o mesmo medicamento
-    // poderá ser registrado novamente
-    // no próximo ciclo às 06:00.
+    // Cada ciclo possui seus próprios registros.
+    // O mesmo horário poderá ser registrado
+    // novamente depois das 06:00.
 
     const idRegistro =
       `${dataISO}_${horario.replace(":", "-")}`;
@@ -413,7 +384,8 @@ botaoConfirmar.addEventListener(
 
     try {
 
-      botaoConfirmar.disabled = true;
+      botaoConfirmar.disabled =
+        true;
 
       botaoConfirmar.textContent =
         "Salvando...";
@@ -429,21 +401,12 @@ botaoConfirmar.addEventListener(
       );
 
 
+      // ==================================================
+      // NÃO MOSTRA MAIS O ALERT DE SUCESSO.
+      // O modal simplesmente fecha.
+      // ==================================================
+
       fecharModal();
-
-
-      alert(
-        "Medicamento registrado!\n\n" +
-
-        "Horário: " +
-        horario +
-
-        "\nDado por: " +
-        nomeUsuario +
-
-        "\nRegistrado às: " +
-        horaRegistro
-      );
 
 
     } catch (erro) {
@@ -576,7 +539,7 @@ function atualizarTela() {
 
 
 // ======================================================
-// BOTÕES "DAR"
+// BOTÕES DAR
 // ======================================================
 
 const botoesDar =
@@ -614,7 +577,7 @@ botoesDar.forEach(
 
 
 // ======================================================
-// FIREBASE AUTHENTICATION
+// AUTENTICAÇÃO FIREBASE
 // ======================================================
 
 onAuthStateChanged(
@@ -640,7 +603,7 @@ onAuthStateChanged(
 
 
 // ======================================================
-// LOGIN ANÔNIMO NO FIREBASE
+// LOGIN ANÔNIMO
 // ======================================================
 
 signInAnonymously(auth)
@@ -671,7 +634,7 @@ signInAnonymously(auth)
 
 
 // ======================================================
-// INICIALIZAÇÃO DA TELA
+// INICIALIZAÇÃO
 // ======================================================
 
 if (nomeUsuario !== "") {
