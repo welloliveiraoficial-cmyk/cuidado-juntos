@@ -1,0 +1,94 @@
+import { Capacitor } from "@capacitor/core";
+import { LocalNotifications } from "@capacitor/local-notifications";
+
+const HORARIOS = [
+  ["08:00", 8, 0],
+  ["09:00", 9, 0],
+  ["10:00", 10, 0],
+  ["12:00", 12, 0],
+  ["16:00", 16, 0],
+  ["20:00", 20, 0],
+  ["21:00", 21, 0],
+  ["22:00", 22, 0],
+  ["00:00", 0, 0]
+];
+
+const CHANNEL_ID = "medicamentos";
+
+async function configurarNotificacoesNativas() {
+  // No GitHub Pages continua funcionando normalmente.
+  // Este código só será executado dentro do APK.
+  if (!Capacitor.isNativePlatform()) {
+    return;
+  }
+
+  try {
+    // Verifica a permissão atual
+    const permissao = await LocalNotifications.checkPermissions();
+
+    // Solicita automaticamente a permissão na primeira utilização
+    if (
+      permissao.display === "prompt" ||
+      permissao.display === "prompt-with-rationale"
+    ) {
+      const resultado = await LocalNotifications.requestPermissions();
+
+      if (resultado.display !== "granted") {
+        console.log("Permissão para notificações não concedida.");
+        return;
+      }
+    }
+
+    // Se a permissão já foi negada, não fica solicitando repetidamente.
+    if (permissao.display === "denied") {
+      console.log("Notificações estão bloqueadas.");
+      return;
+    }
+
+    // Cria o canal de notificações do Android
+    await LocalNotifications.createChannel({
+      id: CHANNEL_ID,
+      name: "Medicamentos",
+      description: "Lembretes dos horários dos medicamentos",
+      importance: 4,
+      visibility: 1,
+      vibration: true
+    });
+
+    // Remove agendamentos anteriores para evitar notificações duplicadas
+    await LocalNotifications.cancelAll();
+
+    // Agenda os 9 horários diariamente
+    await LocalNotifications.schedule({
+      notifications: HORARIOS.map(([horario, hora, minuto], indice) => ({
+        id: 1000 + indice,
+        title: "Cuidado Juntos ❤️",
+        body: `Está na hora do medicamento das ${horario}.`,
+        channelId: CHANNEL_ID,
+        smallIcon: "notificacao",
+        schedule: {
+          on: {
+            hour: hora,
+            minute: minuto
+          },
+          allowWhileIdle: true
+        },
+        autoCancel: true
+      }))
+    });
+
+    console.log("Notificações dos medicamentos configuradas com sucesso.");
+
+  } catch (erro) {
+    console.error(
+      "Erro ao configurar notificações nativas:",
+      erro
+    );
+  }
+}
+
+// Executa quando o aplicativo estiver pronto
+window.addEventListener(
+  "DOMContentLoaded",
+  configurarNotificacoesNativas
+);
