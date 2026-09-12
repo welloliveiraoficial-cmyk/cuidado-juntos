@@ -257,6 +257,8 @@ function mostrarAplicativo() {
     "escondido"
   );
 
+  telaApp.style.display = "";
+
   if (nomeExibido) {
 
     nomeExibido.textContent =
@@ -298,6 +300,8 @@ function mostrarLogin() {
   telaApp.classList.add(
     "escondido"
   );
+
+  telaApp.style.display = "none";
 
 }
 
@@ -344,17 +348,7 @@ if (botaoEntrar) {
         nomeDigitado
       );
 
-      /*
-       * O aplicativo entra imediatamente.
-       * Não depende do Firebase.
-       */
-
       mostrarAplicativo();
-
-      /*
-       * O Firebase continua carregando
-       * em segundo plano.
-       */
 
       if (firebaseAutenticado) {
 
@@ -631,7 +625,7 @@ if (botaoSair) {
 
 
 /* =========================================================
-   MODAL
+   MODAL DE CONFIRMAÇÃO
 ========================================================= */
 
 function abrirModal(horario) {
@@ -654,6 +648,8 @@ function abrirModal(horario) {
       "escondido"
     );
 
+    modalConfirmacao.style.display = "flex";
+
   }
 
 }
@@ -669,6 +665,8 @@ function fecharModal() {
     modalConfirmacao.classList.add(
       "escondido"
     );
+
+    modalConfirmacao.style.display = "none";
 
   }
 
@@ -689,46 +687,92 @@ if (botaoCancelar) {
    BOTÕES DAR
 ========================================================= */
 
-const botoesDar =
-  document.querySelectorAll(
-    ".btn-dar"
-  );
+function configurarBotoesDar() {
 
-
-botoesDar.forEach(
-  function (botao) {
-
-    botao.addEventListener(
-      "click",
-      function () {
-
-        if (botao.disabled) {
-          return;
-        }
-
-        const cartao =
-          botao.closest(
-            ".medicamento"
-          );
-
-        if (!cartao) {
-          return;
-        }
-
-        const horario =
-          cartao.getAttribute(
-            "data-horario"
-          );
-
-        abrirModal(
-          horario
-        );
-
-      }
+  const botoesDar =
+    document.querySelectorAll(
+      ".btn-dar"
     );
 
-  }
-);
+  botoesDar.forEach(
+    function (botao) {
+
+      /*
+       * Evita adicionar o evento mais de uma vez.
+       */
+
+      if (
+        botao.dataset.eventoConfigurado === "true"
+      ) {
+        return;
+      }
+
+      botao.dataset.eventoConfigurado =
+        "true";
+
+      botao.addEventListener(
+        "click",
+        function () {
+
+          if (botao.disabled) {
+            return;
+          }
+
+          /*
+           * A classe correta dos cartões
+           * da interface atual é:
+           *
+           * .medicamento-card
+           */
+
+          const cartao =
+            botao.closest(
+              ".medicamento-card"
+            );
+
+          if (!cartao) {
+
+            console.error(
+              "Cartão do medicamento não encontrado."
+            );
+
+            return;
+
+          }
+
+          const horario =
+            cartao.getAttribute(
+              "data-horario"
+            );
+
+          if (!horario) {
+
+            console.error(
+              "Horário do medicamento não encontrado."
+            );
+
+            return;
+
+          }
+
+          abrirModal(
+            horario
+          );
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/*
+ * Configura os botões imediatamente.
+ */
+
+configurarBotoesDar();
 
 
 /* =========================================================
@@ -742,7 +786,9 @@ if (botaoConfirmar) {
     async function () {
 
       if (!horarioSelecionado) {
+
         return;
+
       }
 
       if (!firebaseAutenticado) {
@@ -788,7 +834,8 @@ if (botaoConfirmar) {
 
         horario: horario,
 
-        nome: nomeUsuario,
+        nome:
+          nomeUsuario || "Familiar",
 
         horaRegistro:
           horaRegistro,
@@ -824,7 +871,40 @@ if (botaoConfirmar) {
 
         );
 
+        /*
+         * Atualiza imediatamente a tela,
+         * sem precisar esperar o Firebase.
+         */
+
+        registros[horario] =
+          registro;
+
+        atualizarTela();
+
         fecharModal();
+
+        /*
+         * Pequena confirmação visual.
+         */
+
+        mostrarAvisoRegistro(
+          horario
+        );
+
+        /*
+         * Atualiza o histórico se ele estiver aberto.
+         */
+
+        if (
+          dataHistorico &&
+          dataHistorico.value === dataISO
+        ) {
+
+          carregarHistorico(
+            dataISO
+          );
+
+        }
 
       } catch (erro) {
 
@@ -854,6 +934,127 @@ if (botaoConfirmar) {
 
 
 /* =========================================================
+   AVISO DE REGISTRO
+========================================================= */
+
+function mostrarAvisoRegistro(
+  horario
+) {
+
+  const avisoExistente =
+    document.getElementById(
+      "aviso-registro"
+    );
+
+  if (avisoExistente) {
+
+    avisoExistente.remove();
+
+  }
+
+  const aviso =
+    document.createElement(
+      "div"
+    );
+
+  aviso.id =
+    "aviso-registro";
+
+  aviso.innerHTML = `
+    <strong>✓ Medicamento registrado!</strong>
+    <span>Horário: ${horario}</span>
+    <span>Dado por: ${nomeUsuario}</span>
+  `;
+
+  /*
+   * Estilo diretamente no aviso para
+   * funcionar mesmo sem alterar o CSS.
+   */
+
+  aviso.style.position =
+    "fixed";
+
+  aviso.style.left =
+    "50%";
+
+  aviso.style.bottom =
+    "24px";
+
+  aviso.style.transform =
+    "translateX(-50%)";
+
+  aviso.style.zIndex =
+    "99999";
+
+  aviso.style.width =
+    "calc(100% - 32px)";
+
+  aviso.style.maxWidth =
+    "420px";
+
+  aviso.style.padding =
+    "18px";
+
+  aviso.style.borderRadius =
+    "18px";
+
+  aviso.style.background =
+    "#16a34a";
+
+  aviso.style.color =
+    "#ffffff";
+
+  aviso.style.boxShadow =
+    "0 12px 35px rgba(0,0,0,.25)";
+
+  aviso.style.display =
+    "flex";
+
+  aviso.style.flexDirection =
+    "column";
+
+  aviso.style.gap =
+    "5px";
+
+  aviso.style.textAlign =
+    "center";
+
+  aviso.style.fontFamily =
+    "Arial, sans-serif";
+
+  aviso.style.animation =
+    "aparecerAviso .3s ease";
+
+  document.body.appendChild(
+    aviso
+  );
+
+  setTimeout(
+    function () {
+
+      aviso.style.opacity =
+        "0";
+
+      aviso.style.transition =
+        "opacity .3s ease";
+
+      setTimeout(
+        function () {
+
+          aviso.remove();
+
+        },
+        350
+      );
+
+    },
+    3500
+  );
+
+}
+
+
+/* =========================================================
    ATUALIZAR TELA
 ========================================================= */
 
@@ -861,7 +1062,7 @@ function atualizarTela() {
 
   const cartoes =
     document.querySelectorAll(
-      ".medicamento"
+      ".medicamento-card"
     );
 
   const total =
@@ -983,6 +1184,13 @@ function atualizarTela() {
 
     }
   );
+
+  /*
+   * Garante que os botões continuem funcionando
+   * mesmo depois de qualquer atualização da tela.
+   */
+
+  configurarBotoesDar();
 
 }
 
@@ -1266,78 +1474,63 @@ if (botaoNotificacao) {
 
 function verificarHorarioMedicamento() {
 
-  if (!notificacaoAtiva) {
-    return;
-  }
-
-  if (
-    !("Notification" in window)
-  ) {
-    return;
-  }
-
-  if (
-    Notification.permission !==
-    "granted"
-  ) {
-    return;
-  }
-
   const agora =
     new Date();
 
   const horaAtual =
     String(
       agora.getHours()
-    ).padStart(2, "0");
-
-  const minutoAtual =
+    ).padStart(2, "0") +
+    ":" +
     String(
       agora.getMinutes()
     ).padStart(2, "0");
 
-  const horarioAtual =
-    `${horaAtual}:${minutoAtual}`;
+  /*
+   * Verifica somente os horários cadastrados.
+   */
 
-  if (
-    !HORARIOS.includes(
-      horarioAtual
-    )
-  ) {
-    return;
-  }
+  HORARIOS.forEach(
+    function (horario) {
 
-  const dataHoje =
-    obterDataHoje();
+      if (
+        horario === horaAtual &&
+        ultimoAviso !==
+          `${obterDataHoje()}_${horario}`
+      ) {
 
-  const chaveAviso =
-    `${dataHoje}_${horarioAtual}`;
+        /*
+         * Não avisa se já foi registrado.
+         */
 
-  if (
-    ultimoAviso === chaveAviso
-  ) {
-    return;
-  }
+        if (!registros[horario]) {
 
-  ultimoAviso =
-    chaveAviso;
+          enviarNotificacao(
+            "💊 Hora do medicamento",
+            `Está na hora do medicamento das ${horario}.`
+          );
 
-  localStorage.setItem(
-    CHAVE_ULTIMO_AVISO,
-    chaveAviso
-  );
+        }
 
-  enviarNotificacao(
-    "💊 Hora do medicamento",
-    `Está na hora do medicamento das ${horarioAtual}.`
+        ultimoAviso =
+          `${obterDataHoje()}_${horario}`;
+
+        localStorage.setItem(
+          CHAVE_ULTIMO_AVISO,
+          ultimoAviso
+        );
+
+      }
+
+    }
   );
 
 }
 
 
-/* =========================================================
-   INICIAR VERIFICAÇÃO DE HORÁRIOS
-========================================================= */
+/*
+ * Verifica a cada 30 segundos.
+ */
 
 setInterval(
   verificarHorarioMedicamento,
@@ -1347,123 +1540,85 @@ setInterval(
 
 /* =========================================================
    FIREBASE
-   CARREGAMENTO SEPARADO DO LOGIN
 ========================================================= */
 
-async function iniciarFirebase() {
+async function inicializarFirebase() {
 
   try {
 
-    console.log(
-      "Iniciando Firebase..."
-    );
-
-    const firebaseAppModule =
+    const appModule =
       await import(
         "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
       );
 
-    const firebaseFirestoreModule =
-      await import(
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"
-      );
-
-    const firebaseAuthModule =
+    const authModule =
       await import(
         "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js"
       );
 
+    const firestoreModule =
+      await import(
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"
+      );
 
     const app =
-      firebaseAppModule.initializeApp(
+      appModule.initializeApp(
         firebaseConfig
       );
 
+    auth =
+      authModule.getAuth(
+        app
+      );
 
     db =
-      firebaseFirestoreModule.getFirestore(
+      firestoreModule.getFirestore(
         app
       );
-
-
-    auth =
-      firebaseAuthModule.getAuth(
-        app
-      );
-
 
     firebaseFunctions = {
 
-      collection:
-        firebaseFirestoreModule.collection,
+      setDoc:
+        firestoreModule.setDoc,
 
       doc:
-        firebaseFirestoreModule.doc,
+        firestoreModule.doc,
 
-      setDoc:
-        firebaseFirestoreModule.setDoc,
+      collection:
+        firestoreModule.collection,
 
       query:
-        firebaseFirestoreModule.query,
+        firestoreModule.query,
 
       where:
-        firebaseFirestoreModule.where,
+        firestoreModule.where,
 
       onSnapshot:
-        firebaseFirestoreModule.onSnapshot
+        firestoreModule.onSnapshot,
+
+      orderBy:
+        firestoreModule.orderBy
 
     };
 
+    /*
+     * Login anônimo no Firebase.
+     */
 
-    firebaseAuthModule.onAuthStateChanged(
-      auth,
-      function (usuario) {
-
-        if (usuario) {
-
-          firebaseAutenticado =
-            true;
-
-          console.log(
-            "Firebase autenticado."
-          );
-
-          if (nomeUsuario) {
-
-            carregarRegistrosHoje();
-
-          }
-
-          if (
-            paginaHistorico &&
-            !paginaHistorico.classList.contains(
-              "escondido"
-            ) &&
-            dataHistorico
-          ) {
-
-            carregarHistorico(
-              dataHistorico.value
-            );
-
-          }
-
-        }
-
-      }
+    await authModule.signInAnonymously(
+      auth
     );
 
-
-    await firebaseAuthModule
-      .signInAnonymously(
-        auth
-      );
-
+    firebaseAutenticado =
+      true;
 
     console.log(
-      "Autenticação anônima iniciada."
+      "Firebase conectado com sucesso."
     );
 
+    /*
+     * Carrega os registros do dia.
+     */
 
     if (nomeUsuario) {
 
@@ -1471,23 +1626,15 @@ async function iniciarFirebase() {
 
     }
 
-
   } catch (erro) {
 
     console.error(
-      "Erro ao iniciar Firebase:",
+      "Erro ao inicializar Firebase:",
       erro
     );
 
-    /*
-     * IMPORTANTE:
-     *
-     * Não mostramos alerta aqui.
-     *
-     * O login continua funcionando
-     * mesmo se o Firebase estiver
-     * temporariamente indisponível.
-     */
+    firebaseAutenticado =
+      false;
 
   }
 
@@ -1502,54 +1649,44 @@ function carregarRegistrosHoje() {
 
   if (
     !firebaseAutenticado ||
-    !firebaseFunctions ||
-    !db
+    !db ||
+    !firebaseFunctions
   ) {
 
     return;
 
   }
 
-  const dataHoje =
+  if (unsubscribeHoje) {
+
+    unsubscribeHoje();
+
+    unsubscribeHoje = null;
+
+  }
+
+  const dataISO =
     obterDataHoje();
 
-  console.log(
-    "Ciclo atual:",
-    dataHoje
-  );
-
-
-  const registrosRef =
+  const colecao =
     firebaseFunctions.collection(
       db,
       "registros"
     );
 
-
   const consulta =
     firebaseFunctions.query(
-      registrosRef,
-
+      colecao,
       firebaseFunctions.where(
         "dataISO",
         "==",
-        dataHoje
+        dataISO
       )
     );
 
-
-  if (unsubscribeHoje) {
-
-    unsubscribeHoje();
-
-  }
-
-
   unsubscribeHoje =
     firebaseFunctions.onSnapshot(
-
       consulta,
-
       function (snapshot) {
 
         registros = {};
@@ -1557,12 +1694,16 @@ function carregarRegistrosHoje() {
         snapshot.forEach(
           function (documento) {
 
-            const dados =
+            const registro =
               documento.data();
 
-            registros[
-              dados.horario
-            ] = dados;
+            if (registro.horario) {
+
+              registros[
+                registro.horario
+              ] = registro;
+
+            }
 
           }
         );
@@ -1570,16 +1711,14 @@ function carregarRegistrosHoje() {
         atualizarTela();
 
       },
-
       function (erro) {
 
         console.error(
-          "Erro ao carregar Firestore:",
+          "Erro ao carregar registros:",
           erro
         );
 
       }
-
     );
 
 }
@@ -1594,28 +1733,33 @@ function carregarHistorico(
 ) {
 
   if (
-    !dataISO ||
     !firebaseAutenticado ||
+    !db ||
     !firebaseFunctions ||
-    !db
+    !dataISO
   ) {
 
     return;
 
   }
 
+  if (unsubscribeHistorico) {
 
-  const registrosRef =
+    unsubscribeHistorico();
+
+    unsubscribeHistorico = null;
+
+  }
+
+  const colecao =
     firebaseFunctions.collection(
       db,
       "registros"
     );
 
-
   const consulta =
     firebaseFunctions.query(
-      registrosRef,
-
+      colecao,
       firebaseFunctions.where(
         "dataISO",
         "==",
@@ -1623,19 +1767,9 @@ function carregarHistorico(
       )
     );
 
-
-  if (unsubscribeHistorico) {
-
-    unsubscribeHistorico();
-
-  }
-
-
   unsubscribeHistorico =
     firebaseFunctions.onSnapshot(
-
       consulta,
-
       function (snapshot) {
 
         registrosHistorico = {};
@@ -1643,12 +1777,16 @@ function carregarHistorico(
         snapshot.forEach(
           function (documento) {
 
-            const dados =
+            const registro =
               documento.data();
 
-            registrosHistorico[
-              dados.horario
-            ] = dados;
+            if (registro.horario) {
+
+              registrosHistorico[
+                registro.horario
+              ] = registro;
+
+            }
 
           }
         );
@@ -1656,7 +1794,6 @@ function carregarHistorico(
         atualizarHistorico();
 
       },
-
       function (erro) {
 
         console.error(
@@ -1667,23 +1804,17 @@ function carregarHistorico(
         if (listaHistorico) {
 
           listaHistorico.innerHTML = `
-            <div class="historico-vazio erro-historico">
-
-              <span>
-                ⚠️
-              </span>
-
+            <div class="historico-vazio">
+              <span>⚠️</span>
               <p>
                 Não foi possível carregar o histórico.
               </p>
-
             </div>
           `;
 
         }
 
       }
-
     );
 
 }
@@ -1693,43 +1824,44 @@ function carregarHistorico(
    INICIALIZAÇÃO
 ========================================================= */
 
-function iniciarAplicativo() {
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
 
-  definirDataHistorico();
+    /*
+     * Configura novamente os botões
+     * depois que todo o HTML estiver carregado.
+     */
 
-  atualizarTela();
+    configurarBotoesDar();
 
-  atualizarBotaoNotificacao();
+    definirDataHistorico();
 
+    atualizarTela();
 
-  /*
-   * Se já existe um nome salvo,
-   * entra automaticamente no aplicativo.
-   */
+    atualizarBotaoNotificacao();
 
-  if (nomeUsuario) {
+    /*
+     * Se já existe um nome salvo,
+     * entra automaticamente no aplicativo.
+     */
 
-    mostrarAplicativo();
+    if (nomeUsuario) {
 
-  } else {
+      mostrarAplicativo();
 
-    mostrarLogin();
+    } else {
+
+      mostrarLogin();
+
+    }
+
+    /*
+     * Firebase é inicializado
+     * sem bloquear a interface.
+     */
+
+    inicializarFirebase();
 
   }
-
-
-  /*
-   * Firebase inicia depois.
-   * Ele não bloqueia o login.
-   */
-
-  iniciarFirebase();
-
-}
-
-
-/* =========================================================
-   INICIAR APLICATIVO
-========================================================= */
-
-iniciarAplicativo();
+);
