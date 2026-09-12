@@ -19,9 +19,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 
-/* =========================
+/* =========================================================
    FIREBASE
-========================= */
+========================================================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAwywIKk97Ro_NHutu4T7zeL_uCdZ2juM8",
@@ -39,9 +39,9 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 
-/* =========================
+/* =========================================================
    CONFIGURAÇÕES
-========================= */
+========================================================= */
 
 const CHAVE_USUARIO =
   "cuidadoJuntos_nomeUsuario";
@@ -54,6 +54,8 @@ let nomeUsuario =
 
 let registros = {};
 
+let registrosHistorico = {};
+
 let horarioSelecionado = null;
 
 let notificacaoAtiva =
@@ -62,10 +64,14 @@ let notificacaoAtiva =
 let ultimoAviso =
   localStorage.getItem("cuidadoJuntos_ultimoAviso") || "";
 
+let unsubscribeHoje = null;
 
-/* =========================
+let unsubscribeHistorico = null;
+
+
+/* =========================================================
    ELEMENTOS
-========================= */
+========================================================= */
 
 const telaLogin =
   document.getElementById("tela-login");
@@ -115,10 +121,31 @@ const totalPendentes =
 const listaHistorico =
   document.getElementById("lista-historico");
 
+const dataHistorico =
+  document.getElementById("data-historico");
 
-/* =========================
-   DATA DO CICLO
-========================= */
+const historicoTotal =
+  document.getElementById("historico-total");
+
+const paginaMedicamentos =
+  document.getElementById("pagina-medicamentos");
+
+const paginaHistorico =
+  document.getElementById("pagina-historico");
+
+const botaoPaginaMedicamentos =
+  document.getElementById("btn-pagina-medicamentos");
+
+const botaoPaginaHistorico =
+  document.getElementById("btn-pagina-historico");
+
+const botaoVoltarMedicamentos =
+  document.getElementById("btn-voltar-medicamentos");
+
+
+/* =========================================================
+   DATA
+========================================================= */
 
 function obterDataHoje() {
 
@@ -129,27 +156,52 @@ function obterDataHoje() {
    */
 
   if (agora.getHours() < 6) {
-    agora.setDate(agora.getDate() - 1);
+    agora.setDate(
+      agora.getDate() - 1
+    );
   }
 
   const ano =
     agora.getFullYear();
 
   const mes =
-    String(agora.getMonth() + 1)
-      .padStart(2, "0");
+    String(
+      agora.getMonth() + 1
+    ).padStart(2, "0");
 
   const dia =
-    String(agora.getDate())
-      .padStart(2, "0");
+    String(
+      agora.getDate()
+    ).padStart(2, "0");
 
   return `${ano}-${mes}-${dia}`;
 }
 
 
-/* =========================
+/* =========================================================
+   FORMATAÇÃO DE DATA
+========================================================= */
+
+function formatarDataBonita(dataISO) {
+
+  if (!dataISO) {
+    return "";
+  }
+
+  const partes =
+    dataISO.split("-");
+
+  if (partes.length !== 3) {
+    return dataISO;
+  }
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+
+/* =========================================================
    NOME DO USUÁRIO
-========================= */
+========================================================= */
 
 function salvarNome(nome) {
 
@@ -162,15 +214,19 @@ function salvarNome(nome) {
 }
 
 
-/* =========================
+/* =========================================================
    MOSTRAR APP
-========================= */
+========================================================= */
 
 function mostrarAplicativo() {
 
-  telaLogin.classList.add("escondido");
+  telaLogin.classList.add(
+    "escondido"
+  );
 
-  telaApp.classList.remove("escondido");
+  telaApp.classList.remove(
+    "escondido"
+  );
 
   nomeExibido.textContent =
     nomeUsuario;
@@ -180,24 +236,139 @@ function mostrarAplicativo() {
   atualizarBotaoNotificacao();
 
   carregarRegistrosHoje();
+
+  definirDataHistorico();
+
+  mostrarPaginaMedicamentos();
 }
 
 
-/* =========================
+/* =========================================================
    MOSTRAR LOGIN
-========================= */
+========================================================= */
 
 function mostrarLogin() {
 
-  telaLogin.classList.remove("escondido");
+  telaLogin.classList.remove(
+    "escondido"
+  );
 
-  telaApp.classList.add("escondido");
+  telaApp.classList.add(
+    "escondido"
+  );
 }
 
 
-/* =========================
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
+
+function mostrarPaginaMedicamentos() {
+
+  paginaMedicamentos.classList.remove(
+    "escondido"
+  );
+
+  paginaHistorico.classList.add(
+    "escondido"
+  );
+
+  botaoPaginaMedicamentos.classList.add(
+    "ativo"
+  );
+
+  botaoPaginaHistorico.classList.remove(
+    "ativo"
+  );
+}
+
+
+function mostrarPaginaHistorico() {
+
+  paginaMedicamentos.classList.add(
+    "escondido"
+  );
+
+  paginaHistorico.classList.remove(
+    "escondido"
+  );
+
+  botaoPaginaMedicamentos.classList.remove(
+    "ativo"
+  );
+
+  botaoPaginaHistorico.classList.add(
+    "ativo"
+  );
+
+  definirDataHistorico();
+
+  carregarHistorico(
+    dataHistorico.value
+  );
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+botaoPaginaMedicamentos.addEventListener(
+  "click",
+  mostrarPaginaMedicamentos
+);
+
+
+botaoPaginaHistorico.addEventListener(
+  "click",
+  mostrarPaginaHistorico
+);
+
+
+botaoVoltarMedicamentos.addEventListener(
+  "click",
+  mostrarPaginaMedicamentos
+);
+
+
+/* =========================================================
+   DATA DO HISTÓRICO
+========================================================= */
+
+function definirDataHistorico() {
+
+  if (!dataHistorico.value) {
+
+    dataHistorico.value =
+      obterDataHoje();
+
+  }
+}
+
+
+dataHistorico.addEventListener(
+  "change",
+  function () {
+
+    const dataSelecionada =
+      dataHistorico.value;
+
+    if (!dataSelecionada) {
+      return;
+    }
+
+    carregarHistorico(
+      dataSelecionada
+    );
+
+  }
+);
+
+
+/* =========================================================
    ENTRAR
-========================= */
+========================================================= */
 
 botaoEntrar.addEventListener(
   "click",
@@ -225,9 +396,9 @@ botaoEntrar.addEventListener(
 );
 
 
-/* =========================
-   ENTER NO CAMPO
-========================= */
+/* =========================================================
+   ENTER NO LOGIN
+========================================================= */
 
 nomeInput.addEventListener(
   "keydown",
@@ -241,9 +412,9 @@ nomeInput.addEventListener(
 );
 
 
-/* =========================
+/* =========================================================
    SAIR
-========================= */
+========================================================= */
 
 botaoSair.addEventListener(
   "click",
@@ -254,26 +425,27 @@ botaoSair.addEventListener(
         "Deseja sair e trocar o familiar deste aparelho?"
       );
 
-    if (confirmarSaida) {
-
-      localStorage.removeItem(
-        CHAVE_USUARIO
-      );
-
-      nomeUsuario = "";
-
-      nomeInput.value = "";
-
-      mostrarLogin();
+    if (!confirmarSaida) {
+      return;
     }
+
+    localStorage.removeItem(
+      CHAVE_USUARIO
+    );
+
+    nomeUsuario = "";
+
+    nomeInput.value = "";
+
+    mostrarLogin();
 
   }
 );
 
 
-/* =========================
-   FIREBASE - CARREGAR
-========================= */
+/* =========================================================
+   FIREBASE - CARREGAR HOJE
+========================================================= */
 
 function carregarRegistrosHoje() {
 
@@ -301,46 +473,135 @@ function carregarRegistrosHoje() {
       )
     );
 
-  onSnapshot(
-    consulta,
-    function (snapshot) {
 
-      registros = {};
+  if (unsubscribeHoje) {
+    unsubscribeHoje();
+  }
 
-      snapshot.forEach(
-        function (documento) {
 
-          const dados =
-            documento.data();
+  unsubscribeHoje =
+    onSnapshot(
+      consulta,
+      function (snapshot) {
 
-          registros[dados.horario] =
-            dados;
-        }
-      );
+        registros = {};
 
-      atualizarTela();
+        snapshot.forEach(
+          function (documento) {
 
-      atualizarHistorico();
+            const dados =
+              documento.data();
 
-    },
-    function (erro) {
+            registros[dados.horario] =
+              dados;
 
-      console.error(
-        "Erro ao carregar Firestore:",
-        erro
-      );
+          }
+        );
 
-      alert(
-        "Não foi possível carregar os registros do Firebase."
-      );
-    }
-  );
+        atualizarTela();
+
+      },
+      function (erro) {
+
+        console.error(
+          "Erro ao carregar Firestore:",
+          erro
+        );
+
+        alert(
+          "Não foi possível carregar os registros do Firebase."
+        );
+
+      }
+    );
+
 }
 
 
-/* =========================
+/* =========================================================
+   FIREBASE - HISTÓRICO
+========================================================= */
+
+function carregarHistorico(dataISO) {
+
+  if (!dataISO) {
+    return;
+  }
+
+  const registrosRef =
+    collection(
+      db,
+      "registros"
+    );
+
+  const consulta =
+    query(
+      registrosRef,
+      where(
+        "dataISO",
+        "==",
+        dataISO
+      )
+    );
+
+
+  if (unsubscribeHistorico) {
+    unsubscribeHistorico();
+  }
+
+
+  unsubscribeHistorico =
+    onSnapshot(
+      consulta,
+      function (snapshot) {
+
+        registrosHistorico = {};
+
+        snapshot.forEach(
+          function (documento) {
+
+            const dados =
+              documento.data();
+
+            registrosHistorico[
+              dados.horario
+            ] = dados;
+
+          }
+        );
+
+        atualizarHistorico();
+
+      },
+      function (erro) {
+
+        console.error(
+          "Erro ao carregar histórico:",
+          erro
+        );
+
+        if (listaHistorico) {
+
+          listaHistorico.innerHTML = `
+            <div class="historico-vazio erro-historico">
+              <span>⚠️</span>
+              <p>
+                Não foi possível carregar o histórico.
+              </p>
+            </div>
+          `;
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
    MODAL
-========================= */
+========================================================= */
 
 function abrirModal(horario) {
 
@@ -374,9 +635,9 @@ botaoCancelar.addEventListener(
 );
 
 
-/* =========================
+/* =========================================================
    CONFIRMAR MEDICAMENTO
-========================= */
+========================================================= */
 
 botaoConfirmar.addEventListener(
   "click",
@@ -476,15 +737,16 @@ botaoConfirmar.addEventListener(
 
       botaoConfirmar.textContent =
         "Confirmar";
+
     }
 
   }
 );
 
 
-/* =========================
-   ATUALIZAR TELA
-========================= */
+/* =========================================================
+   ATUALIZAR TELA DE MEDICAMENTOS
+========================================================= */
 
 function atualizarTela() {
 
@@ -497,7 +759,9 @@ function atualizarTela() {
     cartoes.length;
 
   const dados =
-    Object.keys(registros).length;
+    Object.keys(
+      registros
+    ).length;
 
   const pendentes =
     Math.max(
@@ -580,16 +844,18 @@ function atualizarTela() {
         cartao.classList.remove(
           "medicamento-dado"
         );
+
       }
 
     }
   );
+
 }
 
 
-/* =========================
+/* =========================================================
    ATUALIZAR HISTÓRICO
-========================= */
+========================================================= */
 
 function atualizarHistorico() {
 
@@ -597,27 +863,48 @@ function atualizarHistorico() {
     return;
   }
 
+
   const lista =
-    Object.values(registros)
-      .sort(
-        function (a, b) {
-          return a.horario.localeCompare(
-            b.horario
-          );
-        }
-      );
+    Object.values(
+      registrosHistorico
+    ).sort(
+      function (a, b) {
+
+        return a.horario.localeCompare(
+          b.horario
+        );
+
+      }
+    );
+
+
+  if (historicoTotal) {
+
+    historicoTotal.textContent =
+      lista.length;
+
+  }
+
 
   if (lista.length === 0) {
 
     listaHistorico.innerHTML = `
       <div class="historico-vazio">
-        <span>🕘</span>
-        <p>Nenhum medicamento registrado ainda.</p>
+
+        <span>
+          🕘
+        </span>
+
+        <p>
+          Nenhum medicamento registrado nesta data.
+        </p>
+
       </div>
     `;
 
     return;
   }
+
 
   listaHistorico.innerHTML =
     lista.map(
@@ -627,12 +914,23 @@ function atualizarHistorico() {
           <div class="item-historico">
 
             <div class="historico-horario">
-              <strong>${registro.horario}</strong>
-              <span>Horário</span>
+
+              <strong>
+                ${registro.horario}
+              </strong>
+
+              <span>
+                Horário
+              </span>
+
             </div>
 
+
             <div class="historico-detalhes">
-              <strong>Medicamento administrado</strong>
+
+              <strong>
+                Medicamento administrado
+              </strong>
 
               <p>
                 Dado por
@@ -644,7 +942,9 @@ function atualizarHistorico() {
               <small>
                 ${registro.dataRegistro}
               </small>
+
             </div>
+
 
             <div class="historico-check">
               ✓
@@ -660,9 +960,9 @@ function atualizarHistorico() {
 }
 
 
-/* =========================
+/* =========================================================
    BOTÕES DAR
-========================= */
+========================================================= */
 
 const botoesDar =
   document.querySelectorAll(
@@ -691,7 +991,9 @@ botoesDar.forEach(
             "data-horario"
           );
 
-        abrirModal(horario);
+        abrirModal(
+          horario
+        );
 
       }
     );
@@ -700,20 +1002,16 @@ botoesDar.forEach(
 );
 
 
-/* ==================================================
-   SISTEMA DE NOTIFICAÇÕES
-================================================== */
-
-
-/* =========================
-   ATUALIZAR BOTÃO
-========================= */
+/* =========================================================
+   NOTIFICAÇÕES
+========================================================= */
 
 function atualizarBotaoNotificacao() {
 
   if (!botaoNotificacao) {
     return;
   }
+
 
   if (notificacaoAtiva) {
 
@@ -732,13 +1030,15 @@ function atualizarBotaoNotificacao() {
 
     botaoNotificacao.title =
       "Ativar notificações";
+
   }
+
 }
 
 
-/* =========================
+/* =========================================================
    ATIVAR NOTIFICAÇÕES
-========================= */
+========================================================= */
 
 async function ativarNotificacoes() {
 
@@ -778,14 +1078,10 @@ async function ativarNotificacoes() {
         {
           body:
             "Notificações ativadas! Você receberá os lembretes dos medicamentos.",
+
           icon:
             "img/notificacao.png"
         }
-      );
-
-
-      console.log(
-        "Notificações ativadas."
       );
 
 
@@ -805,6 +1101,7 @@ async function ativarNotificacoes() {
       alert(
         "A permissão para notificações não foi concedida."
       );
+
     }
 
 
@@ -818,13 +1115,15 @@ async function ativarNotificacoes() {
     alert(
       "Não foi possível ativar as notificações."
     );
+
   }
+
 }
 
 
-/* =========================
+/* =========================================================
    BOTÃO NOTIFICAÇÃO
-========================= */
+========================================================= */
 
 if (botaoNotificacao) {
 
@@ -842,7 +1141,9 @@ if (botaoNotificacao) {
 
         localStorage.setItem(
           CHAVE_NOTIFICACAO,
-          String(notificacaoAtiva)
+          String(
+            notificacaoAtiva
+          )
         );
 
         atualizarBotaoNotificacao();
@@ -855,6 +1156,7 @@ if (botaoNotificacao) {
             {
               body:
                 "Lembretes de medicamentos ativados.",
+
               icon:
                 "img/notificacao.png"
             }
@@ -863,6 +1165,7 @@ if (botaoNotificacao) {
         }
 
         return;
+
       }
 
 
@@ -874,9 +1177,9 @@ if (botaoNotificacao) {
 }
 
 
-/* =========================
+/* =========================================================
    ENVIAR LEMBRETE
-========================= */
+========================================================= */
 
 function enviarNotificacao(horario) {
 
@@ -928,145 +1231,4 @@ function enviarNotificacao(horario) {
 
 
   new Notification(
-    "💊 Hora do medicamento",
-    {
-      body:
-        "Está na hora do medicamento das " +
-        horario +
-        ".",
-      icon:
-        "img/notificacao.png",
-      tag:
-        "medicamento-" +
-        horario
-    }
-  );
-
-}
-
-
-/* =========================
-   VERIFICAR HORÁRIOS
-========================= */
-
-function verificarHorarios() {
-
-  if (!notificacaoAtiva) {
-    return;
-  }
-
-  const agora =
-    new Date();
-
-  const hora =
-    String(
-      agora.getHours()
-    ).padStart(2, "0");
-
-  const minuto =
-    String(
-      agora.getMinutes()
-    ).padStart(2, "0");
-
-
-  const horarioAtual =
-    `${hora}:${minuto}`;
-
-
-  const cartao =
-    document.querySelector(
-      `.medicamento[data-horario="${horarioAtual}"]`
-    );
-
-
-  if (!cartao) {
-    return;
-  }
-
-
-  enviarNotificacao(
-    horarioAtual
-  );
-}
-
-
-/* =========================
-   VERIFICAR A CADA 10 SEGUNDOS
-========================= */
-
-setInterval(
-  verificarHorarios,
-  10000
-);
-
-
-/* =========================
-   FIREBASE AUTH
-========================= */
-
-onAuthStateChanged(
-  auth,
-  function (usuario) {
-
-    if (usuario) {
-
-      console.log(
-        "Firebase conectado.",
-        usuario.uid
-      );
-
-    }
-
-  }
-);
-
-
-/* =========================
-   LOGIN ANÔNIMO
-========================= */
-
-signInAnonymously(auth)
-
-  .then(
-    function () {
-
-      console.log(
-        "Autenticação anônima realizada."
-      );
-
-    }
-  )
-
-  .catch(
-    function (erro) {
-
-      console.error(
-        "Erro na autenticação:",
-        erro
-      );
-
-      alert(
-        "Não foi possível conectar ao Firebase. " +
-        "Verifique se o login anônimo está ativado."
-      );
-
-    }
-  );
-
-
-/* =========================
-   INICIALIZAÇÃO
-========================= */
-
-atualizarBotaoNotificacao();
-
-
-if (nomeUsuario !== "") {
-
-  mostrarAplicativo();
-
-} else {
-
-  mostrarLogin();
-
-    }
+    "💊 Hora do medicamento"
