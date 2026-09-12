@@ -1,5 +1,3 @@
-HTML
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,10 +10,15 @@ HTML
 
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <!-- Tela de login -->
+  <!-- ==================================================
+       TELA DE LOGIN
+       ================================================== -->
+
   <section id="tela-login" class="tela">
+
     <div class="login-card">
 
       <div class="logo">
@@ -40,146 +43,567 @@ HTML
         autocomplete="given-name"
       >
 
-      <button id="btn-entrar" class="btn-principal">
+      <button
+        id="btn-entrar"
+        class="btn-principal"
+      >
         Entrar no aplicativo
       </button>
 
-      <p id="erro-login" class="erro"></p>
+      <p
+        id="erro-login"
+        class="erro"
+      ></p>
 
     </div>
+
   </section>
 
-  <!-- Aplicativo principal -->
-  <section id="tela-app" class="tela escondido">
+
+  <!-- ==================================================
+       APLICATIVO PRINCIPAL
+       ================================================== -->
+
+  <section
+    id="tela-app"
+    class="tela escondido"
+  >
+
+    <!-- CABEÇALHO -->
 
     <header class="cabecalho">
+
       <div>
-        <p class="pequeno">Olá, <span id="nome-exibido"></span>!</p>
-        <h1>Cuidado Juntos</h1>
+
+        <p class="pequeno">
+          Olá,
+          <span id="nome-exibido"></span>!
+        </p>
+
+        <h1>
+          Cuidado Juntos
+        </h1>
+
       </div>
 
-      <div class="icone-header">❤</div>
+      <div class="icone-header">
+        ❤
+      </div>
+
     </header>
+
+
+    <!-- CONTEÚDO -->
 
     <main class="conteudo">
 
+
+      <!-- CARTÃO DE BOAS-VINDAS -->
+
       <div class="cartao-boas-vindas">
+
         <div>
-          <p class="pequeno">Cuidado da família</p>
-          <h2>Medicamentos da Josefa</h2>
-          <p>Organização e responsabilidade em família.</p>
+
+          <p class="pequeno">
+            Cuidado da família
+          </p>
+
+          <h2>
+            Medicamentos da Josefa
+          </h2>
+
+          <p>
+            Organização e responsabilidade em família.
+          </p>
+
         </div>
 
-        <div class="coracao">❤</div>
+        <div class="coracao">
+          ❤
+        </div>
+
       </div>
+
+
+      <!-- RESUMO -->
 
       <div class="resumo">
-        <div class="resumo-item">
-          <strong id="total-medicamentos">3</strong>
-          <span>Horários</span>
-        </div>
 
         <div class="resumo-item">
-          <strong id="total-dados">0</strong>
-          <span>Dados</span>
+
+          <strong id="total-medicamentos">
+            9
+          </strong>
+
+          <span>
+            Horários
+          </span>
+
         </div>
 
+
         <div class="resumo-item">
-          <strong id="total-pendentes">3</strong>
-          <span>Pendentes</span>
+
+          <strong id="total-dados">
+            0
+          </strong>
+
+          <span>
+            Dados
+          </span>
+
         </div>
+
+
+        <div class="resumo-item">
+
+          <strong id="total-pendentes">
+            9
+          </strong>
+
+          <span>
+            Pendentes
+          </span>
+
+        </div>
+
       </div>
+
+
+      <!-- TÍTULO DA SEÇÃO -->
 
       <div class="titulo-secao">
-        <h2>Horários de hoje</h2>
-        <span class="badge">Exemplo</span>
+
+        <h2>
+          Horários de hoje
+        </h2>
+
+        <span class="badge">
+          Diário
+        </span>
+
       </div>
+
+
+      <!-- ==================================================
+           LISTA DE HORÁRIOS
+           ================================================== -->
 
       <div id="lista-medicamentos">
 
-        <!-- Medicamento das 08h -->
-        <article class="medicamento" data-horario="08:00">
+
+        <!-- 08:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="08:00"
+        >
 
           <div class="horario">
-            <strong>08:00</strong>
-            <span>Manhã</span>
+
+            <strong>
+              08:00
+            </strong>
+
+            <span>
+              Manhã
+            </span>
+
           </div>
+
 
           <div class="medicamento-info">
-            <h3>Medicamento das 08h</h3>
-            <p class="status">Aguardando registro</p>
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
           </div>
 
-          <button class="btn-dar" data-horario="08:00">
+
+          <button class="btn-dar">
             Dar
           </button>
 
         </article>
 
-        <!-- Medicamento das 10h -->
-        <article class="medicamento" data-horario="10:00">
+
+        <!-- 09:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="09:00"
+        >
 
           <div class="horario">
-            <strong>10:00</strong>
-            <span>Manhã</span>
+
+            <strong>
+              09:00
+            </strong>
+
+            <span>
+              Manhã
+            </span>
+
           </div>
+
 
           <div class="medicamento-info">
-            <h3>Medicamento das 10h</h3>
-            <p class="status">Aguardando registro</p>
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
           </div>
 
-          <button class="btn-dar" data-horario="10:00">
+
+          <button class="btn-dar">
             Dar
           </button>
 
         </article>
 
-        <!-- Medicamento das 14h -->
-        <article class="medicamento" data-horario="14:00">
+
+        <!-- 10:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="10:00"
+        >
 
           <div class="horario">
-            <strong>14:00</strong>
-            <span>Tarde</span>
+
+            <strong>
+              10:00
+            </strong>
+
+            <span>
+              Manhã
+            </span>
+
           </div>
+
 
           <div class="medicamento-info">
-            <h3>Medicamento das 14h</h3>
-            <p class="status">Aguardando registro</p>
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
           </div>
 
-          <button class="btn-dar" data-horario="14:00">
+
+          <button class="btn-dar">
             Dar
           </button>
 
         </article>
+
+
+        <!-- 12:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="12:00"
+        >
+
+          <div class="horario">
+
+            <strong>
+              12:00
+            </strong>
+
+            <span>
+              Tarde
+            </span>
+
+          </div>
+
+
+          <div class="medicamento-info">
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
+          </div>
+
+
+          <button class="btn-dar">
+            Dar
+          </button>
+
+        </article>
+
+
+        <!-- 16:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="16:00"
+        >
+
+          <div class="horario">
+
+            <strong>
+              16:00
+            </strong>
+
+            <span>
+              Tarde
+            </span>
+
+          </div>
+
+
+          <div class="medicamento-info">
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
+          </div>
+
+
+          <button class="btn-dar">
+            Dar
+          </button>
+
+        </article>
+
+
+        <!-- 20:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="20:00"
+        >
+
+          <div class="horario">
+
+            <strong>
+              20:00
+            </strong>
+
+            <span>
+              Noite
+            </span>
+
+          </div>
+
+
+          <div class="medicamento-info">
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
+          </div>
+
+
+          <button class="btn-dar">
+            Dar
+          </button>
+
+        </article>
+
+
+        <!-- 21:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="21:00"
+        >
+
+          <div class="horario">
+
+            <strong>
+              21:00
+            </strong>
+
+            <span>
+              Noite
+            </span>
+
+          </div>
+
+
+          <div class="medicamento-info">
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
+          </div>
+
+
+          <button class="btn-dar">
+            Dar
+          </button>
+
+        </article>
+
+
+        <!-- 22:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="22:00"
+        >
+
+          <div class="horario">
+
+            <strong>
+              22:00
+            </strong>
+
+            <span>
+              Noite
+            </span>
+
+          </div>
+
+
+          <div class="medicamento-info">
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
+          </div>
+
+
+          <button class="btn-dar">
+            Dar
+          </button>
+
+        </article>
+
+
+        <!-- 00:00 -->
+
+        <article
+          class="medicamento"
+          data-horario="00:00"
+        >
+
+          <div class="horario">
+
+            <strong>
+              00:00
+            </strong>
+
+            <span>
+              Madrugada
+            </span>
+
+          </div>
+
+
+          <div class="medicamento-info">
+
+            <h3>
+              Medicamento
+            </h3>
+
+            <p class="status">
+              Aguardando registro
+            </p>
+
+          </div>
+
+
+          <button class="btn-dar">
+            Dar
+          </button>
+
+        </article>
+
 
       </div>
+
+
+      <!-- AVISO -->
 
       <div class="aviso">
-        <strong>Importante</strong>
+
+        <strong>
+          Importante
+        </strong>
+
         <p>
-          Os horários mostrados são apenas exemplos.
-          Vamos substituir pelos horários corretos da sua mãe.
+          Os medicamentos devem ser administrados
+          conforme a orientação médica.
         </p>
+
       </div>
 
-      <button id="btn-sair" class="btn-secundario">
+
+      <!-- BOTÃO SAIR -->
+
+      <button
+        id="btn-sair"
+        class="btn-secundario"
+      >
         Sair
       </button>
+
 
     </main>
 
   </section>
 
-  <!-- Janela de confirmação -->
-  <div id="modal-confirmacao" class="modal escondido">
+
+  <!-- ==================================================
+       JANELA DE CONFIRMAÇÃO
+       ================================================== -->
+
+  <div
+    id="modal-confirmacao"
+    class="modal escondido"
+  >
 
     <div class="modal-card">
 
-      <div class="modal-icone">✓</div>
+      <div class="modal-icone">
+        ✓
+      </div>
 
-      <h2>Registrar medicamento</h2>
+      <h2>
+        Registrar medicamento
+      </h2>
 
       <p id="texto-confirmacao">
         Você está registrando o medicamento.
@@ -190,22 +614,40 @@ HTML
         conforme a orientação médica.
       </p>
 
+
       <div class="modal-botoes">
-        <button id="btn-cancelar" class="btn-secundario">
+
+        <button
+          id="btn-cancelar"
+          class="btn-secundario"
+        >
           Cancelar
         </button>
 
-        <button id="btn-confirmar" class="btn-principal">
+
+        <button
+          id="btn-confirmar"
+          class="btn-principal"
+        >
           Confirmar
         </button>
+
       </div>
 
     </div>
 
   </div>
 
-  <script type="module" src="script.js"></script>
+
+  <!-- ==================================================
+       SCRIPT
+       ================================================== -->
+
+  <script
+    type="module"
+    src="script.js"
+  ></script>
+
 
 </body>
-    </html>
-  
+      </html>
