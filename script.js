@@ -1,4 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
   getFirestore,
@@ -17,9 +19,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 
-// ======================================================
-// FIREBASE
-// ======================================================
+/* =========================
+   FIREBASE
+========================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAwywIKk97Ro_NHutu4T7zeL_uCdZ2juM8",
@@ -31,79 +33,121 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+
 const auth = getAuth(app);
 
 
-// ======================================================
-// VARIÁVEIS
-// ======================================================
+/* =========================
+   CONFIGURAÇÕES
+========================= */
 
-const CHAVE_USUARIO = "cuidadoJuntos_nomeUsuario";
+const CHAVE_USUARIO =
+  "cuidadoJuntos_nomeUsuario";
 
-let nomeUsuario = localStorage.getItem(CHAVE_USUARIO) || "";
+const CHAVE_NOTIFICACAO =
+  "cuidadoJuntos_notificacoes";
+
+let nomeUsuario =
+  localStorage.getItem(CHAVE_USUARIO) || "";
+
 let registros = {};
+
 let horarioSelecionado = null;
 
+let notificacaoAtiva =
+  localStorage.getItem(CHAVE_NOTIFICACAO) === "true";
 
-// ======================================================
-// ELEMENTOS
-// ======================================================
-
-const telaLogin = document.getElementById("tela-login");
-const telaApp = document.getElementById("tela-app");
-
-const nomeInput = document.getElementById("nome-usuario");
-const botaoEntrar = document.getElementById("btn-entrar");
-const erroLogin = document.getElementById("erro-login");
-
-const nomeExibido = document.getElementById("nome-exibido");
-const botaoSair = document.getElementById("btn-sair");
-
-const modalConfirmacao = document.getElementById("modal-confirmacao");
-const textoConfirmacao = document.getElementById("texto-confirmacao");
-
-const botaoCancelar = document.getElementById("btn-cancelar");
-const botaoConfirmar = document.getElementById("btn-confirmar");
-
-const totalMedicamentos = document.getElementById("total-medicamentos");
-const totalDados = document.getElementById("total-dados");
-const totalPendentes = document.getElementById("total-pendentes");
+let ultimoAviso =
+  localStorage.getItem("cuidadoJuntos_ultimoAviso") || "";
 
 
-// ======================================================
-// DATA DO CICLO
-// ======================================================
-// O ciclo diário começa às 06:00.
-// De 06:00 até 23:59 = ciclo do dia atual.
-// De 00:00 até 05:59 = ciclo do dia anterior.
-// ======================================================
+/* =========================
+   ELEMENTOS
+========================= */
+
+const telaLogin =
+  document.getElementById("tela-login");
+
+const telaApp =
+  document.getElementById("tela-app");
+
+const nomeInput =
+  document.getElementById("nome-usuario");
+
+const botaoEntrar =
+  document.getElementById("btn-entrar");
+
+const erroLogin =
+  document.getElementById("erro-login");
+
+const nomeExibido =
+  document.getElementById("nome-exibido");
+
+const botaoSair =
+  document.getElementById("btn-sair");
+
+const botaoNotificacao =
+  document.getElementById("btn-notificacao");
+
+const modalConfirmacao =
+  document.getElementById("modal-confirmacao");
+
+const textoConfirmacao =
+  document.getElementById("texto-confirmacao");
+
+const botaoCancelar =
+  document.getElementById("btn-cancelar");
+
+const botaoConfirmar =
+  document.getElementById("btn-confirmar");
+
+const totalMedicamentos =
+  document.getElementById("total-medicamentos");
+
+const totalDados =
+  document.getElementById("total-dados");
+
+const totalPendentes =
+  document.getElementById("total-pendentes");
+
+
+/* =========================
+   DATA DO CICLO
+========================= */
 
 function obterDataHoje() {
 
   const agora = new Date();
 
+  /*
+   * Mantemos a mesma regra usada anteriormente:
+   * antes das 06:00 pertence ao ciclo do dia anterior.
+   */
+
   if (agora.getHours() < 6) {
     agora.setDate(agora.getDate() - 1);
   }
 
-  const ano = agora.getFullYear();
+  const ano =
+    agora.getFullYear();
 
-  const mes = String(
-    agora.getMonth() + 1
-  ).padStart(2, "0");
+  const mes =
+    String(agora.getMonth() + 1)
+      .padStart(2, "0");
 
-  const dia = String(
-    agora.getDate()
-  ).padStart(2, "0");
+  const dia =
+    String(agora.getDate())
+      .padStart(2, "0");
 
   return `${ano}-${mes}-${dia}`;
 }
 
 
-// ======================================================
-// SALVAR NOME
-// ======================================================
+/* =========================
+   NOME DO USUÁRIO
+========================= */
 
 function salvarNome(nome) {
 
@@ -116,9 +160,9 @@ function salvarNome(nome) {
 }
 
 
-// ======================================================
-// MOSTRAR APLICATIVO
-// ======================================================
+/* =========================
+   MOSTRAR APP
+========================= */
 
 function mostrarAplicativo() {
 
@@ -126,15 +170,20 @@ function mostrarAplicativo() {
 
   telaApp.classList.remove("escondido");
 
-  nomeExibido.textContent = nomeUsuario;
+  nomeExibido.textContent =
+    nomeUsuario;
 
   atualizarTela();
+
+  atualizarBotaoNotificacao();
+
+  carregarRegistrosHoje();
 }
 
 
-// ======================================================
-// MOSTRAR LOGIN
-// ======================================================
+/* =========================
+   MOSTRAR LOGIN
+========================= */
 
 function mostrarLogin() {
 
@@ -144,9 +193,9 @@ function mostrarLogin() {
 }
 
 
-// ======================================================
-// ENTRAR
-// ======================================================
+/* =========================
+   ENTRAR
+========================= */
 
 botaoEntrar.addEventListener(
   "click",
@@ -170,38 +219,40 @@ botaoEntrar.addEventListener(
     salvarNome(nomeDigitado);
 
     mostrarAplicativo();
-
-    carregarRegistrosHoje();
   }
 );
 
 
-// ======================================================
-// ENTER NO NOME
-// ======================================================
+/* =========================
+   ENTER NO CAMPO
+========================= */
 
 nomeInput.addEventListener(
   "keydown",
   function (evento) {
 
     if (evento.key === "Enter") {
+
       botaoEntrar.click();
+
     }
+
   }
 );
 
 
-// ======================================================
-// SAIR
-// ======================================================
+/* =========================
+   SAIR
+========================= */
 
 botaoSair.addEventListener(
   "click",
   function () {
 
-    const confirmarSaida = confirm(
-      "Deseja sair e trocar o familiar deste aparelho?"
-    );
+    const confirmarSaida =
+      confirm(
+        "Deseja sair e trocar o familiar deste aparelho?"
+      );
 
     if (confirmarSaida) {
 
@@ -215,13 +266,14 @@ botaoSair.addEventListener(
 
       mostrarLogin();
     }
+
   }
 );
 
 
-// ======================================================
-// CARREGAR REGISTROS DO CICLO ATUAL
-// ======================================================
+/* =========================
+   FIREBASE - CARREGAR
+========================= */
 
 function carregarRegistrosHoje() {
 
@@ -234,16 +286,23 @@ function carregarRegistrosHoje() {
   );
 
   const registrosRef =
-    collection(db, "registros");
+    collection(
+      db,
+      "registros"
+    );
 
-  const consulta = query(
-    registrosRef,
-    where("dataISO", "==", dataHoje)
-  );
+  const consulta =
+    query(
+      registrosRef,
+      where(
+        "dataISO",
+        "==",
+        dataHoje
+      )
+    );
 
   onSnapshot(
     consulta,
-
     function (snapshot) {
 
       registros = {};
@@ -260,8 +319,8 @@ function carregarRegistrosHoje() {
       );
 
       atualizarTela();
-    },
 
+    },
     function (erro) {
 
       console.error(
@@ -277,9 +336,9 @@ function carregarRegistrosHoje() {
 }
 
 
-// ======================================================
-// ABRIR MODAL
-// ======================================================
+/* =========================
+   MODAL
+========================= */
 
 function abrirModal(horario) {
 
@@ -297,10 +356,6 @@ function abrirModal(horario) {
 }
 
 
-// ======================================================
-// FECHAR MODAL
-// ======================================================
-
 function fecharModal() {
 
   horarioSelecionado = null;
@@ -311,19 +366,15 @@ function fecharModal() {
 }
 
 
-// ======================================================
-// CANCELAR
-// ======================================================
-
 botaoCancelar.addEventListener(
   "click",
   fecharModal
 );
 
 
-// ======================================================
-// CONFIRMAR MEDICAMENTO
-// ======================================================
+/* =========================
+   CONFIRMAR MEDICAMENTO
+========================= */
 
 botaoConfirmar.addEventListener(
   "click",
@@ -356,14 +407,11 @@ botaoConfirmar.addEventListener(
         "pt-BR"
       );
 
-
-    // Cada ciclo possui seus próprios registros.
-    // O mesmo horário poderá ser registrado
-    // novamente depois das 06:00.
-
     const idRegistro =
-      `${dataISO}_${horario.replace(":", "-")}`;
-
+      `${dataISO}_${horario.replace(
+        ":",
+        "-"
+      )}`;
 
     const registro = {
 
@@ -392,19 +440,17 @@ botaoConfirmar.addEventListener(
 
 
       await setDoc(
+
         doc(
           db,
           "registros",
           idRegistro
         ),
+
         registro
+
       );
 
-
-      // ==================================================
-      // NÃO MOSTRA MAIS O ALERT DE SUCESSO.
-      // O modal simplesmente fecha.
-      // ==================================================
 
       fecharModal();
 
@@ -429,13 +475,14 @@ botaoConfirmar.addEventListener(
       botaoConfirmar.textContent =
         "Confirmar";
     }
+
   }
 );
 
 
-// ======================================================
-// ATUALIZAR TELA
-// ======================================================
+/* =========================
+   ATUALIZAR TELA
+========================= */
 
 function atualizarTela() {
 
@@ -513,7 +560,6 @@ function atualizarTela() {
           "medicamento-dado"
         );
 
-
       } else {
 
         botaoDar.textContent =
@@ -533,14 +579,15 @@ function atualizarTela() {
           "medicamento-dado"
         );
       }
+
     }
   );
 }
 
 
-// ======================================================
-// BOTÕES DAR
-// ======================================================
+/* =========================
+   BOTÕES DAR
+========================= */
 
 const botoesDar =
   document.querySelectorAll(
@@ -570,15 +617,333 @@ botoesDar.forEach(
           );
 
         abrirModal(horario);
+
       }
     );
+
   }
 );
 
 
-// ======================================================
-// AUTENTICAÇÃO FIREBASE
-// ======================================================
+/* ==================================================
+   SISTEMA DE NOTIFICAÇÕES
+================================================== */
+
+
+/* =========================
+   ATUALIZAR BOTÃO
+========================= */
+
+function atualizarBotaoNotificacao() {
+
+  if (!botaoNotificacao) {
+    return;
+  }
+
+  if (notificacaoAtiva) {
+
+    botaoNotificacao.classList.add(
+      "ativa"
+    );
+
+    botaoNotificacao.title =
+      "Notificações ativadas";
+
+  } else {
+
+    botaoNotificacao.classList.remove(
+      "ativa"
+    );
+
+    botaoNotificacao.title =
+      "Ativar notificações";
+  }
+}
+
+
+/* =========================
+   ATIVAR NOTIFICAÇÕES
+========================= */
+
+async function ativarNotificacoes() {
+
+  if (
+    !("Notification" in window)
+  ) {
+
+    alert(
+      "Este navegador não oferece suporte a notificações."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    const permissao =
+      await Notification.requestPermission();
+
+
+    if (permissao === "granted") {
+
+      notificacaoAtiva =
+        true;
+
+      localStorage.setItem(
+        CHAVE_NOTIFICACAO,
+        "true"
+      );
+
+      atualizarBotaoNotificacao();
+
+
+      new Notification(
+        "Cuidado Juntos ❤️",
+        {
+          body:
+            "Notificações ativadas! Você receberá os lembretes dos medicamentos.",
+          icon:
+            "img/notificacao.png"
+        }
+      );
+
+
+      console.log(
+        "Notificações ativadas."
+      );
+
+
+    } else {
+
+      notificacaoAtiva =
+        false;
+
+      localStorage.setItem(
+        CHAVE_NOTIFICACAO,
+        "false"
+      );
+
+      atualizarBotaoNotificacao();
+
+
+      alert(
+        "A permissão para notificações não foi concedida."
+      );
+    }
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro nas notificações:",
+      erro
+    );
+
+    alert(
+      "Não foi possível ativar as notificações."
+    );
+  }
+}
+
+
+/* =========================
+   BOTÃO NOTIFICAÇÃO
+========================= */
+
+if (botaoNotificacao) {
+
+  botaoNotificacao.addEventListener(
+    "click",
+    function () {
+
+      if (
+        Notification.permission ===
+        "granted"
+      ) {
+
+        notificacaoAtiva =
+          !notificacaoAtiva;
+
+        localStorage.setItem(
+          CHAVE_NOTIFICACAO,
+          String(notificacaoAtiva)
+        );
+
+        atualizarBotaoNotificacao();
+
+
+        if (notificacaoAtiva) {
+
+          new Notification(
+            "Cuidado Juntos ❤️",
+            {
+              body:
+                "Lembretes de medicamentos ativados.",
+              icon:
+                "img/notificacao.png"
+            }
+          );
+
+        }
+
+        return;
+      }
+
+
+      ativarNotificacoes();
+
+    }
+  );
+
+}
+
+
+/* =========================
+   ENVIAR LEMBRETE
+========================= */
+
+function enviarNotificacao(horario) {
+
+  if (!notificacaoAtiva) {
+    return;
+  }
+
+  if (
+    !("Notification" in window)
+  ) {
+    return;
+  }
+
+  if (
+    Notification.permission !==
+    "granted"
+  ) {
+    return;
+  }
+
+
+  const dataHoje =
+    obterDataHoje();
+
+  const chaveAviso =
+    `${dataHoje}_${horario}`;
+
+
+  /*
+   * Impede que a mesma notificação
+   * seja enviada várias vezes.
+   */
+
+  if (
+    ultimoAviso === chaveAviso
+  ) {
+    return;
+  }
+
+
+  /*
+   * Se já foi registrado,
+   * não envia lembrete.
+   */
+
+  if (registros[horario]) {
+    return;
+  }
+
+
+  ultimoAviso =
+    chaveAviso;
+
+
+  localStorage.setItem(
+    "cuidadoJuntos_ultimoAviso",
+    chaveAviso
+  );
+
+
+  new Notification(
+    "💊 Hora do medicamento",
+    {
+      body:
+        "Está na hora do medicamento das " +
+        horario +
+        ".",
+      icon:
+        "img/notificacao.png",
+      tag:
+        "medicamento-" +
+        horario
+    }
+  );
+
+}
+
+
+/* =========================
+   VERIFICAR HORÁRIOS
+========================= */
+
+function verificarHorarios() {
+
+  if (!notificacaoAtiva) {
+    return;
+  }
+
+  const agora =
+    new Date();
+
+  const hora =
+    String(
+      agora.getHours()
+    ).padStart(2, "0");
+
+  const minuto =
+    String(
+      agora.getMinutes()
+    ).padStart(2, "0");
+
+
+  const horarioAtual =
+    `${hora}:${minuto}`;
+
+
+  const cartao =
+    document.querySelector(
+      `.medicamento[data-horario="${horarioAtual}"]`
+    );
+
+
+  if (!cartao) {
+    return;
+  }
+
+
+  /*
+   * Pequena tolerância:
+   * se o app verificar durante aquele minuto,
+   * dispara o lembrete.
+   */
+
+  enviarNotificacao(
+    horarioAtual
+  );
+}
+
+
+/* =========================
+   VERIFICAR A CADA 10 SEGUNDOS
+========================= */
+
+setInterval(
+  verificarHorarios,
+  10000
+);
+
+
+/* =========================
+   FIREBASE AUTH
+========================= */
 
 onAuthStateChanged(
   auth,
@@ -591,20 +956,15 @@ onAuthStateChanged(
         usuario.uid
       );
 
-      if (nomeUsuario !== "") {
-
-        mostrarAplicativo();
-
-        carregarRegistrosHoje();
-      }
     }
+
   }
 );
 
 
-// ======================================================
-// LOGIN ANÔNIMO
-// ======================================================
+/* =========================
+   LOGIN ANÔNIMO
+========================= */
 
 signInAnonymously(auth)
 
@@ -614,6 +974,7 @@ signInAnonymously(auth)
       console.log(
         "Autenticação anônima realizada."
       );
+
     }
   )
 
@@ -629,13 +990,17 @@ signInAnonymously(auth)
         "Não foi possível conectar ao Firebase. " +
         "Verifique se o login anônimo está ativado."
       );
+
     }
   );
 
 
-// ======================================================
-// INICIALIZAÇÃO
-// ======================================================
+/* =========================
+   INICIALIZAÇÃO
+========================= */
+
+atualizarBotaoNotificacao();
+
 
 if (nomeUsuario !== "") {
 
@@ -644,4 +1009,5 @@ if (nomeUsuario !== "") {
 } else {
 
   mostrarLogin();
-}
+
+                          }
