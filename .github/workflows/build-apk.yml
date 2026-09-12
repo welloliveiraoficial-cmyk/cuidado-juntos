@@ -22,7 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       # 3. Instalar dependências
       - name: Instalar dependências
@@ -33,42 +32,48 @@ jobs:
         run: |
           rm -rf www
           mkdir -p www
+
           cp index.html www/
           cp style.css www/
           cp script.js www/
           cp native-notifications.js www/
+
           cp -r img www/
 
       # 5. Criar projeto Android do Capacitor
       - name: Adicionar Android
         run: npx cap add android
 
-      # 6. Copiar arquivos web para o Android
+      # 6. Sincronizar Capacitor
       - name: Sincronizar Capacitor
         run: npx cap sync android
 
-      # 7. Preparar ícones do aplicativo
-      - name: Preparar logo
+      # 7. Preparar pasta de recursos
+      - name: Preparar recursos do aplicativo
         run: |
           mkdir -p assets
           cp img/logo.png assets/logo.png
+
+      # 8. Gerar ícones Android
+      - name: Gerar ícones
+        run: |
           npx @capacitor/assets generate \
             --android \
             --iconBackgroundColor "#2563eb" \
             --splashBackgroundColor "#2563eb"
 
-      # 8. Sincronizar novamente depois dos ícones
+      # 9. Sincronizar novamente
       - name: Sincronizar recursos
         run: npx cap sync android
 
-      # 9. Preparar ícone de notificação
+      # 10. Preparar ícone das notificações
       - name: Preparar ícone de notificação
         run: |
           mkdir -p android/app/src/main/res/drawable
           cp img/notificacao.png \
             android/app/src/main/res/drawable/notificacao.png
 
-      # 10. Conceder permissão para notificações no Android
+      # 11. Configurar permissão de notificações
       - name: Configurar permissões Android
         run: |
           python3 - <<'PY'
@@ -86,17 +91,11 @@ jobs:
           )
 
           if permissao not in texto:
-              texto = texto.replace(
-                  '<manifest',
-                  '<manifest',
-                  1
-              )
-
-              pos = texto.find('>')
+              pos = texto.find(">")
 
               texto = (
                   texto[:pos + 1]
-                  + '\n    '
+                  + "\n    "
                   + permissao
                   + texto[pos + 1:]
               )
@@ -104,16 +103,16 @@ jobs:
           manifest.write_text(texto)
           PY
 
-      # 11. Permitir execução do Gradle
+      # 12. Permitir execução do Gradle
       - name: Permitir Gradle
         run: chmod +x android/gradlew
 
-      # 12. Gerar APK
+      # 13. Gerar APK
       - name: Gerar APK Debug
         working-directory: android
         run: ./gradlew assembleDebug
 
-      # 13. Disponibilizar APK para download
+      # 14. Disponibilizar APK
       - name: Publicar APK
         uses: actions/upload-artifact@v4
         with:
