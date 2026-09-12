@@ -1,8 +1,3 @@
-// ==========================================
-// CUIDADO JUNTOS
-// Firebase + Cloud Firestore
-// ==========================================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
@@ -22,9 +17,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 
-// ==========================================
+// ======================================================
 // CONFIGURAÇÃO DO FIREBASE
-// ==========================================
+// ======================================================
 
 const firebaseConfig = {
   apiKey: "AIzaSyAwywIKk97Ro_NHutu4T7zeL_uCdZ2juM8",
@@ -36,85 +31,74 @@ const firebaseConfig = {
 };
 
 
-// ==========================================
-// INICIALIZAR FIREBASE
-// ==========================================
+// ======================================================
+// INICIALIZAÇÃO
+// ======================================================
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
 const auth = getAuth(app);
 
 
-// ==========================================
-// CONFIGURAÇÕES DO APLICATIVO
-// ==========================================
+// ======================================================
+// VARIÁVEIS
+// ======================================================
 
 const CHAVE_USUARIO = "cuidadoJuntos_nomeUsuario";
 
-let nomeUsuario =
-  localStorage.getItem(CHAVE_USUARIO) || "";
-
+let nomeUsuario = localStorage.getItem(CHAVE_USUARIO) || "";
 let registros = {};
-
 let horarioSelecionado = null;
 
 
-// ==========================================
-// ELEMENTOS DO HTML
-// ==========================================
+// ======================================================
+// ELEMENTOS DA TELA
+// ======================================================
 
-const telaLogin =
-  document.getElementById("tela-login");
+const telaLogin = document.getElementById("tela-login");
+const telaApp = document.getElementById("tela-app");
 
-const telaApp =
-  document.getElementById("tela-app");
+const nomeInput = document.getElementById("nome-usuario");
+const botaoEntrar = document.getElementById("btn-entrar");
+const erroLogin = document.getElementById("erro-login");
 
-const nomeInput =
-  document.getElementById("nome-usuario");
+const nomeExibido = document.getElementById("nome-exibido");
+const botaoSair = document.getElementById("btn-sair");
 
-const botaoEntrar =
-  document.getElementById("btn-entrar");
+const modalConfirmacao = document.getElementById("modal-confirmacao");
+const textoConfirmacao = document.getElementById("texto-confirmacao");
 
-const erroLogin =
-  document.getElementById("erro-login");
+const botaoCancelar = document.getElementById("btn-cancelar");
+const botaoConfirmar = document.getElementById("btn-confirmar");
 
-const nomeExibido =
-  document.getElementById("nome-exibido");
-
-const botaoSair =
-  document.getElementById("btn-sair");
-
-const modalConfirmacao =
-  document.getElementById("modal-confirmacao");
-
-const textoConfirmacao =
-  document.getElementById("texto-confirmacao");
-
-const botaoCancelar =
-  document.getElementById("btn-cancelar");
-
-const botaoConfirmar =
-  document.getElementById("btn-confirmar");
-
-const totalMedicamentos =
-  document.getElementById("total-medicamentos");
-
-const totalDados =
-  document.getElementById("total-dados");
-
-const totalPendentes =
-  document.getElementById("total-pendentes");
+const totalMedicamentos = document.getElementById("total-medicamentos");
+const totalDados = document.getElementById("total-dados");
+const totalPendentes = document.getElementById("total-pendentes");
 
 
-// ==========================================
-// DATA ATUAL
-// ==========================================
+// ======================================================
+// DATA DO CICLO
+// ======================================================
+//
+// O "dia" do aplicativo começa às 06:00.
+//
+// 06:00 até 23:59 = ciclo do dia atual
+// 00:00 até 05:59 = ainda pertence ao ciclo anterior
+//
+// Exemplo:
+// 13/09 às 05:30 -> ciclo 12/09
+// 13/09 às 06:00 -> ciclo 13/09
+//
+// ======================================================
 
 function obterDataHoje() {
 
   const agora = new Date();
+
+  // Antes das 06:00, ainda estamos no ciclo do dia anterior
+  if (agora.getHours() < 6) {
+    agora.setDate(agora.getDate() - 1);
+  }
 
   const ano = agora.getFullYear();
 
@@ -130,9 +114,9 @@ function obterDataHoje() {
 }
 
 
-// ==========================================
-// DATA FORMATADA
-// ==========================================
+// ======================================================
+// FORMATAR DATA
+// ======================================================
 
 function formatarData(dataISO) {
 
@@ -142,9 +126,9 @@ function formatarData(dataISO) {
 }
 
 
-// ==========================================
-// SALVAR NOME
-// ==========================================
+// ======================================================
+// SALVAR NOME DO FAMILIAR
+// ======================================================
 
 function salvarNome(nome) {
 
@@ -157,9 +141,9 @@ function salvarNome(nome) {
 }
 
 
-// ==========================================
+// ======================================================
 // MOSTRAR APLICATIVO
-// ==========================================
+// ======================================================
 
 function mostrarAplicativo() {
 
@@ -167,16 +151,15 @@ function mostrarAplicativo() {
 
   telaApp.classList.remove("escondido");
 
-  nomeExibido.textContent =
-    nomeUsuario;
+  nomeExibido.textContent = nomeUsuario;
 
   atualizarTela();
 }
 
 
-// ==========================================
+// ======================================================
 // MOSTRAR LOGIN
-// ==========================================
+// ======================================================
 
 function mostrarLogin() {
 
@@ -186,9 +169,9 @@ function mostrarLogin() {
 }
 
 
-// ==========================================
-// ENTRAR
-// ==========================================
+// ======================================================
+// LOGIN
+// ======================================================
 
 botaoEntrar.addEventListener(
   "click",
@@ -218,9 +201,9 @@ botaoEntrar.addEventListener(
 );
 
 
-// ==========================================
-// ENTER NO LOGIN
-// ==========================================
+// ======================================================
+// ENTER NO CAMPO DO NOME
+// ======================================================
 
 nomeInput.addEventListener(
   "keydown",
@@ -229,25 +212,22 @@ nomeInput.addEventListener(
     if (evento.key === "Enter") {
 
       botaoEntrar.click();
-
     }
-
   }
 );
 
 
-// ==========================================
+// ======================================================
 // SAIR
-// ==========================================
+// ======================================================
 
 botaoSair.addEventListener(
   "click",
   function () {
 
-    const confirmarSaida =
-      confirm(
-        "Deseja sair e trocar o familiar deste aparelho?"
-      );
+    const confirmarSaida = confirm(
+      "Deseja sair e trocar o familiar deste aparelho?"
+    );
 
     if (confirmarSaida) {
 
@@ -260,34 +240,35 @@ botaoSair.addEventListener(
       nomeInput.value = "";
 
       mostrarLogin();
-
     }
-
   }
 );
 
 
-// ==========================================
-// FIRESTORE
-// CARREGAR REGISTROS DE HOJE
-// ==========================================
+// ======================================================
+// CARREGAR REGISTROS DO CICLO ATUAL
+// ======================================================
 
 function carregarRegistrosHoje() {
 
-  const dataHoje =
-    obterDataHoje();
+  const dataHoje = obterDataHoje();
+
+  console.log(
+    "Ciclo atual do aplicativo:",
+    dataHoje
+  );
 
   const registrosRef =
     collection(db, "registros");
 
-  const consulta =
-    query(
-      registrosRef,
-      where("dataISO", "==", dataHoje)
-    );
+  const consulta = query(
+    registrosRef,
+    where("dataISO", "==", dataHoje)
+  );
 
   onSnapshot(
     consulta,
+
     function (snapshot) {
 
       registros = {};
@@ -300,13 +281,12 @@ function carregarRegistrosHoje() {
 
           registros[dados.horario] =
             dados;
-
         }
       );
 
       atualizarTela();
-
     },
+
     function (erro) {
 
       console.error(
@@ -317,20 +297,18 @@ function carregarRegistrosHoje() {
       alert(
         "Não foi possível carregar os registros do Firebase."
       );
-
     }
   );
 }
 
 
-// ==========================================
+// ======================================================
 // ABRIR MODAL
-// ==========================================
+// ======================================================
 
 function abrirModal(horario) {
 
-  horarioSelecionado =
-    horario;
+  horarioSelecionado = horario;
 
   textoConfirmacao.textContent =
     "Você está registrando o medicamento das " +
@@ -343,9 +321,9 @@ function abrirModal(horario) {
 }
 
 
-// ==========================================
+// ======================================================
 // FECHAR MODAL
-// ==========================================
+// ======================================================
 
 function fecharModal() {
 
@@ -357,24 +335,26 @@ function fecharModal() {
 }
 
 
+// ======================================================
+// BOTÃO CANCELAR
+// ======================================================
+
 botaoCancelar.addEventListener(
   "click",
   fecharModal
 );
 
 
-// ==========================================
+// ======================================================
 // CONFIRMAR MEDICAMENTO
-// ==========================================
+// ======================================================
 
 botaoConfirmar.addEventListener(
   "click",
   async function () {
 
     if (!horarioSelecionado) {
-
       return;
-
     }
 
     const horario =
@@ -383,6 +363,8 @@ botaoConfirmar.addEventListener(
     const agora =
       new Date();
 
+    // IMPORTANTE:
+    // Usa o ciclo que começa às 06:00
     const dataISO =
       obterDataHoje();
 
@@ -401,7 +383,13 @@ botaoConfirmar.addEventListener(
       );
 
 
-    // ID único por dia + horário
+    // O ID contém a data do ciclo
+    // e o horário do medicamento.
+    //
+    // Portanto, o mesmo medicamento
+    // poderá ser registrado novamente
+    // no próximo ciclo às 06:00.
+
     const idRegistro =
       `${dataISO}_${horario.replace(":", "-")}`;
 
@@ -420,7 +408,6 @@ botaoConfirmar.addEventListener(
 
       dataCompleta:
         agora.toISOString()
-
     };
 
 
@@ -447,13 +434,14 @@ botaoConfirmar.addEventListener(
 
       alert(
         "Medicamento registrado!\n\n" +
+
         "Horário: " +
         horario +
-        "\n" +
-        "Dado por: " +
+
+        "\nDado por: " +
         nomeUsuario +
-        "\n" +
-        "Registrado às: " +
+
+        "\nRegistrado às: " +
         horaRegistro
       );
 
@@ -469,6 +457,7 @@ botaoConfirmar.addEventListener(
         "Não foi possível salvar o registro no Firebase."
       );
 
+
     } finally {
 
       botaoConfirmar.disabled =
@@ -476,16 +465,14 @@ botaoConfirmar.addEventListener(
 
       botaoConfirmar.textContent =
         "Confirmar";
-
     }
-
   }
 );
 
 
-// ==========================================
+// ======================================================
 // ATUALIZAR TELA
-// ==========================================
+// ======================================================
 
 function atualizarTela() {
 
@@ -582,17 +569,15 @@ function atualizarTela() {
         cartao.classList.remove(
           "medicamento-dado"
         );
-
       }
-
     }
   );
 }
 
 
-// ==========================================
-// BOTÕES DAR
-// ==========================================
+// ======================================================
+// BOTÕES "DAR"
+// ======================================================
 
 const botoesDar =
   document.querySelectorAll(
@@ -608,9 +593,7 @@ botoesDar.forEach(
       function () {
 
         if (botao.disabled) {
-
           return;
-
         }
 
         const cartao =
@@ -624,17 +607,15 @@ botoesDar.forEach(
           );
 
         abrirModal(horario);
-
       }
     );
-
   }
 );
 
 
-// ==========================================
-// AUTENTICAÇÃO ANÔNIMA
-// ==========================================
+// ======================================================
+// FIREBASE AUTHENTICATION
+// ======================================================
 
 onAuthStateChanged(
   auth,
@@ -652,29 +633,27 @@ onAuthStateChanged(
         mostrarAplicativo();
 
         carregarRegistrosHoje();
-
       }
-
     }
-
   }
 );
 
 
-// ==========================================
-// INICIAR AUTENTICAÇÃO
-// ==========================================
+// ======================================================
+// LOGIN ANÔNIMO NO FIREBASE
+// ======================================================
 
 signInAnonymously(auth)
+
   .then(
     function () {
 
       console.log(
         "Autenticação anônima realizada."
       );
-
     }
   )
+
   .catch(
     function (erro) {
 
@@ -684,16 +663,16 @@ signInAnonymously(auth)
       );
 
       alert(
-        "Não foi possível conectar ao Firebase. Verifique se o login anônimo está ativado."
+        "Não foi possível conectar ao Firebase. " +
+        "Verifique se o login anônimo está ativado."
       );
-
     }
   );
 
 
-// ==========================================
-// INICIAR APP
-// ==========================================
+// ======================================================
+// INICIALIZAÇÃO DA TELA
+// ======================================================
 
 if (nomeUsuario !== "") {
 
@@ -702,5 +681,4 @@ if (nomeUsuario !== "") {
 } else {
 
   mostrarLogin();
-
 }
