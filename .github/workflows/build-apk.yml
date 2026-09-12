@@ -1,0 +1,122 @@
+name: Gerar APK - Cuidado Juntos
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-apk:
+    name: Construir APK Android
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Baixar o código do repositório
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      # 2. Configurar Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # 3. Instalar dependências
+      - name: Instalar dependências
+        run: npm install
+
+      # 4. Preparar pasta www
+      - name: Preparar aplicativo web
+        run: |
+          rm -rf www
+          mkdir -p www
+          cp index.html www/
+          cp style.css www/
+          cp script.js www/
+          cp native-notifications.js www/
+          cp -r img www/
+
+      # 5. Criar projeto Android do Capacitor
+      - name: Adicionar Android
+        run: npx cap add android
+
+      # 6. Copiar arquivos web para o Android
+      - name: Sincronizar Capacitor
+        run: npx cap sync android
+
+      # 7. Preparar ícones do aplicativo
+      - name: Preparar logo
+        run: |
+          mkdir -p assets
+          cp img/logo.png assets/logo.png
+          npx @capacitor/assets generate \
+            --android \
+            --iconBackgroundColor "#2563eb" \
+            --splashBackgroundColor "#2563eb"
+
+      # 8. Sincronizar novamente depois dos ícones
+      - name: Sincronizar recursos
+        run: npx cap sync android
+
+      # 9. Preparar ícone de notificação
+      - name: Preparar ícone de notificação
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          cp img/notificacao.png \
+            android/app/src/main/res/drawable/notificacao.png
+
+      # 10. Conceder permissão para notificações no Android
+      - name: Configurar permissões Android
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path(
+              "android/app/src/main/AndroidManifest.xml"
+          )
+
+          texto = manifest.read_text()
+
+          permissao = (
+              '<uses-permission '
+              'android:name="android.permission.POST_NOTIFICATIONS" />'
+          )
+
+          if permissao not in texto:
+              texto = texto.replace(
+                  '<manifest',
+                  '<manifest',
+                  1
+              )
+
+              pos = texto.find('>')
+
+              texto = (
+                  texto[:pos + 1]
+                  + '\n    '
+                  + permissao
+                  + texto[pos + 1:]
+              )
+
+          manifest.write_text(texto)
+          PY
+
+      # 11. Permitir execução do Gradle
+      - name: Permitir Gradle
+        run: chmod +x android/gradlew
+
+      # 12. Gerar APK
+      - name: Gerar APK Debug
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      # 13. Disponibilizar APK para download
+      - name: Publicar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuidado-juntos-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
