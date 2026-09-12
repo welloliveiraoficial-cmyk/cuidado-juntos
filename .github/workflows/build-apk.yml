@@ -23,11 +23,25 @@ jobs:
         with:
           node-version: 22
 
-      # 3. Instalar dependências
+      # 3. Configurar Java 21
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # 4. Verificar versões
+      - name: Verificar ambiente
+        run: |
+          node --version
+          npm --version
+          java -version
+
+      # 5. Instalar dependências
       - name: Instalar dependências
         run: npm install
 
-      # 4. Preparar pasta do aplicativo web
+      # 6. Preparar pasta www
       - name: Preparar aplicativo web
         run: |
           rm -rf www
@@ -40,21 +54,21 @@ jobs:
 
           cp -r img www/
 
-      # 5. Criar projeto Android
+      # 7. Criar projeto Android
       - name: Adicionar Android
         run: npx cap add android
 
-      # 6. Sincronizar Capacitor
+      # 8. Sincronizar Capacitor
       - name: Sincronizar Capacitor
         run: npx cap sync android
 
-      # 7. Preparar logo
+      # 9. Preparar logo
       - name: Preparar logo
         run: |
           mkdir -p assets
           cp img/logo.png assets/logo.png
 
-      # 8. Gerar ícones Android
+      # 10. Gerar ícones Android
       - name: Gerar ícones Android
         run: |
           npx @capacitor/assets generate \
@@ -62,18 +76,18 @@ jobs:
             --iconBackgroundColor "#2563eb" \
             --splashBackgroundColor "#2563eb"
 
-      # 9. Sincronizar novamente
+      # 11. Sincronizar recursos
       - name: Sincronizar depois dos ícones
         run: npx cap sync android
 
-      # 10. Preparar ícone das notificações
+      # 12. Preparar ícone das notificações
       - name: Preparar ícone de notificação
         run: |
           mkdir -p android/app/src/main/res/drawable
           cp img/notificacao.png \
             android/app/src/main/res/drawable/notificacao.png
 
-      # 11. Adicionar permissão de notificações
+      # 13. Adicionar permissão de notificações
       - name: Adicionar permissão POST_NOTIFICATIONS
         run: |
           python3 - <<'PY'
@@ -108,23 +122,23 @@ jobs:
           print("Permissão POST_NOTIFICATIONS configurada.")
           PY
 
-      # 12. Mostrar o Manifest para diagnóstico
+      # 14. Verificar Manifest
       - name: Verificar AndroidManifest
         run: |
           echo "===== ANDROID MANIFEST ====="
           cat android/app/src/main/AndroidManifest.xml
           echo "===== FIM MANIFEST ====="
 
-      # 13. Permitir execução do Gradle
+      # 15. Permitir execução do Gradle
       - name: Permitir Gradle
         run: chmod +x android/gradlew
 
-      # 14. Gerar APK
+      # 16. Gerar APK
       - name: Gerar APK Debug
         working-directory: android
         run: ./gradlew assembleDebug
 
-      # 15. Publicar APK
+      # 17. Publicar APK
       - name: Publicar APK
         uses: actions/upload-artifact@v4
         with:
