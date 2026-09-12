@@ -1,0 +1,11 @@
+{
+  "appId": "com.cuidadojuntos.app",
+  "appName": "Cuidado Juntos",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "notificacao",
+      "iconColor": "#2563eb"
+    }
+  }
+}
