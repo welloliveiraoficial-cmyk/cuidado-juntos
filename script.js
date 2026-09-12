@@ -1,72 +1,63 @@
 // ==========================================
 // CUIDADO JUNTOS
-// Salvamento dos registros no celular
+// Salvamento permanente no navegador
 // ==========================================
 
-const STORAGE_KEY = "cuidadoJuntosRegistros";
-const USER_KEY = "cuidadoJuntosUsuario";
+const CHAVE_USUARIO = "cuidadoJuntos_nomeUsuario";
+const CHAVE_REGISTROS = "cuidadoJuntos_registros";
 
-// Elementos da tela
-const loginScreen = document.getElementById("loginScreen");
-const appScreen = document.getElementById("appScreen");
-
-const loginForm = document.getElementById("loginForm");
-const nameInput = document.getElementById("nameInput");
-
-const userNameDisplay = document.getElementById("userName");
-const logoutButton = document.getElementById("logoutButton");
-
-const confirmationModal = document.getElementById("confirmationModal");
-const modalTitle = document.getElementById("modalTitle");
-const modalText = document.getElementById("modalText");
-
-const confirmButton = document.getElementById("confirmButton");
-const cancelButton = document.getElementById("cancelButton");
-
-// Contadores
-const totalCount = document.getElementById("totalCount");
-const givenCount = document.getElementById("givenCount");
-const pendingCount = document.getElementById("pendingCount");
-
-// Variáveis
-let medicamentoSelecionado = null;
-
-// ==========================================
-// FUNÇÕES DE SALVAMENTO
-// ==========================================
+// Guarda o nome e os registros no navegador
+let nomeUsuario = localStorage.getItem(CHAVE_USUARIO) || "";
+let registros = carregarRegistros();
 
 function carregarRegistros() {
-  const registrosSalvos = localStorage.getItem(STORAGE_KEY);
-
-  if (!registrosSalvos) {
-    return {};
-  }
-
   try {
-    return JSON.parse(registrosSalvos);
+    const dados = localStorage.getItem(CHAVE_REGISTROS);
+
+    if (!dados) {
+      return {};
+    }
+
+    return JSON.parse(dados);
   } catch (erro) {
     console.error("Erro ao carregar registros:", erro);
     return {};
   }
 }
 
-function salvarRegistros(registros) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(registros));
+function salvarRegistros() {
+  localStorage.setItem(CHAVE_REGISTROS, JSON.stringify(registros));
 }
 
-function obterUsuario() {
-  return localStorage.getItem(USER_KEY);
-}
-
-function salvarUsuario(nome) {
-  localStorage.setItem(USER_KEY, nome);
+function salvarNome(nome) {
+  nomeUsuario = nome;
+  localStorage.setItem(CHAVE_USUARIO, nome);
 }
 
 // ==========================================
-// LOGIN
+// ELEMENTOS DA PÁGINA
 // ==========================================
 
-function mostrarAplicativo(nome) {
+const loginScreen = document.getElementById("loginScreen");
+const appScreen = document.getElementById("appScreen");
+const loginForm = document.getElementById("loginForm");
+const nameInput = document.getElementById("nameInput");
+const userNameDisplay = document.getElementById("userName");
+const logoutButton = document.getElementById("logoutButton");
+
+const confirmationModal = document.getElementById("confirmationModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalText = document.getElementById("modalText");
+const confirmButton = document.getElementById("confirmButton");
+const cancelButton = document.getElementById("cancelButton");
+
+let medicamentoSelecionado = null;
+
+// ==========================================
+// MOSTRAR TELAS
+// ==========================================
+
+function mostrarAplicativo() {
   if (loginScreen) {
     loginScreen.style.display = "none";
   }
@@ -76,7 +67,7 @@ function mostrarAplicativo(nome) {
   }
 
   if (userNameDisplay) {
-    userNameDisplay.textContent = nome;
+    userNameDisplay.textContent = nomeUsuario;
   }
 
   atualizarTela();
@@ -92,31 +83,46 @@ function mostrarLogin() {
   }
 }
 
+// ==========================================
+// PRIMEIRO ACESSO
+// ==========================================
+
 if (loginForm) {
   loginForm.addEventListener("submit", function (evento) {
     evento.preventDefault();
 
-    const nome = nameInput.value.trim();
+    const nomeDigitado = nameInput.value.trim();
 
-    if (nome === "") {
+    if (nomeDigitado === "") {
       alert("Digite seu primeiro nome.");
       return;
     }
 
-    salvarUsuario(nome);
-    mostrarAplicativo(nome);
-  });
-}
-
-if (logoutButton) {
-  logoutButton.addEventListener("click", function () {
-    localStorage.removeItem(USER_KEY);
-    mostrarLogin();
+    salvarNome(nomeDigitado);
+    mostrarAplicativo();
   });
 }
 
 // ==========================================
-// MODAL DE CONFIRMAÇÃO
+// SAIR DA CONTA
+// ==========================================
+
+if (logoutButton) {
+  logoutButton.addEventListener("click", function () {
+    const desejaSair = confirm(
+      "Deseja trocar de familiar neste aparelho?"
+    );
+
+    if (desejaSair) {
+      localStorage.removeItem(CHAVE_USUARIO);
+      nomeUsuario = "";
+      mostrarLogin();
+    }
+  });
+}
+
+// ==========================================
+// MODAL
 // ==========================================
 
 function abrirModal(medicamento) {
@@ -164,13 +170,11 @@ if (confirmButton) {
 // ==========================================
 
 function registrarMedicamento(medicamento) {
-  const nomeUsuario = obterUsuario() || "Familiar";
-
   const agora = new Date();
 
-  const registro = {
+  registros[medicamento] = {
     medicamento: medicamento,
-    nome: nomeUsuario,
+    nome: nomeUsuario || "Familiar",
     horario: agora.toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit"
@@ -179,12 +183,7 @@ function registrarMedicamento(medicamento) {
     dataCompleta: agora.toISOString()
   };
 
-  const registros = carregarRegistros();
-
-  registros[medicamento] = registro;
-
-  salvarRegistros(registros);
-
+  salvarRegistros();
   atualizarTela();
 
   alert(
@@ -192,48 +191,50 @@ function registrarMedicamento(medicamento) {
     medicamento +
     "\n" +
     "Dado por: " +
-    nomeUsuario +
+    registros[medicamento].nome +
     "\n" +
     "Horário: " +
-    registro.horario
+    registros[medicamento].horario
   );
 }
 
 // ==========================================
-// ATUALIZAR A TELA
+// ATUALIZAR OS CARTÕES
 // ==========================================
 
 function atualizarTela() {
-  const registros = carregarRegistros();
-
   const botoes = document.querySelectorAll("[data-medicamento]");
 
-  let total = botoes.length;
-  let dados = Object.keys(registros).length;
-  let pendentes = total - dados;
+  const total = botoes.length;
+  const registrados = Object.keys(registros).length;
+  const pendentes = Math.max(total - registrados, 0);
+
+  const totalCount = document.getElementById("totalCount");
+  const givenCount = document.getElementById("givenCount");
+  const pendingCount = document.getElementById("pendingCount");
 
   if (totalCount) {
     totalCount.textContent = total;
   }
 
   if (givenCount) {
-    givenCount.textContent = dados;
+    givenCount.textContent = registrados;
   }
 
   if (pendingCount) {
-    pendingCount.textContent = pendentes < 0 ? 0 : pendentes;
+    pendingCount.textContent = pendentes;
   }
 
   botoes.forEach(function (botao) {
     const medicamento = botao.getAttribute("data-medicamento");
-    const cartao = botao.closest(".medication-card");
-
     const registro = registros[medicamento];
 
     if (registro) {
       botao.textContent = "Registrado ✓";
       botao.disabled = true;
       botao.classList.add("registered");
+
+      const cartao = botao.closest(".medication-card");
 
       if (cartao) {
         cartao.classList.add("medication-done");
@@ -259,6 +260,8 @@ function atualizarTela() {
       botao.disabled = false;
       botao.classList.remove("registered");
 
+      const cartao = botao.closest(".medication-card");
+
       if (cartao) {
         cartao.classList.remove("medication-done");
 
@@ -279,11 +282,7 @@ function atualizarTela() {
 document.addEventListener("click", function (evento) {
   const botao = evento.target.closest("[data-medicamento]");
 
-  if (!botao) {
-    return;
-  }
-
-  if (botao.disabled) {
+  if (!botao || botao.disabled) {
     return;
   }
 
@@ -293,13 +292,11 @@ document.addEventListener("click", function (evento) {
 });
 
 // ==========================================
-// INICIAR O APLICATIVO
+// INICIALIZAÇÃO
 // ==========================================
 
-const usuarioSalvo = obterUsuario();
-
-if (usuarioSalvo) {
-  mostrarAplicativo(usuarioSalvo);
+if (nomeUsuario) {
+  mostrarAplicativo();
 } else {
   mostrarLogin();
 }
