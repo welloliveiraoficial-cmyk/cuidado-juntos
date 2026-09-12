@@ -7,6 +7,7 @@ on:
     branches:
       - main
 
+
 jobs:
 
   build-apk:
@@ -15,10 +16,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+
     steps:
 
       # =====================================================
-      # 1. BAIXAR CÓDIGO
+      # 1. BAIXAR O CÓDIGO
       # =====================================================
 
       - name: Baixar código
@@ -31,10 +33,8 @@ jobs:
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
-
         with:
           node-version: 22
-          cache: npm
 
 
       # =====================================================
@@ -43,7 +43,6 @@ jobs:
 
       - name: Configurar Java 21
         uses: actions/setup-java@v4
-
         with:
           distribution: temurin
           java-version: "21"
@@ -74,12 +73,12 @@ jobs:
 
 
       # =====================================================
-      # 6. PREPARAR APLICATIVO WEB
+      # 6. PREPARAR A PASTA WWW
       # =====================================================
 
       - name: Preparar aplicativo web
         run: |
-          echo "Preparando pasta www..."
+          echo "Preparando aplicativo..."
 
           rm -rf www
 
@@ -92,17 +91,47 @@ jobs:
 
           cp -r img www/
 
-          echo "Arquivos copiados:"
+          echo ""
+          echo "Arquivos preparados:"
           find www -maxdepth 2 -type f
 
 
       # =====================================================
-      # 7. ADICIONAR ANDROID
+      # 7. VERIFICAR LOGO
+      # =====================================================
+
+      - name: Verificar arquivos de imagem
+        run: |
+          echo "===== LOGO ====="
+
+          if [ -f "img/logo.png" ]; then
+            echo "Logo encontrada."
+            file img/logo.png
+          else
+            echo "ERRO: img/logo.png não encontrada."
+            exit 1
+          fi
+
+          echo ""
+          echo "===== NOTIFICAÇÃO ====="
+
+          if [ -f "img/notificacao.png" ]; then
+            echo "Ícone de notificação encontrado."
+            file img/notificacao.png
+          else
+            echo "ERRO: img/notificacao.png não encontrada."
+            exit 1
+          fi
+
+
+      # =====================================================
+      # 8. ADICIONAR ANDROID
       # =====================================================
 
       - name: Adicionar projeto Android
         run: |
           if [ ! -d "android" ]; then
+            echo "Criando projeto Android..."
             npx cap add android
           else
             echo "Projeto Android já existe."
@@ -110,21 +139,20 @@ jobs:
 
 
       # =====================================================
-      # 8. PREPARAR ASSETS
+      # 9. PREPARAR ASSETS
       # =====================================================
 
-      - name: Preparar assets do aplicativo
+      - name: Preparar assets
         run: |
           mkdir -p assets
 
           cp img/logo.png assets/logo.png
 
-          echo "Logo encontrada:"
-          file assets/logo.png
+          echo "Asset da logo preparado."
 
 
       # =====================================================
-      # 9. GERAR ÍCONE E SPLASH SCREEN
+      # 10. GERAR ÍCONE E SPLASH
       # =====================================================
 
       - name: Gerar ícones e Splash Screen
@@ -136,7 +164,7 @@ jobs:
 
 
       # =====================================================
-      # 10. SINCRONIZAR CAPACITOR
+      # 11. SINCRONIZAR CAPACITOR
       # =====================================================
 
       - name: Sincronizar Capacitor
@@ -145,7 +173,7 @@ jobs:
 
 
       # =====================================================
-      # 11. PREPARAR ÍCONE DAS NOTIFICAÇÕES
+      # 12. PREPARAR ÍCONE DE NOTIFICAÇÃO
       # =====================================================
 
       - name: Preparar ícone de notificação
@@ -161,10 +189,10 @@ jobs:
 
 
       # =====================================================
-      # 12. CONFIGURAR PERMISSÃO DE NOTIFICAÇÕES
+      # 13. CONFIGURAR PERMISSÃO DE NOTIFICAÇÕES
       # =====================================================
 
-      - name: Configurar POST_NOTIFICATIONS
+      - name: Configurar notificações Android
         run: |
 
           python3 - <<'PY'
@@ -199,34 +227,34 @@ jobs:
               manifest.write_text(texto)
 
           print(
-              "Permissão POST_NOTIFICATIONS configurada."
+              "Permissão de notificações configurada."
           )
 
           PY
 
 
       # =====================================================
-      # 13. VERIFICAR CONFIGURAÇÃO
+      # 14. VERIFICAR MANIFEST
       # =====================================================
 
-      - name: Verificar configuração Android
+      - name: Verificar AndroidManifest
         run: |
 
-          echo "======================================"
+          echo "========================================"
           echo "ANDROID MANIFEST"
-          echo "======================================"
+          echo "========================================"
 
           cat android/app/src/main/AndroidManifest.xml
 
-          echo "======================================"
+          echo "========================================"
           echo "CAPACITOR CONFIG"
-          echo "======================================"
+          echo "========================================"
 
           cat capacitor.config.json
 
 
       # =====================================================
-      # 14. DAR PERMISSÃO AO GRADLE
+      # 15. PERMITIR EXECUÇÃO DO GRADLE
       # =====================================================
 
       - name: Permitir execução do Gradle
@@ -236,7 +264,7 @@ jobs:
 
 
       # =====================================================
-      # 15. LIMPAR BUILD ANTERIOR
+      # 16. LIMPAR BUILD ANTERIOR
       # =====================================================
 
       - name: Limpar projeto Android
@@ -247,7 +275,7 @@ jobs:
 
 
       # =====================================================
-      # 16. GERAR APK
+      # 17. GERAR APK
       # =====================================================
 
       - name: Gerar APK Debug
@@ -258,22 +286,22 @@ jobs:
 
 
       # =====================================================
-      # 17. VERIFICAR APK
+      # 18. VERIFICAR APK
       # =====================================================
 
-      - name: Verificar APK
+      - name: Verificar APK gerado
         run: |
 
-          echo "======================================"
+          echo "========================================"
           echo "APK GERADO"
-          echo "======================================"
+          echo "========================================"
 
           ls -lh \
             android/app/build/outputs/apk/debug/app-debug.apk
 
 
       # =====================================================
-      # 18. PUBLICAR APK
+      # 19. PUBLICAR APK
       # =====================================================
 
       - name: Publicar APK
@@ -282,7 +310,6 @@ jobs:
         with:
           name: cuidado-juntos-apk
 
-          path:
-            android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
 
           if-no-files-found: error
