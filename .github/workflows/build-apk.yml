@@ -2,49 +2,87 @@ name: Gerar APK - Cuidado Juntos
 
 on:
   workflow_dispatch:
+
   push:
     branches:
       - main
 
 jobs:
+
   build-apk:
+
     name: Construir APK Android
+
     runs-on: ubuntu-latest
 
     steps:
 
-      # 1. Baixar o código
+      # =====================================================
+      # 1. BAIXAR CÓDIGO
+      # =====================================================
+
       - name: Baixar código
         uses: actions/checkout@v4
 
-      # 2. Configurar Node.js
+
+      # =====================================================
+      # 2. CONFIGURAR NODE.JS
+      # =====================================================
+
       - name: Configurar Node.js
         uses: actions/setup-node@v4
+
         with:
           node-version: 22
+          cache: npm
 
-      # 3. Configurar Java 21
+
+      # =====================================================
+      # 3. CONFIGURAR JAVA
+      # =====================================================
+
       - name: Configurar Java 21
         uses: actions/setup-java@v4
+
         with:
           distribution: temurin
           java-version: "21"
 
-      # 4. Verificar versões
+
+      # =====================================================
+      # 4. VERIFICAR AMBIENTE
+      # =====================================================
+
       - name: Verificar ambiente
         run: |
+          echo "===== NODE ====="
           node --version
+
+          echo "===== NPM ====="
           npm --version
+
+          echo "===== JAVA ====="
           java -version
 
-      # 5. Instalar dependências
+
+      # =====================================================
+      # 5. INSTALAR DEPENDÊNCIAS
+      # =====================================================
+
       - name: Instalar dependências
         run: npm install
 
-      # 6. Preparar pasta www
+
+      # =====================================================
+      # 6. PREPARAR APLICATIVO WEB
+      # =====================================================
+
       - name: Preparar aplicativo web
         run: |
+          echo "Preparando pasta www..."
+
           rm -rf www
+
           mkdir -p www
 
           cp index.html www/
@@ -54,43 +92,83 @@ jobs:
 
           cp -r img www/
 
-      # 7. Criar projeto Android
-      - name: Adicionar Android
-        run: npx cap add android
+          echo "Arquivos copiados:"
+          find www -maxdepth 2 -type f
 
-      # 8. Sincronizar Capacitor
-      - name: Sincronizar Capacitor
-        run: npx cap sync android
 
-      # 9. Preparar logo
-      - name: Preparar logo
+      # =====================================================
+      # 7. ADICIONAR ANDROID
+      # =====================================================
+
+      - name: Adicionar projeto Android
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          else
+            echo "Projeto Android já existe."
+          fi
+
+
+      # =====================================================
+      # 8. PREPARAR ASSETS
+      # =====================================================
+
+      - name: Preparar assets do aplicativo
         run: |
           mkdir -p assets
+
           cp img/logo.png assets/logo.png
 
-      # 10. Gerar ícones Android
-      - name: Gerar ícones Android
+          echo "Logo encontrada:"
+          file assets/logo.png
+
+
+      # =====================================================
+      # 9. GERAR ÍCONE E SPLASH SCREEN
+      # =====================================================
+
+      - name: Gerar ícones e Splash Screen
         run: |
-          npx @capacitor/assets generate \
+          npx capacitor-assets generate \
             --android \
             --iconBackgroundColor "#2563eb" \
             --splashBackgroundColor "#2563eb"
 
-      # 11. Sincronizar recursos
-      - name: Sincronizar depois dos ícones
-        run: npx cap sync android
 
-      # 12. Preparar ícone das notificações
+      # =====================================================
+      # 10. SINCRONIZAR CAPACITOR
+      # =====================================================
+
+      - name: Sincronizar Capacitor
+        run: |
+          npx cap sync android
+
+
+      # =====================================================
+      # 11. PREPARAR ÍCONE DAS NOTIFICAÇÕES
+      # =====================================================
+
       - name: Preparar ícone de notificação
         run: |
-          mkdir -p android/app/src/main/res/drawable
+
+          mkdir -p \
+            android/app/src/main/res/drawable
+
           cp img/notificacao.png \
             android/app/src/main/res/drawable/notificacao.png
 
-      # 13. Adicionar permissão de notificações
-      - name: Adicionar permissão POST_NOTIFICATIONS
+          echo "Ícone de notificação instalado."
+
+
+      # =====================================================
+      # 12. CONFIGURAR PERMISSÃO DE NOTIFICAÇÕES
+      # =====================================================
+
+      - name: Configurar POST_NOTIFICATIONS
         run: |
+
           python3 - <<'PY'
+
           from pathlib import Path
 
           manifest = Path(
@@ -105,6 +183,7 @@ jobs:
           )
 
           if "android.permission.POST_NOTIFICATIONS" not in texto:
+
               marcador = "</manifest>"
 
               if marcador not in texto:
@@ -117,31 +196,93 @@ jobs:
                   permissao + "\n" + marcador
               )
 
-          manifest.write_text(texto)
+              manifest.write_text(texto)
 
-          print("Permissão POST_NOTIFICATIONS configurada.")
+          print(
+              "Permissão POST_NOTIFICATIONS configurada."
+          )
+
           PY
 
-      # 14. Verificar Manifest
-      - name: Verificar AndroidManifest
+
+      # =====================================================
+      # 13. VERIFICAR CONFIGURAÇÃO
+      # =====================================================
+
+      - name: Verificar configuração Android
         run: |
-          echo "===== ANDROID MANIFEST ====="
+
+          echo "======================================"
+          echo "ANDROID MANIFEST"
+          echo "======================================"
+
           cat android/app/src/main/AndroidManifest.xml
-          echo "===== FIM MANIFEST ====="
 
-      # 15. Permitir execução do Gradle
-      - name: Permitir Gradle
-        run: chmod +x android/gradlew
+          echo "======================================"
+          echo "CAPACITOR CONFIG"
+          echo "======================================"
 
-      # 16. Gerar APK
+          cat capacitor.config.json
+
+
+      # =====================================================
+      # 14. DAR PERMISSÃO AO GRADLE
+      # =====================================================
+
+      - name: Permitir execução do Gradle
+        run: |
+
+          chmod +x android/gradlew
+
+
+      # =====================================================
+      # 15. LIMPAR BUILD ANTERIOR
+      # =====================================================
+
+      - name: Limpar projeto Android
+        working-directory: android
+        run: |
+
+          ./gradlew clean
+
+
+      # =====================================================
+      # 16. GERAR APK
+      # =====================================================
+
       - name: Gerar APK Debug
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: |
 
-      # 17. Publicar APK
+          ./gradlew assembleDebug
+
+
+      # =====================================================
+      # 17. VERIFICAR APK
+      # =====================================================
+
+      - name: Verificar APK
+        run: |
+
+          echo "======================================"
+          echo "APK GERADO"
+          echo "======================================"
+
+          ls -lh \
+            android/app/build/outputs/apk/debug/app-debug.apk
+
+
+      # =====================================================
+      # 18. PUBLICAR APK
+      # =====================================================
+
       - name: Publicar APK
         uses: actions/upload-artifact@v4
+
         with:
           name: cuidado-juntos-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+          path:
+            android/app/build/outputs/apk/debug/app-debug.apk
+
           if-no-files-found: error
