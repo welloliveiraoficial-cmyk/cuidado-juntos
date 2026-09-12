@@ -1,0 +1,211 @@
+HTML
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Cuidado Juntos - organização dos medicamentos em família">
+
+  <title>Cuidado Juntos</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Tela de login -->
+  <section id="tela-login" class="tela">
+    <div class="login-card">
+
+      <div class="logo">
+        <div class="logo-simbolo">❤</div>
+      </div>
+
+      <h1>Cuidado Juntos</h1>
+
+      <p class="subtitulo">
+        Cuidando juntos de quem amamos.
+      </p>
+
+      <label for="nome-usuario">
+        Digite seu primeiro nome
+      </label>
+
+      <input
+        type="text"
+        id="nome-usuario"
+        placeholder="Exemplo: Lucas"
+        maxlength="30"
+        autocomplete="given-name"
+      >
+
+      <button id="btn-entrar" class="btn-principal">
+        Entrar no aplicativo
+      </button>
+
+      <p id="erro-login" class="erro"></p>
+
+    </div>
+  </section>
+
+  <!-- Aplicativo principal -->
+  <section id="tela-app" class="tela escondido">
+
+    <header class="cabecalho">
+      <div>
+        <p class="pequeno">Olá, <span id="nome-exibido"></span>!</p>
+        <h1>Cuidado Juntos</h1>
+      </div>
+
+      <div class="icone-header">❤</div>
+    </header>
+
+    <main class="conteudo">
+
+      <div class="cartao-boas-vindas">
+        <div>
+          <p class="pequeno">Cuidado da família</p>
+          <h2>Medicamentos da Josefa</h2>
+          <p>Organização e responsabilidade em família.</p>
+        </div>
+
+        <div class="coracao">❤</div>
+      </div>
+
+      <div class="resumo">
+        <div class="resumo-item">
+          <strong id="total-medicamentos">3</strong>
+          <span>Horários</span>
+        </div>
+
+        <div class="resumo-item">
+          <strong id="total-dados">0</strong>
+          <span>Dados</span>
+        </div>
+
+        <div class="resumo-item">
+          <strong id="total-pendentes">3</strong>
+          <span>Pendentes</span>
+        </div>
+      </div>
+
+      <div class="titulo-secao">
+        <h2>Horários de hoje</h2>
+        <span class="badge">Exemplo</span>
+      </div>
+
+      <div id="lista-medicamentos">
+
+        <!-- Medicamento das 08h -->
+        <article class="medicamento" data-horario="08:00">
+
+          <div class="horario">
+            <strong>08:00</strong>
+            <span>Manhã</span>
+          </div>
+
+          <div class="medicamento-info">
+            <h3>Medicamento das 08h</h3>
+            <p class="status">Aguardando registro</p>
+          </div>
+
+          <button class="btn-dar" data-horario="08:00">
+            Dar
+          </button>
+
+        </article>
+
+        <!-- Medicamento das 10h -->
+        <article class="medicamento" data-horario="10:00">
+
+          <div class="horario">
+            <strong>10:00</strong>
+            <span>Manhã</span>
+          </div>
+
+          <div class="medicamento-info">
+            <h3>Medicamento das 10h</h3>
+            <p class="status">Aguardando registro</p>
+          </div>
+
+          <button class="btn-dar" data-horario="10:00">
+            Dar
+          </button>
+
+        </article>
+
+        <!-- Medicamento das 14h -->
+        <article class="medicamento" data-horario="14:00">
+
+          <div class="horario">
+            <strong>14:00</strong>
+            <span>Tarde</span>
+          </div>
+
+          <div class="medicamento-info">
+            <h3>Medicamento das 14h</h3>
+            <p class="status">Aguardando registro</p>
+          </div>
+
+          <button class="btn-dar" data-horario="14:00">
+            Dar
+          </button>
+
+        </article>
+
+      </div>
+
+      <div class="aviso">
+        <strong>Importante</strong>
+        <p>
+          Os horários mostrados são apenas exemplos.
+          Vamos substituir pelos horários corretos da sua mãe.
+        </p>
+      </div>
+
+      <button id="btn-sair" class="btn-secundario">
+        Sair
+      </button>
+
+    </main>
+
+  </section>
+
+  <!-- Janela de confirmação -->
+  <div id="modal-confirmacao" class="modal escondido">
+
+    <div class="modal-card">
+
+      <div class="modal-icone">✓</div>
+
+      <h2>Registrar medicamento</h2>
+
+      <p id="texto-confirmacao">
+        Você está registrando o medicamento.
+      </p>
+
+      <p class="texto-alerta">
+        Confirme somente depois de dar o medicamento
+        conforme a orientação médica.
+      </p>
+
+      <div class="modal-botoes">
+        <button id="btn-cancelar" class="btn-secundario">
+          Cancelar
+        </button>
+
+        <button id="btn-confirmar" class="btn-principal">
+          Confirmar
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+    </html>
+  
