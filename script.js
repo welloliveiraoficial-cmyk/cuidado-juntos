@@ -112,6 +112,9 @@ const totalDados =
 const totalPendentes =
   document.getElementById("total-pendentes");
 
+const listaHistorico =
+  document.getElementById("lista-historico");
+
 
 /* =========================
    DATA DO CICLO
@@ -122,8 +125,7 @@ function obterDataHoje() {
   const agora = new Date();
 
   /*
-   * Mantemos a mesma regra usada anteriormente:
-   * antes das 06:00 pertence ao ciclo do dia anterior.
+   * Antes das 06:00 pertence ao ciclo do dia anterior.
    */
 
   if (agora.getHours() < 6) {
@@ -232,9 +234,7 @@ nomeInput.addEventListener(
   function (evento) {
 
     if (evento.key === "Enter") {
-
       botaoEntrar.click();
-
     }
 
   }
@@ -319,6 +319,8 @@ function carregarRegistrosHoje() {
       );
 
       atualizarTela();
+
+      atualizarHistorico();
 
     },
     function (erro) {
@@ -586,6 +588,79 @@ function atualizarTela() {
 
 
 /* =========================
+   ATUALIZAR HISTÓRICO
+========================= */
+
+function atualizarHistorico() {
+
+  if (!listaHistorico) {
+    return;
+  }
+
+  const lista =
+    Object.values(registros)
+      .sort(
+        function (a, b) {
+          return a.horario.localeCompare(
+            b.horario
+          );
+        }
+      );
+
+  if (lista.length === 0) {
+
+    listaHistorico.innerHTML = `
+      <div class="historico-vazio">
+        <span>🕘</span>
+        <p>Nenhum medicamento registrado ainda.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  listaHistorico.innerHTML =
+    lista.map(
+      function (registro) {
+
+        return `
+          <div class="item-historico">
+
+            <div class="historico-horario">
+              <strong>${registro.horario}</strong>
+              <span>Horário</span>
+            </div>
+
+            <div class="historico-detalhes">
+              <strong>Medicamento administrado</strong>
+
+              <p>
+                Dado por
+                <b>${registro.nome}</b>
+                às
+                <b>${registro.horaRegistro}</b>
+              </p>
+
+              <small>
+                ${registro.dataRegistro}
+              </small>
+            </div>
+
+            <div class="historico-check">
+              ✓
+            </div>
+
+          </div>
+        `;
+
+      }
+    )
+    .join("");
+
+}
+
+
+/* =========================
    BOTÕES DAR
 ========================= */
 
@@ -830,22 +905,12 @@ function enviarNotificacao(horario) {
     `${dataHoje}_${horario}`;
 
 
-  /*
-   * Impede que a mesma notificação
-   * seja enviada várias vezes.
-   */
-
   if (
     ultimoAviso === chaveAviso
   ) {
     return;
   }
 
-
-  /*
-   * Se já foi registrado,
-   * não envia lembrete.
-   */
 
   if (registros[horario]) {
     return;
@@ -918,12 +983,6 @@ function verificarHorarios() {
     return;
   }
 
-
-  /*
-   * Pequena tolerância:
-   * se o app verificar durante aquele minuto,
-   * dispara o lembrete.
-   */
 
   enviarNotificacao(
     horarioAtual
@@ -1010,4 +1069,4 @@ if (nomeUsuario !== "") {
 
   mostrarLogin();
 
-                          }
+    }
