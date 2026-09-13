@@ -4,7 +4,7 @@
   "private": true,
   "description": "Cuidado Juntos - organização dos medicamentos em família",
   "scripts": {
-    "build": "echo Build web concluído"
+    "build": "node build-www.js"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.0",
