@@ -8,16 +8,17 @@
    sobre quem já tomou o remédio.
 ========================================================= */
 
-const CACHE_NAME = "cuidado-juntos-v2";
+const CACHE_NAME = "cuidado-juntos-v3";
 
 const ARQUIVOS_ESSENCIAIS = [
   "./",
   "./index.html",
-  "./style.css?v=14",
-  "./script.js?v=14",
-  "./native-notifications.js?v=14",
+  "./style.css?v=15",
+  "./script.js?v=15",
+  "./native-notifications.js?v=15",
   "./manifest.json",
-  "./img/logo.png"
+  "./img/logo.png",
+  "./img/icone-notificacao.png"
 ];
 
 /* =========================================================
