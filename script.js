@@ -1,11 +1,36 @@
 /* =========================================================
    CUIDADO JUNTOS
    SCRIPT PRINCIPAL
+   VERSÃO CORRIGIDA
 ========================================================= */
 
 
 /* =========================================================
-   CONFIGURAÇÕES FIREBASE
+   FIREBASE
+========================================================= */
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getAuth,
+  signInAnonymously
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  onSnapshot,
+  setDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+/* =========================================================
+   CONFIGURAÇÃO FIREBASE
 ========================================================= */
 
 const firebaseConfig = {
@@ -19,7 +44,7 @@ const firebaseConfig = {
 
 
 /* =========================================================
-   VARIÁVEIS FIREBASE
+   VARIÁVEIS
 ========================================================= */
 
 let db = null;
@@ -27,14 +52,17 @@ let auth = null;
 
 let firebaseAutenticado = false;
 
-let firebaseFunctions = null;
-
 let unsubscribeHoje = null;
 let unsubscribeHistorico = null;
 
+let registros = {};
+let registrosHistorico = {};
+
+let horarioSelecionado = null;
+
 
 /* =========================================================
-   CONFIGURAÇÕES DO APLICATIVO
+   LOCAL STORAGE
 ========================================================= */
 
 const CHAVE_USUARIO =
@@ -48,17 +76,11 @@ const CHAVE_ULTIMO_AVISO =
 
 
 /* =========================================================
-   ESTADO DO APLICATIVO
+   ESTADO
 ========================================================= */
 
 let nomeUsuario =
   localStorage.getItem(CHAVE_USUARIO) || "";
-
-let registros = {};
-
-let registrosHistorico = {};
-
-let horarioSelecionado = null;
 
 let notificacaoAtiva =
   localStorage.getItem(CHAVE_NOTIFICACAO) === "true";
@@ -68,7 +90,7 @@ let ultimoAviso =
 
 
 /* =========================================================
-   HORÁRIOS
+   HORÁRIOS DOS MEDICAMENTOS
 ========================================================= */
 
 const HORARIOS = [
@@ -165,7 +187,7 @@ const botaoVoltarMedicamentos =
 
 
 /* =========================================================
-   DATA ATUAL
+   DATA DO CICLO
 ========================================================= */
 
 function obterDataHoje() {
@@ -173,16 +195,13 @@ function obterDataHoje() {
   const agora = new Date();
 
   /*
-   * Antes das 06:00 pertence ao ciclo
-   * do dia anterior.
+   * Antes das 06:00 pertence ao dia anterior.
    */
 
   if (agora.getHours() < 6) {
-
     agora.setDate(
       agora.getDate() - 1
     );
-
   }
 
   const ano =
@@ -203,7 +222,7 @@ function obterDataHoje() {
 
 
 /* =========================================================
-   FORMATAR DATA
+   DATA BONITA
 ========================================================= */
 
 function formatarDataBonita(dataISO) {
@@ -229,11 +248,12 @@ function formatarDataBonita(dataISO) {
 
 function salvarNome(nome) {
 
-  nomeUsuario = nome;
+  nomeUsuario =
+    nome.trim();
 
   localStorage.setItem(
     CHAVE_USUARIO,
-    nome
+    nomeUsuario
   );
 
 }
@@ -246,6 +266,10 @@ function salvarNome(nome) {
 function mostrarAplicativo() {
 
   if (!telaLogin || !telaApp) {
+    console.error(
+      "Elementos da tela não encontrados."
+    );
+
     return;
   }
 
@@ -257,7 +281,13 @@ function mostrarAplicativo() {
     "escondido"
   );
 
+  /*
+   * Garante que o aplicativo fique visível
+   * mesmo se o CSS usar display.
+   */
+
   telaApp.style.display = "";
+
 
   if (nomeExibido) {
 
@@ -266,6 +296,7 @@ function mostrarAplicativo() {
 
   }
 
+
   atualizarTela();
 
   atualizarBotaoNotificacao();
@@ -273,6 +304,12 @@ function mostrarAplicativo() {
   definirDataHistorico();
 
   mostrarPaginaMedicamentos();
+
+
+  /*
+   * Se o Firebase já estiver conectado,
+   * carrega os registros imediatamente.
+   */
 
   if (firebaseAutenticado) {
 
@@ -301,7 +338,8 @@ function mostrarLogin() {
     "escondido"
   );
 
-  telaApp.style.display = "none";
+  telaApp.style.display =
+    "none";
 
 }
 
@@ -310,61 +348,94 @@ function mostrarLogin() {
    LOGIN
 ========================================================= */
 
+function realizarLogin() {
+
+  const nomeDigitado =
+    nomeInput
+      ? nomeInput.value.trim()
+      : "";
+
+
+  if (!nomeDigitado) {
+
+    if (erroLogin) {
+
+      erroLogin.textContent =
+        "Digite seu primeiro nome para entrar.";
+
+    }
+
+    if (nomeInput) {
+
+      nomeInput.focus();
+
+    }
+
+    return;
+
+  }
+
+
+  /*
+   * Remove mensagem de erro.
+   */
+
+  if (erroLogin) {
+
+    erroLogin.textContent =
+      "";
+
+  }
+
+
+  /*
+   * Salva o nome imediatamente.
+   */
+
+  salvarNome(
+    nomeDigitado
+  );
+
+
+  /*
+   * Entra no aplicativo SEM esperar
+   * o Firebase.
+   */
+
+  mostrarAplicativo();
+
+
+  /*
+   * Se o Firebase já estiver pronto,
+   * carrega os registros.
+   */
+
+  if (firebaseAutenticado) {
+
+    carregarRegistrosHoje();
+
+  }
+
+}
+
+
+/*
+ * Botão Entrar
+ */
+
 if (botaoEntrar) {
 
   botaoEntrar.addEventListener(
     "click",
-    function () {
-
-      const nomeDigitado =
-        nomeInput
-          ? nomeInput.value.trim()
-          : "";
-
-      if (!nomeDigitado) {
-
-        if (erroLogin) {
-
-          erroLogin.textContent =
-            "Digite seu primeiro nome para entrar.";
-
-        }
-
-        if (nomeInput) {
-          nomeInput.focus();
-        }
-
-        return;
-      }
-
-      if (erroLogin) {
-
-        erroLogin.textContent =
-          "";
-
-      }
-
-      salvarNome(
-        nomeDigitado
-      );
-
-      mostrarAplicativo();
-
-      if (firebaseAutenticado) {
-
-        carregarRegistrosHoje();
-
-      }
-
-    }
+    realizarLogin
   );
 
 }
 
 
-/* =========================================================
-   ENTER NO CAMPO DE NOME
-========================================================= */
+/*
+ * Enter no campo de nome
+ */
 
 if (nomeInput) {
 
@@ -372,17 +443,11 @@ if (nomeInput) {
     "keydown",
     function (evento) {
 
-      if (
-        evento.key === "Enter"
-      ) {
+      if (evento.key === "Enter") {
 
         evento.preventDefault();
 
-        if (botaoEntrar) {
-
-          botaoEntrar.click();
-
-        }
+        realizarLogin();
 
       }
 
@@ -405,6 +470,7 @@ function mostrarPaginaMedicamentos() {
     return;
   }
 
+
   paginaMedicamentos.classList.remove(
     "escondido"
   );
@@ -412,6 +478,7 @@ function mostrarPaginaMedicamentos() {
   paginaHistorico.classList.add(
     "escondido"
   );
+
 
   if (botaoPaginaMedicamentos) {
 
@@ -421,6 +488,7 @@ function mostrarPaginaMedicamentos() {
 
   }
 
+
   if (botaoPaginaHistorico) {
 
     botaoPaginaHistorico.classList.remove(
@@ -428,6 +496,7 @@ function mostrarPaginaMedicamentos() {
     );
 
   }
+
 
   window.scrollTo({
     top: 0,
@@ -446,6 +515,7 @@ function mostrarPaginaHistorico() {
     return;
   }
 
+
   paginaMedicamentos.classList.add(
     "escondido"
   );
@@ -453,6 +523,7 @@ function mostrarPaginaHistorico() {
   paginaHistorico.classList.remove(
     "escondido"
   );
+
 
   if (botaoPaginaMedicamentos) {
 
@@ -462,6 +533,7 @@ function mostrarPaginaHistorico() {
 
   }
 
+
   if (botaoPaginaHistorico) {
 
     botaoPaginaHistorico.classList.add(
@@ -470,7 +542,9 @@ function mostrarPaginaHistorico() {
 
   }
 
+
   definirDataHistorico();
+
 
   if (
     firebaseAutenticado &&
@@ -482,6 +556,7 @@ function mostrarPaginaHistorico() {
     );
 
   }
+
 
   window.scrollTo({
     top: 0,
@@ -578,43 +653,57 @@ if (botaoSair) {
     function () {
 
       const confirmarSaida =
-        confirm(
+        window.confirm(
           "Deseja sair e trocar o familiar deste aparelho?"
         );
+
 
       if (!confirmarSaida) {
         return;
       }
 
+
       localStorage.removeItem(
         CHAVE_USUARIO
       );
 
-      nomeUsuario = "";
+
+      nomeUsuario =
+        "";
+
 
       if (nomeInput) {
-        nomeInput.value = "";
+
+        nomeInput.value =
+          "";
+
       }
+
 
       if (unsubscribeHoje) {
 
         unsubscribeHoje();
 
-        unsubscribeHoje = null;
+        unsubscribeHoje =
+          null;
 
       }
+
 
       if (unsubscribeHistorico) {
 
         unsubscribeHistorico();
 
-        unsubscribeHistorico = null;
+        unsubscribeHistorico =
+          null;
 
       }
+
 
       registros = {};
 
       registrosHistorico = {};
+
 
       mostrarLogin();
 
@@ -625,13 +714,14 @@ if (botaoSair) {
 
 
 /* =========================================================
-   MODAL DE CONFIRMAÇÃO
+   MODAL
 ========================================================= */
 
 function abrirModal(horario) {
 
   horarioSelecionado =
     horario;
+
 
   if (textoConfirmacao) {
 
@@ -642,13 +732,15 @@ function abrirModal(horario) {
 
   }
 
+
   if (modalConfirmacao) {
 
     modalConfirmacao.classList.remove(
       "escondido"
     );
 
-    modalConfirmacao.style.display = "flex";
+    modalConfirmacao.style.display =
+      "flex";
 
   }
 
@@ -660,13 +752,15 @@ function fecharModal() {
   horarioSelecionado =
     null;
 
+
   if (modalConfirmacao) {
 
     modalConfirmacao.classList.add(
       "escondido"
     );
 
-    modalConfirmacao.style.display = "none";
+    modalConfirmacao.style.display =
+      "none";
 
   }
 
@@ -689,26 +783,26 @@ if (botaoCancelar) {
 
 function configurarBotoesDar() {
 
-  const botoesDar =
+  const botoes =
     document.querySelectorAll(
       ".btn-dar"
     );
 
-  botoesDar.forEach(
+
+  botoes.forEach(
     function (botao) {
 
-      /*
-       * Evita adicionar o evento mais de uma vez.
-       */
-
       if (
-        botao.dataset.eventoConfigurado === "true"
+        botao.dataset.eventoConfigurado ===
+        "true"
       ) {
         return;
       }
 
+
       botao.dataset.eventoConfigurado =
         "true";
+
 
       botao.addEventListener(
         "click",
@@ -718,17 +812,12 @@ function configurarBotoesDar() {
             return;
           }
 
-          /*
-           * A classe correta dos cartões
-           * da interface atual é:
-           *
-           * .medicamento-card
-           */
 
           const cartao =
             botao.closest(
               ".medicamento-card"
             );
+
 
           if (!cartao) {
 
@@ -740,20 +829,23 @@ function configurarBotoesDar() {
 
           }
 
+
           const horario =
             cartao.getAttribute(
               "data-horario"
             );
 
+
           if (!horario) {
 
             console.error(
-              "Horário do medicamento não encontrado."
+              "Horário não encontrado."
             );
 
             return;
 
           }
+
 
           abrirModal(
             horario
@@ -768,13 +860,6 @@ function configurarBotoesDar() {
 }
 
 
-/*
- * Configura os botões imediatamente.
- */
-
-configurarBotoesDar();
-
-
 /* =========================================================
    CONFIRMAR MEDICAMENTO
 ========================================================= */
@@ -786,29 +871,32 @@ if (botaoConfirmar) {
     async function () {
 
       if (!horarioSelecionado) {
-
         return;
-
       }
 
-      if (!firebaseAutenticado) {
 
-        alert(
-          "Aguarde a conexão com o Firebase."
+      if (!firebaseAutenticado || !db) {
+
+        window.alert(
+          "Aguarde a conexão com o aplicativo."
         );
 
         return;
 
       }
 
+
       const horario =
         horarioSelecionado;
+
 
       const agora =
         new Date();
 
+
       const dataISO =
         obterDataHoje();
+
 
       const horaRegistro =
         agora.toLocaleTimeString(
@@ -819,10 +907,12 @@ if (botaoConfirmar) {
           }
         );
 
+
       const dataRegistro =
         agora.toLocaleDateString(
           "pt-BR"
         );
+
 
       const idRegistro =
         `${dataISO}_${horario.replace(
@@ -830,12 +920,15 @@ if (botaoConfirmar) {
           "-"
         )}`;
 
+
       const registro = {
 
-        horario: horario,
+        horario:
+          horario,
 
         nome:
-          nomeUsuario || "Familiar",
+          nomeUsuario ||
+          "Familiar",
 
         horaRegistro:
           horaRegistro,
@@ -851,6 +944,7 @@ if (botaoConfirmar) {
 
       };
 
+
       try {
 
         botaoConfirmar.disabled =
@@ -859,40 +953,37 @@ if (botaoConfirmar) {
         botaoConfirmar.textContent =
           "Salvando...";
 
-        await firebaseFunctions.setDoc(
 
-          firebaseFunctions.doc(
+        await setDoc(
+          doc(
             db,
             "registros",
             idRegistro
           ),
-
           registro
-
         );
 
+
         /*
-         * Atualiza imediatamente a tela,
-         * sem precisar esperar o Firebase.
+         * Atualização imediata.
          */
 
         registros[horario] =
           registro;
 
+
         atualizarTela();
 
         fecharModal();
 
-        /*
-         * Pequena confirmação visual.
-         */
 
         mostrarAvisoRegistro(
           horario
         );
 
+
         /*
-         * Atualiza o histórico se ele estiver aberto.
+         * Atualiza histórico.
          */
 
         if (
@@ -913,8 +1004,9 @@ if (botaoConfirmar) {
           erro
         );
 
-        alert(
-          "Não foi possível salvar o registro no Firebase."
+
+        window.alert(
+          "Não foi possível salvar o registro."
         );
 
       } finally {
@@ -937,28 +1029,28 @@ if (botaoConfirmar) {
    AVISO DE REGISTRO
 ========================================================= */
 
-function mostrarAvisoRegistro(
-  horario
-) {
+function mostrarAvisoRegistro(horario) {
 
-  const avisoExistente =
+  const antigo =
     document.getElementById(
       "aviso-registro"
     );
 
-  if (avisoExistente) {
 
-    avisoExistente.remove();
-
+  if (antigo) {
+    antigo.remove();
   }
+
 
   const aviso =
     document.createElement(
       "div"
     );
 
+
   aviso.id =
     "aviso-registro";
+
 
   aviso.innerHTML = `
     <strong>✓ Medicamento registrado!</strong>
@@ -966,10 +1058,6 @@ function mostrarAvisoRegistro(
     <span>Dado por: ${nomeUsuario}</span>
   `;
 
-  /*
-   * Estilo diretamente no aviso para
-   * funcionar mesmo sem alterar o CSS.
-   */
 
   aviso.style.position =
     "fixed";
@@ -1022,12 +1110,11 @@ function mostrarAvisoRegistro(
   aviso.style.fontFamily =
     "Arial, sans-serif";
 
-  aviso.style.animation =
-    "aparecerAviso .3s ease";
 
   document.body.appendChild(
     aviso
   );
+
 
   setTimeout(
     function () {
@@ -1038,10 +1125,13 @@ function mostrarAvisoRegistro(
       aviso.style.transition =
         "opacity .3s ease";
 
+
       setTimeout(
         function () {
 
-          aviso.remove();
+          if (aviso) {
+            aviso.remove();
+          }
 
         },
         350
@@ -1049,6 +1139,161 @@ function mostrarAvisoRegistro(
 
     },
     3500
+  );
+
+}
+
+
+/* =========================================================
+   ATUALIZAR BOTÃO DE NOTIFICAÇÃO
+========================================================= */
+
+function atualizarBotaoNotificacao() {
+
+  if (!botaoNotificacao) {
+    return;
+  }
+
+
+  if (notificacaoAtiva) {
+
+    botaoNotificacao.classList.add(
+      "ativo"
+    );
+
+
+    botaoNotificacao.setAttribute(
+      "aria-label",
+      "Notificações ativadas"
+    );
+
+  } else {
+
+    botaoNotificacao.classList.remove(
+      "ativo"
+    );
+
+
+    botaoNotificacao.setAttribute(
+      "aria-label",
+      "Ativar notificações"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   NOTIFICAÇÕES
+========================================================= */
+
+if (botaoNotificacao) {
+
+  botaoNotificacao.addEventListener(
+    "click",
+    async function () {
+
+      if (
+        !("Notification" in window)
+      ) {
+
+        window.alert(
+          "Este navegador não oferece suporte a notificações."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        if (
+          Notification.permission ===
+          "default"
+        ) {
+
+          const permissao =
+            await Notification.requestPermission();
+
+          if (
+            permissao !==
+            "granted"
+          ) {
+
+            notificacaoAtiva =
+              false;
+
+            localStorage.setItem(
+              CHAVE_NOTIFICACAO,
+              "false"
+            );
+
+            atualizarBotaoNotificacao();
+
+            return;
+
+          }
+
+        }
+
+
+        if (
+          Notification.permission ===
+          "granted"
+        ) {
+
+          notificacaoAtiva =
+            !notificacaoAtiva;
+
+
+          localStorage.setItem(
+            CHAVE_NOTIFICACAO,
+            String(
+              notificacaoAtiva
+            )
+          );
+
+
+          atualizarBotaoNotificacao();
+
+
+          if (notificacaoAtiva) {
+
+            try {
+
+              new Notification(
+                "Cuidado Juntos",
+                {
+                  body:
+                    "As notificações foram ativadas."
+                }
+              );
+
+            } catch (erro) {
+
+              console.log(
+                "Notificação não exibida:",
+                erro
+              );
+
+            }
+
+          }
+
+        }
+
+      } catch (erro) {
+
+        console.error(
+          "Erro nas notificações:",
+          erro
+        );
+
+      }
+
+    }
   );
 
 }
@@ -1065,13 +1310,16 @@ function atualizarTela() {
       ".medicamento-card"
     );
 
+
   const total =
     cartoes.length;
+
 
   const dados =
     Object.keys(
       registros
     ).length;
+
 
   const pendentes =
     Math.max(
@@ -1079,789 +1327,10 @@ function atualizarTela() {
       0
     );
 
+
   if (totalMedicamentos) {
 
     totalMedicamentos.textContent =
       total;
 
-  }
-
-  if (totalDados) {
-
-    totalDados.textContent =
-      dados;
-
-  }
-
-  if (totalPendentes) {
-
-    totalPendentes.textContent =
-      pendentes;
-
-  }
-
-  cartoes.forEach(
-    function (cartao) {
-
-      const horario =
-        cartao.getAttribute(
-          "data-horario"
-        );
-
-      const botaoDar =
-        cartao.querySelector(
-          ".btn-dar"
-        );
-
-      const status =
-        cartao.querySelector(
-          ".status"
-        );
-
-      const registro =
-        registros[horario];
-
-      if (registro) {
-
-        if (botaoDar) {
-
-          botaoDar.textContent =
-            "Registrado ✓";
-
-          botaoDar.disabled =
-            true;
-
-          botaoDar.classList.add(
-            "registrado"
-          );
-
-        }
-
-        if (status) {
-
-          status.textContent =
-            "Dado por " +
-            registro.nome +
-            " às " +
-            registro.horaRegistro +
-            " em " +
-            registro.dataRegistro;
-
-        }
-
-        cartao.classList.add(
-          "medicamento-dado"
-        );
-
-      } else {
-
-        if (botaoDar) {
-
-          botaoDar.textContent =
-            "Dar";
-
-          botaoDar.disabled =
-            false;
-
-          botaoDar.classList.remove(
-            "registrado"
-          );
-
-        }
-
-        if (status) {
-
-          status.textContent =
-            "Aguardando registro";
-
-        }
-
-        cartao.classList.remove(
-          "medicamento-dado"
-        );
-
-      }
-
-    }
-  );
-
-  /*
-   * Garante que os botões continuem funcionando
-   * mesmo depois de qualquer atualização da tela.
-   */
-
-  configurarBotoesDar();
-
-}
-
-
-/* =========================================================
-   ATUALIZAR HISTÓRICO
-========================================================= */
-
-function atualizarHistorico() {
-
-  if (!listaHistorico) {
-    return;
-  }
-
-  const lista =
-    Object.values(
-      registrosHistorico
-    ).sort(
-      function (a, b) {
-
-        return a.horario.localeCompare(
-          b.horario
-        );
-
-      }
-    );
-
-  if (historicoTotal) {
-
-    historicoTotal.textContent =
-      lista.length;
-
-  }
-
-  if (lista.length === 0) {
-
-    listaHistorico.innerHTML = `
-      <div class="historico-vazio">
-
-        <span>
-          🕘
-        </span>
-
-        <p>
-          Nenhum medicamento registrado nesta data.
-        </p>
-
-      </div>
-    `;
-
-    return;
-
-  }
-
-  listaHistorico.innerHTML =
-    lista.map(
-      function (registro) {
-
-        return `
-          <div class="item-historico">
-
-            <div class="historico-horario">
-
-              <strong>
-                ${registro.horario}
-              </strong>
-
-              <span>
-                Horário
-              </span>
-
-            </div>
-
-            <div class="historico-detalhes">
-
-              <strong>
-                Medicamento administrado
-              </strong>
-
-              <p>
-                Dado por
-                <b>${registro.nome}</b>
-                às
-                <b>${registro.horaRegistro}</b>
-              </p>
-
-              <small>
-                ${registro.dataRegistro}
-              </small>
-
-            </div>
-
-            <div class="historico-check">
-              ✓
-            </div>
-
-          </div>
-        `;
-
-      }
-    )
-    .join("");
-
-}
-
-
-/* =========================================================
-   NOTIFICAÇÕES
-========================================================= */
-
-function atualizarBotaoNotificacao() {
-
-  if (!botaoNotificacao) {
-    return;
-  }
-
-  if (notificacaoAtiva) {
-
-    botaoNotificacao.classList.add(
-      "ativa"
-    );
-
-    botaoNotificacao.title =
-      "Notificações ativadas";
-
-  } else {
-
-    botaoNotificacao.classList.remove(
-      "ativa"
-    );
-
-    botaoNotificacao.title =
-      "Ativar notificações";
-
-  }
-
-}
-
-
-/* =========================================================
-   ATIVAR NOTIFICAÇÕES
-========================================================= */
-
-async function ativarNotificacoes() {
-
-  if (
-    !("Notification" in window)
-  ) {
-
-    alert(
-      "Este navegador não oferece suporte a notificações."
-    );
-
-    return;
-
-  }
-
-  try {
-
-    const permissao =
-      await Notification.requestPermission();
-
-    if (
-      permissao === "granted"
-    ) {
-
-      notificacaoAtiva =
-        true;
-
-      localStorage.setItem(
-        CHAVE_NOTIFICACAO,
-        "true"
-      );
-
-      atualizarBotaoNotificacao();
-
-      enviarNotificacao(
-        "💊 Cuidado Juntos",
-        "As notificações foram ativadas."
-      );
-
-    } else {
-
-      notificacaoAtiva =
-        false;
-
-      localStorage.setItem(
-        CHAVE_NOTIFICACAO,
-        "false"
-      );
-
-      atualizarBotaoNotificacao();
-
-      alert(
-        "As notificações não foram autorizadas."
-      );
-
-    }
-
-  } catch (erro) {
-
-    console.error(
-      "Erro nas notificações:",
-      erro
-    );
-
-    alert(
-      "Não foi possível ativar as notificações."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   ENVIAR NOTIFICAÇÃO
-========================================================= */
-
-function enviarNotificacao(
-  titulo,
-  mensagem
-) {
-
-  if (
-    !("Notification" in window)
-  ) {
-    return;
-  }
-
-  if (
-    Notification.permission !==
-    "granted"
-  ) {
-    return;
-  }
-
-  try {
-
-    new Notification(
-      titulo,
-      {
-        body: mensagem,
-        icon: "img/notificacao.png"
-      }
-    );
-
-  } catch (erro) {
-
-    console.error(
-      "Erro ao enviar notificação:",
-      erro
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   BOTÃO DE NOTIFICAÇÃO
-========================================================= */
-
-if (botaoNotificacao) {
-
-  botaoNotificacao.addEventListener(
-    "click",
-    function () {
-
-      ativarNotificacoes();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   VERIFICAR HORÁRIO DOS MEDICAMENTOS
-========================================================= */
-
-function verificarHorarioMedicamento() {
-
-  const agora =
-    new Date();
-
-  const horaAtual =
-    String(
-      agora.getHours()
-    ).padStart(2, "0") +
-    ":" +
-    String(
-      agora.getMinutes()
-    ).padStart(2, "0");
-
-  /*
-   * Verifica somente os horários cadastrados.
-   */
-
-  HORARIOS.forEach(
-    function (horario) {
-
-      if (
-        horario === horaAtual &&
-        ultimoAviso !==
-          `${obterDataHoje()}_${horario}`
-      ) {
-
-        /*
-         * Não avisa se já foi registrado.
-         */
-
-        if (!registros[horario]) {
-
-          enviarNotificacao(
-            "💊 Hora do medicamento",
-            `Está na hora do medicamento das ${horario}.`
-          );
-
-        }
-
-        ultimoAviso =
-          `${obterDataHoje()}_${horario}`;
-
-        localStorage.setItem(
-          CHAVE_ULTIMO_AVISO,
-          ultimoAviso
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/*
- * Verifica a cada 30 segundos.
- */
-
-setInterval(
-  verificarHorarioMedicamento,
-  30000
-);
-
-
-/* =========================================================
-   FIREBASE
-========================================================= */
-
-async function inicializarFirebase() {
-
-  try {
-
-    const appModule =
-      await import(
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
-      );
-
-    const authModule =
-      await import(
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js"
-      );
-
-    const firestoreModule =
-      await import(
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"
-      );
-
-    const app =
-      appModule.initializeApp(
-        firebaseConfig
-      );
-
-    auth =
-      authModule.getAuth(
-        app
-      );
-
-    db =
-      firestoreModule.getFirestore(
-        app
-      );
-
-    firebaseFunctions = {
-
-      setDoc:
-        firestoreModule.setDoc,
-
-      doc:
-        firestoreModule.doc,
-
-      collection:
-        firestoreModule.collection,
-
-      query:
-        firestoreModule.query,
-
-      where:
-        firestoreModule.where,
-
-      onSnapshot:
-        firestoreModule.onSnapshot,
-
-      orderBy:
-        firestoreModule.orderBy
-
-    };
-
-    /*
-     * Login anônimo no Firebase.
-     */
-
-    await authModule.signInAnonymously(
-      auth
-    );
-
-    firebaseAutenticado =
-      true;
-
-    console.log(
-      "Firebase conectado com sucesso."
-    );
-
-    /*
-     * Carrega os registros do dia.
-     */
-
-    if (nomeUsuario) {
-
-      carregarRegistrosHoje();
-
-    }
-
-  } catch (erro) {
-
-    console.error(
-      "Erro ao inicializar Firebase:",
-      erro
-    );
-
-    firebaseAutenticado =
-      false;
-
-  }
-
-}
-
-
-/* =========================================================
-   CARREGAR REGISTROS DE HOJE
-========================================================= */
-
-function carregarRegistrosHoje() {
-
-  if (
-    !firebaseAutenticado ||
-    !db ||
-    !firebaseFunctions
-  ) {
-
-    return;
-
-  }
-
-  if (unsubscribeHoje) {
-
-    unsubscribeHoje();
-
-    unsubscribeHoje = null;
-
-  }
-
-  const dataISO =
-    obterDataHoje();
-
-  const colecao =
-    firebaseFunctions.collection(
-      db,
-      "registros"
-    );
-
-  const consulta =
-    firebaseFunctions.query(
-      colecao,
-      firebaseFunctions.where(
-        "dataISO",
-        "==",
-        dataISO
-      )
-    );
-
-  unsubscribeHoje =
-    firebaseFunctions.onSnapshot(
-      consulta,
-      function (snapshot) {
-
-        registros = {};
-
-        snapshot.forEach(
-          function (documento) {
-
-            const registro =
-              documento.data();
-
-            if (registro.horario) {
-
-              registros[
-                registro.horario
-              ] = registro;
-
-            }
-
-          }
-        );
-
-        atualizarTela();
-
-      },
-      function (erro) {
-
-        console.error(
-          "Erro ao carregar registros:",
-          erro
-        );
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   CARREGAR HISTÓRICO
-========================================================= */
-
-function carregarHistorico(
-  dataISO
-) {
-
-  if (
-    !firebaseAutenticado ||
-    !db ||
-    !firebaseFunctions ||
-    !dataISO
-  ) {
-
-    return;
-
-  }
-
-  if (unsubscribeHistorico) {
-
-    unsubscribeHistorico();
-
-    unsubscribeHistorico = null;
-
-  }
-
-  const colecao =
-    firebaseFunctions.collection(
-      db,
-      "registros"
-    );
-
-  const consulta =
-    firebaseFunctions.query(
-      colecao,
-      firebaseFunctions.where(
-        "dataISO",
-        "==",
-        dataISO
-      )
-    );
-
-  unsubscribeHistorico =
-    firebaseFunctions.onSnapshot(
-      consulta,
-      function (snapshot) {
-
-        registrosHistorico = {};
-
-        snapshot.forEach(
-          function (documento) {
-
-            const registro =
-              documento.data();
-
-            if (registro.horario) {
-
-              registrosHistorico[
-                registro.horario
-              ] = registro;
-
-            }
-
-          }
-        );
-
-        atualizarHistorico();
-
-      },
-      function (erro) {
-
-        console.error(
-          "Erro ao carregar histórico:",
-          erro
-        );
-
-        if (listaHistorico) {
-
-          listaHistorico.innerHTML = `
-            <div class="historico-vazio">
-              <span>⚠️</span>
-              <p>
-                Não foi possível carregar o histórico.
-              </p>
-            </div>
-          `;
-
-        }
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   INICIALIZAÇÃO
-========================================================= */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
-
-    /*
-     * Configura novamente os botões
-     * depois que todo o HTML estiver carregado.
-     */
-
-    configurarBotoesDar();
-
-    definirDataHistorico();
-
-    atualizarTela();
-
-    atualizarBotaoNotificacao();
-
-    /*
-     * Se já existe um nome salvo,
-     * entra automaticamente no aplicativo.
-     */
-
-    if (nomeUsuario) {
-
-      mostrarAplicativo();
-
-    } else {
-
-      mostrarLogin();
-
-    }
-
-    /*
-     * Firebase é inicializado
-     * sem bloquear a interface.
-     */
-
-    inicializarFirebase();
-
-  }
-);
+         }
