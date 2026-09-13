@@ -1,48 +1,63 @@
 /* =========================================================
    CUIDADO JUNTOS
-   INTERFACE — v3 (paleta da logo oficial)
-   Paleta: azul-royal + ciano (cores da logo) sobre fundo frio claro.
-   Verde/vermelho/roxo semânticos (tomado/atrasado/noite) mantidos.
+   INTERFACE — v4 (dashboard profissional, paleta da logo)
+   Azul-royal + ciano (logo) como marca. Rosa no lugar do
+   verde para "tomado" (pedido do usuário). Layout em lista
+   com destaque hero para o próximo remédio, estilo painel.
    Tipografia: Fraunces (títulos) + Nunito Sans (interface).
 ========================================================= */
 
 :root {
-  /* ---- Marca ---- */
-  --petroleo: #123f94;
-  --petroleo-escuro: #0b2c6e;
+  /* ---- Marca (cores da logo) ---- */
+  --petroleo: #0b3fd1;
+  --petroleo-escuro: #072a94;
   --petroleo-claro: #4d8fe0;
+  --ciano: #22d3ee;
+  --ciano-escuro: #0e93a8;
+  --ciano-suave: #e0f9fc;
 
-  /* ---- Destaque / ação ---- */
+  /* ---- Destaque / ação (mesmo tom da logo) ---- */
   --ambar: #1fb8db;
   --ambar-escuro: #0e7f97;
   --ambar-suave: #dff6fb;
 
-  /* ---- Status ---- */
-  --salvia: #4b7a57;
-  --salvia-escura: #396044;
-  --salvia-suave: #e3ede4;
+  /* ---- Status "tomado" — rosa no lugar do verde ---- */
+  --salvia: #d1477f;
+  --salvia-escura: #a3335f;
+  --salvia-suave: #fbe7ef;
 
-  --rust: #a6472b;
-  --rust-escuro: #832f1a;
-  --rust-suave: #f3ded7;
+  /* ---- Status "atrasado" ---- */
+  --rust: #e2544a;
+  --rust-escuro: #ad342c;
+  --rust-suave: #fbe3e0;
 
-  --roxo: #6b5b95;
-  --roxo-suave: #e6e1f0;
+  /* ---- Período: tarde ---- */
+  --amarelo: #f5a524;
+  --amarelo-suave: #fdf1dc;
 
-  /* ---- Neutros quentes ---- */
+  /* ---- Período: noite ---- */
+  --roxo: #7c5cd6;
+  --roxo-suave: #ece6fa;
+
+  /* ---- Período: almoço ---- */
+  --teal: #16a394;
+  --teal-suave: #dcf5f1;
+
+  /* ---- Neutros ---- */
   --creme: #f2f6fc;
-  --creme-forte: #e3edf9;
+  --creme-forte: #e6eefb;
   --carvao: #10192b;
-  --carvao-suave: #55647a;
-  --linha: #dce6f5;
+  --carvao-suave: #5b6478;
+  --linha: #dde6f5;
   --branco: #ffffff;
 
-  /* ---- Sombras (tingidas de petróleo, não cinza genérico) ---- */
-  --sombra: 0 12px 32px rgba(18, 63, 148, 0.10);
-  --sombra-forte: 0 20px 46px rgba(18, 63, 148, 0.20);
-  --sombra-ambar: 0 14px 30px rgba(31, 184, 219, 0.30);
+  /* ---- Sombras ---- */
+  --sombra: 0 10px 26px rgba(11, 63, 209, 0.08);
+  --sombra-forte: 0 20px 44px rgba(11, 63, 209, 0.16);
+  --sombra-ciano: 0 12px 26px rgba(31, 184, 219, 0.3);
+  --sombra-rosa: 0 10px 22px rgba(209, 71, 127, 0.28);
 
-  --raio: 20px;
+  --raio: 18px;
 
   /* ---- Tipografia ---- */
   --fonte-titulo: "Fraunces", "Georgia", serif;
@@ -63,9 +78,7 @@ body {
   min-height: 100vh;
   font-family: var(--fonte-base);
   color: var(--carvao);
-  background:
-    radial-gradient(circle at 12% 0%, rgba(31, 184, 219, 0.10), transparent 38%),
-    linear-gradient(180deg, #eef4fc 0%, var(--creme) 100%);
+  background: var(--creme);
   overflow-x: hidden;
 }
 
@@ -79,12 +92,12 @@ body {
 }
 
 @keyframes subir {
-  from { opacity: 0; transform: translateY(22px); }
+  from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes entradaCartao {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -95,7 +108,12 @@ body {
 
 @keyframes pulsarAmbar {
   0%, 100% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.35); }
-  50% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
+  50% { box-shadow: 0 0 0 9px rgba(31, 184, 219, 0); }
+}
+
+@keyframes pulsarAtrasado {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(226, 84, 74, 0.35); }
+  50% { box-shadow: 0 0 0 9px rgba(226, 84, 74, 0); }
 }
 
 @keyframes checkPop {
@@ -114,10 +132,6 @@ body {
   100% { transform: translateY(90px) rotate(340deg); opacity: 0; }
 }
 
-/*
- * Animação do sino: toca uma vez quando é ATIVADO,
- * pra deixar óbvio que o clique funcionou.
- */
 @keyframes sinoBalancar {
   0% { transform: rotate(0deg); }
   15% { transform: rotate(-18deg); }
@@ -144,9 +158,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at 80% 10%, rgba(31, 184, 219, 0.22), transparent 42%),
-    linear-gradient(160deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--petroleo-claro));
+  background: linear-gradient(160deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--ciano) 130%);
   transition: opacity 0.4s ease;
 }
 
@@ -201,7 +213,7 @@ body {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--ambar);
+  background: var(--ciano);
   animation: pontinhos 1.2s ease-in-out infinite;
 }
 
@@ -222,7 +234,7 @@ body {
   gap: 22px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--petroleo-escuro) 0%, var(--petroleo) 55%, var(--petroleo-claro) 100%);
+  background: linear-gradient(160deg, var(--petroleo-escuro) 0%, var(--petroleo) 55%, var(--ciano) 130%);
   animation: aparecer 0.7s ease;
 }
 
@@ -233,7 +245,7 @@ body {
   height: 260px;
   right: -90px;
   top: -100px;
-  border: 22px solid rgba(31, 184, 219, 0.18);
+  border: 22px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
 }
 
@@ -244,7 +256,7 @@ body {
   height: 180px;
   left: -60px;
   bottom: -40px;
-  border: 16px solid rgba(31, 184, 219, 0.14);
+  border: 16px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
 }
 
@@ -266,8 +278,8 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 26px;
-  background: var(--ambar);
-  box-shadow: 0 16px 34px rgba(31, 184, 219, 0.4);
+  background: var(--branco);
+  box-shadow: 0 16px 34px rgba(11, 63, 209, 0.3);
 }
 
 .logo-login {
@@ -287,7 +299,7 @@ body {
 }
 
 .login-container p.subtitulo-login {
-  color: #cfe4f7;
+  color: #d6e8fb;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.6;
@@ -312,9 +324,9 @@ body {
   width: 100%;
   height: 56px;
   padding: 0 18px 0 46px;
-  border: 2px solid var(--linha);
+  border: 2px solid transparent;
   border-radius: 16px;
-  background: var(--creme);
+  background: var(--branco);
   color: var(--carvao);
   font-family: var(--fonte-base);
   font-weight: 700;
@@ -325,8 +337,7 @@ body {
 
 #nome-usuario:focus {
   border-color: var(--ambar);
-  background: var(--branco);
-  box-shadow: 0 0 0 4px rgba(31, 184, 219, 0.18);
+  box-shadow: 0 0 0 4px rgba(31, 184, 219, 0.22);
 }
 
 #btn-entrar {
@@ -334,8 +345,8 @@ body {
   min-height: 56px;
   border: none;
   border-radius: 16px;
-  color: var(--branco);
-  background: linear-gradient(135deg, var(--ambar), var(--ambar-escuro));
+  color: var(--petroleo-escuro);
+  background: var(--branco);
   font-family: var(--fonte-base);
   font-size: 16px;
   font-weight: 800;
@@ -344,7 +355,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 12px 26px rgba(31, 184, 219, 0.4);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
@@ -354,9 +365,8 @@ body {
 }
 
 #btn-entrar:hover {
-  filter: brightness(1.08);
   transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.5);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
 }
 
 #btn-entrar:hover .seta-entrar {
@@ -365,11 +375,10 @@ body {
 
 #btn-entrar:active {
   transform: scale(0.97);
-  filter: brightness(0.96);
 }
 
 #erro-login {
-  color: #ffb4b4;
+  color: #ffd7d2;
   font-weight: 700;
   font-size: 13px;
   margin-top: 12px;
@@ -378,7 +387,7 @@ body {
 
 .login-seguranca {
   margin-top: 24px;
-  color: #8fb6e0;
+  color: #b9d6f5;
   font-size: 12px;
   font-weight: 700;
 }
@@ -389,7 +398,7 @@ body {
   font-size: 15px;
   font-style: italic;
   font-weight: 600;
-  opacity: 0.75;
+  opacity: 0.85;
   text-align: center;
 }
 
@@ -411,35 +420,18 @@ body {
 }
 
 /* =========================================================
-   CABEÇALHO
+   CABEÇALHO — mais sóbrio, cor sólida da marca
 ========================================================= */
 
 .cabecalho {
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 88% 5%, rgba(31, 184, 219, 0.28), transparent 30%),
-    linear-gradient(135deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--petroleo-claro));
+  background: var(--petroleo);
   color: var(--branco);
-  padding: 20px;
-  border-radius: 0 0 28px 28px;
-  box-shadow: 0 14px 32px rgba(18, 63, 148, 0.28);
-}
-
-.cabecalho::after {
-  content: "";
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  right: -80px;
-  top: -95px;
-  border: 24px solid rgba(31, 184, 219, 0.12);
-  border-radius: 50%;
+  padding: 18px 20px;
+  border-radius: 0 0 22px 22px;
+  box-shadow: 0 10px 24px rgba(11, 63, 209, 0.22);
 }
 
 .cabecalho-conteudo {
-  position: relative;
-  z-index: 1;
   max-width: 1180px;
   margin: 0 auto;
   display: flex;
@@ -456,12 +448,11 @@ body {
 }
 
 .logo-app {
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   flex-shrink: 0;
-  filter: drop-shadow(0 7px 14px rgba(0, 0, 0, 0.22));
-  animation: flutuar 4s ease-in-out infinite;
+  border-radius: 12px;
 }
 
 .marca-texto {
@@ -470,16 +461,16 @@ body {
 
 .marca-texto h1 {
   font-family: var(--fonte-titulo);
-  font-size: 21px;
+  font-size: 19px;
   font-weight: 700;
   font-style: italic;
   letter-spacing: -0.2px;
 }
 
 .marca-texto p {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  opacity: 0.85;
+  opacity: 0.8;
   margin-top: 2px;
 }
 
@@ -495,22 +486,21 @@ body {
 #btn-notificacao,
 #btn-sair {
   position: relative;
-  width: 44px;
-  height: 44px;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
   color: var(--branco);
-  background: rgba(31, 184, 219, 0.14);
-  font-size: 19px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 17px;
   cursor: pointer;
-  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
 #btn-instalar:hover,
 #btn-notificacao:hover,
 #btn-sair:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.24);
   transform: translateY(-2px);
 }
 
@@ -521,22 +511,15 @@ body {
 }
 
 #btn-instalar {
-  border-color: var(--ambar);
-  background: var(--ambar);
+  background: var(--ciano);
   color: var(--petroleo-escuro);
   animation: pulsarAmbar 2.6s infinite;
 }
 
-/*
- * SININHO — estado claramente diferente quando ativo:
- * preenche de dourado, ganha anel e "toca" uma vez.
- */
-
 #btn-notificacao.ativo {
-  background: var(--ambar);
-  border-color: var(--ambar);
+  background: var(--ciano);
   color: var(--petroleo-escuro);
-  box-shadow: var(--sombra-ambar);
+  box-shadow: var(--sombra-ciano);
   animation: sinoBalancar 0.55s ease;
 }
 
@@ -545,15 +528,15 @@ body {
   position: absolute;
   top: -3px;
   right: -3px;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
   background: var(--salvia);
-  border: 2px solid var(--petroleo-escuro);
+  border: 2px solid var(--petroleo);
 }
 
 /* =========================================================
-   RESUMO DO DIA (CARD ÚNICO + ANEL)
+   RESUMO DO DIA — cartão de destaque estilo painel
 ========================================================= */
 
 .resumo-dia-card {
@@ -563,21 +546,12 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin: 22px 0 10px;
-  padding: 24px;
+  margin: 20px 0 8px;
+  padding: 22px 24px;
   background: var(--branco);
-  border: 1px solid var(--linha);
   border-radius: var(--raio);
   box-shadow: var(--sombra);
-  animation: subir 0.7s ease;
-}
-
-.resumo-dia-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, rgba(31, 184, 219, 0.06), transparent 55%);
-  pointer-events: none;
+  animation: subir 0.6s ease;
 }
 
 .resumo-info {
@@ -588,7 +562,7 @@ body {
 .resumo-data {
   display: inline-block;
   color: var(--petroleo);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   background: var(--creme-forte);
   padding: 4px 11px;
@@ -599,8 +573,8 @@ body {
 .resumo-titulo {
   display: block;
   font-family: var(--fonte-titulo);
-  color: var(--petroleo);
-  font-size: 24px;
+  color: var(--carvao);
+  font-size: 22px;
   font-weight: 700;
   font-style: italic;
   letter-spacing: -0.3px;
@@ -616,8 +590,8 @@ body {
 
 .anel-progresso-area {
   position: relative;
-  width: 86px;
-  height: 86px;
+  width: 82px;
+  height: 82px;
   flex-shrink: 0;
 }
 
@@ -655,7 +629,7 @@ body {
 .anel-texto strong {
   font-family: var(--fonte-titulo);
   color: var(--petroleo);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   line-height: 1;
 }
@@ -674,8 +648,8 @@ body {
 
 .historico-mini-anel-area {
   position: relative;
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
 }
 
@@ -692,13 +666,13 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin: 26px 0 14px;
+  margin: 24px 0 14px;
 }
 
 .titulo-secao h2 {
   font-family: var(--fonte-titulo);
-  color: var(--petroleo);
-  font-size: 20px;
+  color: var(--carvao);
+  font-size: 19px;
   font-weight: 700;
   font-style: italic;
 }
@@ -722,29 +696,31 @@ body {
 
 /* =========================================================
    LISTA DE MEDICAMENTOS
+   — cards "compactos" para o resto, e um destaque "hero"
+   automático para quem está badge-agora/badge-proximo,
+   sem precisar mexer no HTML nem no JS.
 ========================================================= */
 
 .lista-medicamentos {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .medicamento-card {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 12px;
   min-width: 0;
-  padding: 16px;
+  padding: 14px;
   background: var(--branco);
-  border: 1px solid var(--linha);
-  border-left: 5px solid #c7d6ee;
-  border-radius: 18px;
+  border-left: 4px solid var(--linha);
+  border-radius: 16px;
   box-shadow: var(--sombra);
   cursor: pointer;
   animation: entradaCartao 0.5s ease both;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .medicamento-card:nth-child(1) { animation-delay: 0.02s; }
@@ -758,8 +734,8 @@ body {
 .medicamento-card:nth-child(9) { animation-delay: 0.26s; }
 
 .medicamento-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 34px rgba(18, 63, 148, 0.14);
+  transform: translateY(-3px);
+  box-shadow: var(--sombra-forte);
 }
 
 .medicamento-card:active {
@@ -767,15 +743,15 @@ body {
 }
 
 .icone-medicamento {
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--creme-forte);
-  font-size: 24px;
+  font-size: 21px;
 }
 
 .medicamento-detalhes {
@@ -802,8 +778,8 @@ body {
 
 .medicamento-horario {
   font-family: var(--fonte-titulo);
-  color: var(--petroleo);
-  font-size: 20px;
+  color: var(--carvao);
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.3px;
   line-height: 1.1;
@@ -819,25 +795,23 @@ body {
 
 .btn-dar {
   flex-shrink: 0;
-  min-width: 62px;
-  min-height: 42px;
+  min-width: 58px;
+  min-height: 40px;
   padding: 0 12px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--ambar), var(--ambar-escuro));
+  background: var(--petroleo);
   color: var(--branco);
   font-family: var(--fonte-base);
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(31, 184, 219, 0.32);
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .btn-dar:hover {
-  filter: brightness(1.06);
+  filter: brightness(1.1);
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(31, 184, 219, 0.4);
 }
 
 .btn-dar:active {
@@ -849,84 +823,130 @@ body {
   filter: none;
 }
 
-/* ---- Cores por status ---- */
+/* ---- Estado: TOMADO (rosa, no lugar do verde) ---- */
 
 .medicamento-card.badge-tomado {
   border-left-color: var(--salvia);
-  background: linear-gradient(135deg, var(--salvia-suave), var(--branco) 60%);
+  background: var(--salvia-suave);
 }
 .medicamento-card.badge-tomado .icone-medicamento {
-  background: #d3e5d6;
+  background: #f6d3e2;
 }
 .medicamento-card.badge-tomado .medicamento-badge {
   background: var(--salvia);
 }
 .medicamento-card.badge-tomado .btn-dar {
-  background: linear-gradient(135deg, var(--salvia), var(--salvia-escura));
-  box-shadow: 0 8px 18px rgba(75, 122, 87, 0.28);
+  background: var(--salvia);
   font-size: 0;
 }
 .medicamento-card.badge-tomado .btn-dar::before {
   content: "✓";
-  font-size: 18px;
+  font-size: 17px;
 }
+
+/* ---- Estado: PRÓXIMO — vira card hero, ocupa a linha toda ---- */
 
 .medicamento-card.badge-proximo {
-  border-left-color: var(--petroleo);
-  background: linear-gradient(135deg, #e7f0fb, var(--branco) 60%);
-  box-shadow: 0 16px 32px rgba(18, 63, 148, 0.14);
+  grid-column: 1 / -1;
+  border-left: none;
+  padding: 18px 20px;
+  background: var(--petroleo);
+  box-shadow: var(--sombra-forte);
 }
 .medicamento-card.badge-proximo .icone-medicamento {
-  background: #dce9fa;
+  width: 52px;
+  height: 52px;
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.16);
 }
 .medicamento-card.badge-proximo .medicamento-badge {
-  background: var(--petroleo);
+  background: var(--ciano);
+  color: var(--petroleo-escuro);
+}
+.medicamento-card.badge-proximo .medicamento-horario {
+  color: var(--branco);
+  font-size: 22px;
+}
+.medicamento-card.badge-proximo .status {
+  color: #cfe3fb;
+}
+.medicamento-card.badge-proximo .btn-dar {
+  background: var(--branco);
+  color: var(--petroleo);
+  min-width: 70px;
 }
 
+/* ---- Estado: AGORA — hero mais urgente, ciano pulsante ---- */
+
 .medicamento-card.badge-agora {
-  border-left-color: var(--ambar-escuro);
-  background: linear-gradient(135deg, var(--ambar-suave), var(--branco) 60%);
-  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.2);
+  grid-column: 1 / -1;
+  border-left: none;
+  padding: 18px 20px;
+  background: var(--ambar-escuro);
+  box-shadow: var(--sombra-ciano);
+  animation: entradaCartao 0.5s ease both, pulsarAmbar 2.2s ease-in-out infinite;
 }
 .medicamento-card.badge-agora .icone-medicamento {
-  background: #c9f1f9;
+  width: 52px;
+  height: 52px;
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.18);
 }
 .medicamento-card.badge-agora .medicamento-badge {
-  background: var(--ambar-escuro);
+  background: var(--branco);
+  color: var(--ambar-escuro);
 }
+.medicamento-card.badge-agora .medicamento-horario {
+  color: var(--branco);
+  font-size: 22px;
+}
+.medicamento-card.badge-agora .status {
+  color: #d8f5fb;
+}
+.medicamento-card.badge-agora .btn-dar {
+  background: var(--branco);
+  color: var(--ambar-escuro);
+  min-width: 70px;
+}
+
+/* ---- Estado: ATRASADO ---- */
 
 .medicamento-card.badge-atrasado {
   border-left-color: var(--rust);
-  background: linear-gradient(135deg, var(--rust-suave), var(--branco) 60%);
-  animation: entradaCartao 0.5s ease both, anelAcender 2.4s ease-in-out infinite;
+  background: var(--rust-suave);
+  animation: entradaCartao 0.5s ease both, pulsarAtrasado 2.2s ease-in-out infinite;
 }
 .medicamento-card.badge-atrasado .icone-medicamento {
-  background: #e9c7ba;
+  background: #f7d2cd;
 }
 .medicamento-card.badge-atrasado .medicamento-badge {
   background: var(--rust);
 }
 .medicamento-card.badge-atrasado .btn-dar {
-  background: linear-gradient(135deg, var(--rust), var(--rust-escuro));
-  box-shadow: 0 8px 18px rgba(166, 71, 43, 0.32);
+  background: var(--rust);
 }
 
-/* ---- Cores por período (quando não é próximo/agora/tomado/atrasado) ---- */
+/* ---- Cores por período (cheias de vida, uma por turno) ---- */
 
-.medicamento-card.periodo-manha .icone-medicamento { background: #dce9fa; }
-.medicamento-card.periodo-manha .medicamento-badge { background: var(--petroleo-claro); }
+.medicamento-card.periodo-manha .icone-medicamento { background: var(--ciano-suave); }
+.medicamento-card.periodo-manha .medicamento-badge { background: var(--ciano-escuro); }
+.medicamento-card.periodo-manha { border-left-color: var(--ciano); }
 
-.medicamento-card.periodo-almoco .icone-medicamento { background: var(--salvia-suave); }
-.medicamento-card.periodo-almoco .medicamento-badge { background: var(--salvia); }
+.medicamento-card.periodo-almoco .icone-medicamento { background: var(--teal-suave); }
+.medicamento-card.periodo-almoco .medicamento-badge { background: var(--teal); }
+.medicamento-card.periodo-almoco { border-left-color: var(--teal); }
 
-.medicamento-card.periodo-tarde .icone-medicamento { background: var(--ambar-suave); }
-.medicamento-card.periodo-tarde .medicamento-badge { background: var(--ambar-escuro); }
+.medicamento-card.periodo-tarde .icone-medicamento { background: var(--amarelo-suave); }
+.medicamento-card.periodo-tarde .medicamento-badge { background: var(--amarelo); }
+.medicamento-card.periodo-tarde { border-left-color: var(--amarelo); }
 
 .medicamento-card.periodo-noite .icone-medicamento { background: var(--roxo-suave); }
 .medicamento-card.periodo-noite .medicamento-badge { background: var(--roxo); }
+.medicamento-card.periodo-noite { border-left-color: var(--roxo); }
 
-.medicamento-card.periodo-madrugada .icone-medicamento { background: #d7e3f7; }
+.medicamento-card.periodo-madrugada .icone-medicamento { background: var(--creme-forte); }
 .medicamento-card.periodo-madrugada .medicamento-badge { background: var(--petroleo-escuro); }
+.medicamento-card.periodo-madrugada { border-left-color: var(--petroleo-escuro); }
 
 /* =========================================================
    HISTÓRICO
@@ -947,8 +967,8 @@ body {
 
 .historico-cabecalho h2 {
   font-family: var(--fonte-titulo);
-  color: var(--petroleo);
-  font-size: 22px;
+  color: var(--carvao);
+  font-size: 21px;
   font-weight: 700;
   font-style: italic;
 }
@@ -961,7 +981,7 @@ body {
 }
 
 #data-historico {
-  min-height: 45px;
+  min-height: 44px;
   padding: 0 14px;
   border: 1.5px solid var(--linha);
   border-radius: 13px;
@@ -980,16 +1000,15 @@ body {
   gap: 14px;
   padding: 18px 20px;
   background: var(--branco);
-  border: 1px solid var(--linha);
   border-radius: var(--raio);
   box-shadow: var(--sombra);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .historico-resumo-card strong {
   display: block;
   font-family: var(--fonte-titulo);
-  color: var(--petroleo);
+  color: var(--carvao);
   font-size: 16px;
   font-weight: 700;
 }
@@ -1005,7 +1024,7 @@ body {
 #lista-historico {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .historico-item {
@@ -1013,20 +1032,19 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 15px 17px;
+  padding: 14px 16px;
   background: var(--branco);
-  border: 1px solid var(--linha);
-  border-left: 5px solid #c7d6ee;
-  border-radius: 17px;
-  box-shadow: 0 6px 18px rgba(18, 63, 148, 0.06);
+  border-left: 4px solid var(--linha);
+  border-radius: 15px;
+  box-shadow: 0 5px 16px rgba(11, 63, 209, 0.06);
   animation: subir 0.5s ease;
 }
 
 .historico-item .icone-medicamento {
-  width: 44px;
-  height: 44px;
-  font-size: 20px;
-  border-radius: 13px;
+  width: 42px;
+  height: 42px;
+  font-size: 19px;
+  border-radius: 12px;
 }
 
 .historico-item-detalhes {
@@ -1037,8 +1055,8 @@ body {
 .historico-item-detalhes strong {
   display: block;
   font-family: var(--fonte-titulo);
-  color: var(--petroleo);
-  font-size: 16px;
+  color: var(--carvao);
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -1115,7 +1133,7 @@ body {
   display: flex;
   background: rgba(255, 255, 255, 0.97);
   border-top: 1px solid var(--linha);
-  box-shadow: 0 -10px 26px rgba(18, 63, 148, 0.1);
+  box-shadow: 0 -8px 22px rgba(11, 63, 209, 0.08);
   backdrop-filter: blur(10px);
   padding: 8px max(10px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));
 }
@@ -1161,7 +1179,7 @@ body {
   width: 22px;
   height: 3px;
   border-radius: 3px;
-  background: var(--ambar);
+  background: var(--ciano);
 }
 
 .btn-navegacao:active {
@@ -1180,7 +1198,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 22px;
-  background: rgba(11, 44, 110, 0.6);
+  background: rgba(7, 42, 148, 0.55);
   backdrop-filter: blur(8px);
   animation: aparecer 0.25s ease;
 }
@@ -1191,21 +1209,21 @@ body {
   padding: 32px 26px;
   text-align: center;
   background: var(--branco);
-  border-radius: 26px;
-  box-shadow: 0 28px 70px rgba(11, 44, 110, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(7, 42, 148, 0.28);
   animation: subir 0.35s ease;
 }
 
 .modal-icone {
-  width: 64px;
-  height: 64px;
+  width: 62px;
+  height: 62px;
   margin: 0 auto 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 20px;
+  border-radius: 18px;
   background: var(--creme-forte);
-  font-size: 30px;
+  font-size: 28px;
 }
 
 .modal-badge {
@@ -1223,8 +1241,8 @@ body {
 
 .modal-conteudo h2 {
   font-family: var(--fonte-titulo);
-  color: var(--petroleo);
-  font-size: 23px;
+  color: var(--carvao);
+  font-size: 22px;
   font-weight: 700;
   font-style: italic;
   margin-bottom: 10px;
@@ -1276,13 +1294,13 @@ body {
 #btn-confirmar,
 #btn-fechar-sucesso {
   color: var(--branco);
-  background: linear-gradient(135deg, var(--salvia), var(--salvia-escura));
-  box-shadow: 0 8px 18px rgba(75, 122, 87, 0.28);
+  background: var(--salvia);
+  box-shadow: var(--sombra-rosa);
 }
 
 #btn-confirmar:hover,
 #btn-fechar-sucesso:hover {
-  filter: brightness(1.07);
+  filter: brightness(1.08);
   transform: translateY(-2px);
 }
 
@@ -1296,23 +1314,23 @@ body {
 
 .sucesso-check-area {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 88px;
+  height: 88px;
   margin: 0 auto 18px;
 }
 
 .sucesso-check {
-  width: 90px;
-  height: 90px;
+  width: 88px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--salvia), var(--salvia-escura));
+  background: var(--salvia);
   color: var(--branco);
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 900;
-  box-shadow: 0 16px 32px rgba(75, 122, 87, 0.32);
+  box-shadow: var(--sombra-rosa);
   animation: checkPop 0.5s ease;
 }
 
@@ -1327,12 +1345,12 @@ body {
   animation: confeteCair 0.9s ease forwards;
 }
 
-.confete.c1 { background: var(--ambar); transform: translateX(-55px); animation-delay: 0.05s; }
+.confete.c1 { background: var(--ciano); transform: translateX(-55px); animation-delay: 0.05s; }
 .confete.c2 { background: var(--petroleo); transform: translateX(-25px); animation-delay: 0.12s; }
 .confete.c3 { background: var(--salvia); transform: translateX(5px); animation-delay: 0.02s; }
 .confete.c4 { background: var(--roxo); transform: translateX(30px); animation-delay: 0.18s; }
-.confete.c5 { background: var(--rust); transform: translateX(55px); animation-delay: 0.08s; }
-.confete.c6 { background: var(--petroleo-claro); transform: translateX(-8px); animation-delay: 0.22s; }
+.confete.c5 { background: var(--amarelo); transform: translateX(55px); animation-delay: 0.08s; }
+.confete.c6 { background: var(--teal); transform: translateX(-8px); animation-delay: 0.22s; }
 
 .sucesso-detalhes {
   display: flex;
@@ -1391,17 +1409,17 @@ button:disabled {
   }
 
   .cabecalho {
-    padding: 16px 15px;
-    border-radius: 0 0 24px 24px;
+    padding: 15px;
+    border-radius: 0 0 20px 20px;
   }
 
   .logo-app {
-    width: 46px;
-    height: 46px;
+    width: 42px;
+    height: 42px;
   }
 
   .marca-texto h1 {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .marca-texto p {
@@ -1411,24 +1429,24 @@ button:disabled {
   #btn-instalar,
   #btn-notificacao,
   #btn-sair {
-    width: 39px;
-    height: 39px;
-    border-radius: 12px;
-    font-size: 16px;
+    width: 37px;
+    height: 37px;
+    border-radius: 11px;
+    font-size: 15px;
   }
 
   .resumo-dia-card {
-    padding: 18px;
+    padding: 16px;
     gap: 12px;
   }
 
   .resumo-titulo {
-    font-size: 19px;
+    font-size: 18px;
   }
 
   .anel-progresso-area {
-    width: 72px;
-    height: 72px;
+    width: 70px;
+    height: 70px;
   }
 
   .anel-texto strong {
@@ -1437,25 +1455,25 @@ button:disabled {
 
   .lista-medicamentos {
     grid-template-columns: 1fr;
-    gap: 11px;
+    gap: 10px;
   }
 
   .medicamento-card {
-    padding: 14px;
+    padding: 13px;
   }
 
   .icone-medicamento {
-    width: 48px;
-    height: 48px;
-    font-size: 22px;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
   }
 
   .medicamento-horario {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .titulo-secao h2 {
-    font-size: 18px;
+    font-size: 17px;
   }
 }
 
