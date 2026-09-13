@@ -1,20 +1,21 @@
 /* =========================================================
    CUIDADO JUNTOS
-   INTERFACE — v2 (redesign completo)
-   Paleta: azul-petróleo + dourado-âmbar sobre creme quente.
+   INTERFACE — v3 (paleta da logo oficial)
+   Paleta: azul-royal + ciano (cores da logo) sobre fundo frio claro.
+   Verde/vermelho/roxo semânticos (tomado/atrasado/noite) mantidos.
    Tipografia: Fraunces (títulos) + Nunito Sans (interface).
 ========================================================= */
 
 :root {
   /* ---- Marca ---- */
-  --petroleo: #1f3a52;
-  --petroleo-escuro: #142838;
-  --petroleo-claro: #4d7690;
+  --petroleo: #123f94;
+  --petroleo-escuro: #0b2c6e;
+  --petroleo-claro: #4d8fe0;
 
   /* ---- Destaque / ação ---- */
-  --ambar: #c6953a;
-  --ambar-escuro: #a87527;
-  --ambar-suave: #f6e9d2;
+  --ambar: #1fb8db;
+  --ambar-escuro: #0e7f97;
+  --ambar-suave: #dff6fb;
 
   /* ---- Status ---- */
   --salvia: #4b7a57;
@@ -29,17 +30,17 @@
   --roxo-suave: #e6e1f0;
 
   /* ---- Neutros quentes ---- */
-  --creme: #f6f2e8;
-  --creme-forte: #efe8d8;
-  --carvao: #2b2a28;
-  --carvao-suave: #6b6459;
-  --linha: #e4dccb;
+  --creme: #f2f6fc;
+  --creme-forte: #e3edf9;
+  --carvao: #10192b;
+  --carvao-suave: #55647a;
+  --linha: #dce6f5;
   --branco: #ffffff;
 
   /* ---- Sombras (tingidas de petróleo, não cinza genérico) ---- */
-  --sombra: 0 12px 32px rgba(31, 58, 82, 0.10);
-  --sombra-forte: 0 20px 46px rgba(31, 58, 82, 0.20);
-  --sombra-ambar: 0 14px 30px rgba(198, 149, 58, 0.30);
+  --sombra: 0 12px 32px rgba(18, 63, 148, 0.10);
+  --sombra-forte: 0 20px 46px rgba(18, 63, 148, 0.20);
+  --sombra-ambar: 0 14px 30px rgba(31, 184, 219, 0.30);
 
   --raio: 20px;
 
@@ -63,8 +64,8 @@ body {
   font-family: var(--fonte-base);
   color: var(--carvao);
   background:
-    radial-gradient(circle at 12% 0%, rgba(198, 149, 58, 0.10), transparent 38%),
-    linear-gradient(180deg, #faf7ef 0%, var(--creme) 100%);
+    radial-gradient(circle at 12% 0%, rgba(31, 184, 219, 0.10), transparent 38%),
+    linear-gradient(180deg, #eef4fc 0%, var(--creme) 100%);
   overflow-x: hidden;
 }
 
@@ -93,8 +94,8 @@ body {
 }
 
 @keyframes pulsarAmbar {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(198, 149, 58, 0.35); }
-  50% { box-shadow: 0 0 0 10px rgba(198, 149, 58, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.35); }
+  50% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
 }
 
 @keyframes checkPop {
@@ -128,8 +129,8 @@ body {
 }
 
 @keyframes anelAcender {
-  0% { box-shadow: 0 0 0 0 rgba(198, 149, 58, 0.55); }
-  100% { box-shadow: 0 0 0 10px rgba(198, 149, 58, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.55); }
+  100% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
 }
 
 /* =========================================================
@@ -144,7 +145,7 @@ body {
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at 80% 10%, rgba(198, 149, 58, 0.22), transparent 42%),
+    radial-gradient(circle at 80% 10%, rgba(31, 184, 219, 0.22), transparent 42%),
     linear-gradient(160deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--petroleo-claro));
   transition: opacity 0.4s ease;
 }
@@ -301,7 +302,7 @@ body {
 #nome-usuario:focus {
   border-color: var(--ambar);
   background: var(--branco);
-  box-shadow: 0 0 0 4px rgba(198, 149, 58, 0.18);
+  box-shadow: 0 0 0 4px rgba(31, 184, 219, 0.18);
 }
 
 #btn-entrar {
@@ -319,7 +320,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 12px 26px rgba(31, 58, 82, 0.32);
+  box-shadow: 0 12px 26px rgba(18, 63, 148, 0.32);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
@@ -331,7 +332,7 @@ body {
 #btn-entrar:hover {
   filter: brightness(1.08);
   transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(31, 58, 82, 0.4);
+  box-shadow: 0 16px 32px rgba(18, 63, 148, 0.4);
 }
 
 #btn-entrar:hover .seta-entrar {
@@ -393,12 +394,12 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 88% 5%, rgba(198, 149, 58, 0.28), transparent 30%),
+    radial-gradient(circle at 88% 5%, rgba(31, 184, 219, 0.28), transparent 30%),
     linear-gradient(135deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--petroleo-claro));
   color: var(--branco);
   padding: 20px;
   border-radius: 0 0 28px 28px;
-  box-shadow: 0 14px 32px rgba(31, 58, 82, 0.28);
+  box-shadow: 0 14px 32px rgba(18, 63, 148, 0.28);
 }
 
 .cabecalho::after {
@@ -408,7 +409,7 @@ body {
   height: 200px;
   right: -80px;
   top: -95px;
-  border: 24px solid rgba(198, 149, 58, 0.12);
+  border: 24px solid rgba(31, 184, 219, 0.12);
   border-radius: 50%;
 }
 
@@ -496,8 +497,8 @@ body {
 }
 
 #btn-instalar {
-  border-color: rgba(198, 149, 58, 0.6);
-  background: rgba(198, 149, 58, 0.22);
+  border-color: rgba(31, 184, 219, 0.6);
+  background: rgba(31, 184, 219, 0.22);
   animation: pulsarAmbar 2.6s infinite;
 }
 
@@ -550,7 +551,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, rgba(198, 149, 58, 0.06), transparent 55%);
+  background: linear-gradient(120deg, rgba(31, 184, 219, 0.06), transparent 55%);
   pointer-events: none;
 }
 
@@ -713,7 +714,7 @@ body {
   padding: 16px;
   background: var(--branco);
   border: 1px solid var(--linha);
-  border-left: 5px solid #d8cfba;
+  border-left: 5px solid #c7d6ee;
   border-radius: 18px;
   box-shadow: var(--sombra);
   cursor: pointer;
@@ -733,7 +734,7 @@ body {
 
 .medicamento-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 34px rgba(31, 58, 82, 0.14);
+  box-shadow: 0 18px 34px rgba(18, 63, 148, 0.14);
 }
 
 .medicamento-card:active {
@@ -804,14 +805,14 @@ body {
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(198, 149, 58, 0.32);
+  box-shadow: 0 8px 18px rgba(31, 184, 219, 0.32);
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .btn-dar:hover {
   filter: brightness(1.06);
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(198, 149, 58, 0.4);
+  box-shadow: 0 12px 24px rgba(31, 184, 219, 0.4);
 }
 
 .btn-dar:active {
@@ -847,11 +848,11 @@ body {
 
 .medicamento-card.badge-proximo {
   border-left-color: var(--petroleo);
-  background: linear-gradient(135deg, #eef3f6, var(--branco) 60%);
-  box-shadow: 0 16px 32px rgba(31, 58, 82, 0.14);
+  background: linear-gradient(135deg, #e7f0fb, var(--branco) 60%);
+  box-shadow: 0 16px 32px rgba(18, 63, 148, 0.14);
 }
 .medicamento-card.badge-proximo .icone-medicamento {
-  background: #e1e9ee;
+  background: #dce9fa;
 }
 .medicamento-card.badge-proximo .medicamento-badge {
   background: var(--petroleo);
@@ -860,10 +861,10 @@ body {
 .medicamento-card.badge-agora {
   border-left-color: var(--ambar-escuro);
   background: linear-gradient(135deg, var(--ambar-suave), var(--branco) 60%);
-  box-shadow: 0 16px 32px rgba(198, 149, 58, 0.2);
+  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.2);
 }
 .medicamento-card.badge-agora .icone-medicamento {
-  background: #f1dfb8;
+  background: #c9f1f9;
 }
 .medicamento-card.badge-agora .medicamento-badge {
   background: var(--ambar-escuro);
@@ -887,7 +888,7 @@ body {
 
 /* ---- Cores por período (quando não é próximo/agora/tomado/atrasado) ---- */
 
-.medicamento-card.periodo-manha .icone-medicamento { background: #e1e9ee; }
+.medicamento-card.periodo-manha .icone-medicamento { background: #dce9fa; }
 .medicamento-card.periodo-manha .medicamento-badge { background: var(--petroleo-claro); }
 
 .medicamento-card.periodo-almoco .icone-medicamento { background: var(--salvia-suave); }
@@ -899,7 +900,7 @@ body {
 .medicamento-card.periodo-noite .icone-medicamento { background: var(--roxo-suave); }
 .medicamento-card.periodo-noite .medicamento-badge { background: var(--roxo); }
 
-.medicamento-card.periodo-madrugada .icone-medicamento { background: #dfe3ee; }
+.medicamento-card.periodo-madrugada .icone-medicamento { background: #d7e3f7; }
 .medicamento-card.periodo-madrugada .medicamento-badge { background: var(--petroleo-escuro); }
 
 /* =========================================================
@@ -990,9 +991,9 @@ body {
   padding: 15px 17px;
   background: var(--branco);
   border: 1px solid var(--linha);
-  border-left: 5px solid #d8cfba;
+  border-left: 5px solid #c7d6ee;
   border-radius: 17px;
-  box-shadow: 0 6px 18px rgba(31, 58, 82, 0.06);
+  box-shadow: 0 6px 18px rgba(18, 63, 148, 0.06);
   animation: subir 0.5s ease;
 }
 
@@ -1089,7 +1090,7 @@ body {
   display: flex;
   background: rgba(255, 255, 255, 0.97);
   border-top: 1px solid var(--linha);
-  box-shadow: 0 -10px 26px rgba(31, 58, 82, 0.1);
+  box-shadow: 0 -10px 26px rgba(18, 63, 148, 0.1);
   backdrop-filter: blur(10px);
   padding: 8px max(10px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));
 }
@@ -1154,7 +1155,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 22px;
-  background: rgba(20, 40, 56, 0.6);
+  background: rgba(11, 44, 110, 0.6);
   backdrop-filter: blur(8px);
   animation: aparecer 0.25s ease;
 }
@@ -1166,7 +1167,7 @@ body {
   text-align: center;
   background: var(--branco);
   border-radius: 26px;
-  box-shadow: 0 28px 70px rgba(20, 40, 56, 0.3);
+  box-shadow: 0 28px 70px rgba(11, 44, 110, 0.3);
   animation: subir 0.35s ease;
 }
 
@@ -1342,7 +1343,7 @@ button {
 
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid rgba(198, 149, 58, 0.5);
+  outline: 3px solid rgba(31, 184, 219, 0.5);
   outline-offset: 3px;
 }
 
