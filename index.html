@@ -18,7 +18,7 @@
   href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
   rel="stylesheet"
 >
-<link rel="stylesheet" href="style.css?v=17">
+<link rel="stylesheet" href="style.css?v=18">
 <link rel="icon" type="image/png" href="img/logo.png">
 
 <!-- PWA: app instalável -->
@@ -241,6 +241,17 @@
             <button type="button" class="btn-dar">Dar</button>
           </article>
 
+          <!-- HORÁRIO DE TESTE — REMOVER DEPOIS DE TESTAR O PUSH -->
+          <article class="medicamento-card" data-horario="23:58">
+            <div class="icone-medicamento">🧪</div>
+            <div class="medicamento-detalhes">
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">23:58</strong>
+              <span class="status" data-status>—</span>
+            </div>
+            <button type="button" class="btn-dar">Dar</button>
+          </article>
+
         </div>
       </section>
     </main>
@@ -344,15 +355,15 @@
 </div>
 
 <!-- SCRIPTS -->
-<script type="module" src="script.js?v=17"></script>
-<script src="native-notifications.js?v=17"></script>
+<script type="module" src="script.js?v=18"></script>
+<script src="native-notifications.js?v=18"></script>
 
 <!-- REGISTRO DO SERVICE WORKER (PWA instalável) -->
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker
-        .register("sw.js?v=5")
+        .register("sw.js?v=6")
         .catch(function (erro) {
           console.error("Erro ao registrar o service worker:", erro);
         });
@@ -363,4 +374,4 @@
 </html>
 
 
-  
+              
