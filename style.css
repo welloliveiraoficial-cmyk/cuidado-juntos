@@ -1,43 +1,26 @@
 /* =========================================================
    CUIDADO JUNTOS
-   INTERFACE MODERNA
+   Interface moderna, responsiva e com animações
 ========================================================= */
 
 :root {
-  --azul: #2563eb;
-  --azul-escuro: #1d4ed8;
-  --azul-profundo: #172554;
+  --azul-principal: #2563eb;
+  --azul-escuro: #123b82;
   --azul-claro: #60a5fa;
-  --azul-muito-claro: #eff6ff;
-
+  --azul-suave: #eff6ff;
   --verde: #16a34a;
-  --verde-escuro: #15803d;
   --verde-claro: #dcfce7;
-
-  --laranja: #f59e0b;
-  --laranja-claro: #fef3c7;
-
-  --vermelho: #dc2626;
-  --vermelho-claro: #fee2e2;
-
-  --texto: #172033;
-  --texto-secundario: #64748b;
-  --texto-claro: #94a3b8;
-
-  --fundo: #f5f8fc;
+  --laranja: #f97316;
+  --laranja-claro: #ffedd5;
+  --vermelho: #ef4444;
+  --cinza-texto: #334155;
+  --cinza-medio: #64748b;
+  --cinza-claro: #f1f5f9;
   --branco: #ffffff;
-  --borda: #e2e8f0;
-
-  --sombra: 0 10px 30px rgba(15, 23, 42, .08);
-  --sombra-forte: 0 25px 60px rgba(30, 64, 175, .18);
-
-  --raio: 20px;
-  --raio-pequeno: 14px;
+  --sombra: 0 12px 35px rgba(15, 23, 42, 0.08);
+  --sombra-forte: 0 18px 45px rgba(37, 99, 235, 0.18);
+  --raio: 22px;
 }
-
-/* =========================================================
-   RESET
-========================================================= */
 
 * {
   box-sizing: border-box;
@@ -51,38 +34,12 @@ html {
 
 body {
   min-height: 100vh;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
-
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--cinza-texto);
   background:
-    linear-gradient(
-      180deg,
-      #f8fbff 0%,
-      #f1f6fc 100%
-    );
-
-  color: var(--texto);
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 32%),
+    linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
   overflow-x: hidden;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-img {
-  max-width: 100%;
-  display: block;
 }
 
 /* =========================================================
@@ -114,7 +71,7 @@ img {
 @keyframes entradaCartao {
   from {
     opacity: 0;
-    transform: translateY(35px) scale(.96);
+    transform: translateY(20px) scale(0.97);
   }
 
   to {
@@ -130,46 +87,34 @@ img {
   }
 
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
   }
 }
 
 @keyframes pulsarSuave {
   0%,
   100% {
-    box-shadow:
-      0 0 0 0 rgba(37, 99, 235, .18);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.15);
   }
 
   50% {
-    box-shadow:
-      0 0 0 14px rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 9px rgba(37, 99, 235, 0);
   }
 }
 
 @keyframes brilho {
   0% {
-    transform: translateX(-120%);
+    background-position: -200% center;
   }
 
   100% {
-    transform: translateX(120%);
-  }
-}
-
-@keyframes girar {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
+    background-position: 200% center;
   }
 }
 
 @keyframes checkPop {
   0% {
-    transform: scale(.7);
+    transform: scale(0.7);
     opacity: 0;
   }
 
@@ -186,533 +131,130 @@ img {
 @keyframes aparecerAviso {
   from {
     opacity: 0;
-    transform:
-      translateX(-50%)
-      translateY(20px);
+    transform: translate(-50%, -20px);
   }
 
   to {
     opacity: 1;
-    transform:
-      translateX(-50%)
-      translateY(0);
+    transform: translate(-50%, 0);
   }
 }
 
 /* =========================================================
-   CLASSE ESCONDIDO
+   TELA DE LOGIN
 ========================================================= */
 
-.escondido {
-  display: none !important;
-}
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-.tela-login {
-  position: relative;
-
+#tela-login {
   min-height: 100vh;
-  min-height: 100dvh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 28px 18px;
-
-  overflow: hidden;
-
-  background:
-    radial-gradient(
-      circle at 15% 15%,
-      rgba(96, 165, 250, .30),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 85% 85%,
-      rgba(37, 99, 235, .22),
-      transparent 32%
-    ),
-    linear-gradient(
-      145deg,
-      #eaf3ff 0%,
-      #f8fbff 48%,
-      #edf5ff 100%
-    );
-
-  animation: aparecer .6s ease;
+  padding: 24px;
+  animation: aparecer 0.7s ease;
 }
-
-/* =========================================================
-   DECORAÇÕES DO FUNDO DO LOGIN
-========================================================= */
-
-.tela-login::before {
-  content: "";
-
-  position: absolute;
-
-  width: 300px;
-  height: 300px;
-
-  top: -130px;
-  left: -100px;
-
-  border-radius: 50%;
-
-  background:
-    rgba(37, 99, 235, .10);
-
-  filter: blur(2px);
-
-  animation: flutuar 6s ease-in-out infinite;
-}
-
-.tela-login::after {
-  content: "";
-
-  position: absolute;
-
-  width: 260px;
-  height: 260px;
-
-  right: -100px;
-  bottom: -100px;
-
-  border-radius: 50%;
-
-  background:
-    rgba(96, 165, 250, .13);
-
-  animation: flutuar 7s ease-in-out infinite reverse;
-}
-
-/* =========================================================
-   CONTAINER LOGIN
-========================================================= */
 
 .login-container {
-  position: relative;
-  z-index: 2;
-
   width: 100%;
   max-width: 430px;
-
-  padding: 42px 30px 30px;
-
-  background:
-    rgba(255, 255, 255, .90);
-
-  border:
-    1px solid rgba(255, 255, 255, .95);
-
-  border-radius: 30px;
-
-  box-shadow:
-    0 30px 80px rgba(30, 64, 175, .16),
-    0 8px 25px rgba(15, 23, 42, .07);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
+  padding: 38px 28px;
   text-align: center;
-
-  animation:
-    entradaCartao .7s
-    cubic-bezier(.2, .8, .2, 1);
-
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 32px;
+  box-shadow: var(--sombra-forte);
+  backdrop-filter: blur(16px);
+  animation: subir 0.7s ease;
 }
-
-/* brilho superior */
-
-.login-container::before {
-  content: "";
-
-  position: absolute;
-
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 5px;
-
-  background:
-    linear-gradient(
-      90deg,
-      #2563eb,
-      #60a5fa,
-      #2563eb
-    );
-}
-
-/* =========================================================
-   LOGO DO LOGIN
-========================================================= */
 
 .logo-login {
-  position: relative;
-
-  width: 120px;
-  height: 120px;
-
-  margin: 0 auto 22px;
-
-  padding: 10px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffffff,
-      #eef5ff
-    );
-
-  border-radius: 32px;
-
-  border:
-    1px solid rgba(37, 99, 235, .10);
-
-  box-shadow:
-    0 15px 35px rgba(37, 99, 235, .16);
-
-  animation:
-    flutuar 5s ease-in-out infinite,
-    pulsarSuave 3.5s ease-in-out infinite;
-}
-
-/* halo da logo */
-
-.logo-login::before {
-  content: "";
-
-  position: absolute;
-
-  inset: -7px;
-
-  border-radius: 38px;
-
-  border:
-    1px solid rgba(37, 99, 235, .10);
-
-  pointer-events: none;
-}
-
-/* brilho da logo */
-
-.logo-login::after {
-  content: "";
-
-  position: absolute;
-
-  top: 0;
-  left: -100%;
-
-  width: 60%;
-  height: 100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(255,255,255,.75),
-      transparent
-    );
-
-  transform: skewX(-20deg);
-
-  animation:
-    brilho 4s ease-in-out infinite;
-}
-
-.logo-login img {
-  width: 100%;
-  height: 100%;
-
+  width: 125px;
+  height: 125px;
   object-fit: contain;
-
-  border-radius: 22px;
-
-  position: relative;
-  z-index: 2;
+  display: block;
+  margin: 0 auto 20px;
+  filter: drop-shadow(0 12px 18px rgba(37, 99, 235, 0.18));
+  animation: flutuar 4s ease-in-out infinite;
 }
-
-/* =========================================================
-   TÍTULO LOGIN
-========================================================= */
 
 .login-container h1 {
-  margin-bottom: 8px;
-
-  color: var(--azul-profundo);
-
+  color: var(--azul-escuro);
   font-size: 30px;
   font-weight: 800;
-
-  letter-spacing: -.7px;
-
-  line-height: 1.15;
+  margin-bottom: 8px;
+  letter-spacing: -0.8px;
 }
 
-.login-container h1::after {
-  content: "";
-
-  display: block;
-
-  width: 42px;
-  height: 4px;
-
-  margin:
-    13px auto 15px;
-
-  border-radius: 20px;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--azul),
-      var(--azul-claro)
-    );
-}
-
-/* =========================================================
-   SUBTÍTULO
-========================================================= */
-
-.subtitulo-login {
-  max-width: 320px;
-
-  margin:
-    0 auto 28px;
-
-  color: var(--texto-secundario);
-
+.login-container p {
+  color: var(--cinza-medio);
   font-size: 15px;
-
-  line-height: 1.55;
+  line-height: 1.6;
+  margin-bottom: 28px;
 }
 
-/* =========================================================
-   CAMPO LOGIN
-========================================================= */
-
-.campo-login {
-  position: relative;
-
-  margin-bottom: 16px;
-
-  text-align: left;
-}
-
-.campo-login::before {
-  content: "👤";
-
-  position: absolute;
-
-  left: 17px;
-  top: 50%;
-
-  transform:
-    translateY(-50%);
-
-  font-size: 18px;
-
-  z-index: 2;
-
-  opacity: .75;
-}
-
-.campo-login input {
+#nome-usuario {
   width: 100%;
-
-  height: 58px;
-
-  padding:
-    0 18px 0 50px;
-
-  border:
-    2px solid #e5edf8;
-
-  border-radius: 17px;
-
-  outline: none;
-
-  background:
-    #f8fbff;
-
-  color: var(--texto);
-
+  height: 56px;
+  padding: 0 18px;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: var(--cinza-texto);
   font-size: 16px;
-
-  transition:
-    border-color .25s ease,
-    box-shadow .25s ease,
-    background .25s ease,
-    transform .2s ease;
+  outline: none;
+  transition: 0.25s ease;
+  margin-bottom: 14px;
 }
 
-.campo-login input::placeholder {
-  color: #9aa9bc;
+#nome-usuario:focus {
+  border-color: var(--azul-principal);
+  background: var(--branco);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
-
-.campo-login input:focus {
-  background: #ffffff;
-
-  border-color:
-    var(--azul-claro);
-
-  box-shadow:
-    0 0 0 4px
-    rgba(37, 99, 235, .10);
-
-  transform:
-    translateY(-1px);
-}
-
-/* =========================================================
-   BOTÃO ENTRAR
-========================================================= */
 
 #btn-entrar {
-  position: relative;
-
   width: 100%;
-
-  min-height: 58px;
-
+  min-height: 56px;
   border: none;
-
-  border-radius: 17px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #2563eb 0%,
-      #1d4ed8 100%
-    );
-
-  color: #ffffff;
-
+  border-radius: 16px;
+  color: var(--branco);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   font-size: 16px;
-  font-weight: 700;
-
-  letter-spacing: .1px;
-
-  box-shadow:
-    0 12px 25px
-    rgba(37, 99, 235, .25);
-
-  overflow: hidden;
-
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease,
-    filter .2s ease;
-}
-
-#btn-entrar::before {
-  content: "";
-
-  position: absolute;
-
-  top: 0;
-  left: -120%;
-
-  width: 60%;
-  height: 100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(255,255,255,.28),
-      transparent
-    );
-
-  transform: skewX(-20deg);
-
-  transition: none;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: pulsarSuave 3s infinite;
 }
 
 #btn-entrar:hover {
-  transform:
-    translateY(-2px);
-
-  box-shadow:
-    0 17px 32px
-    rgba(37, 99, 235, .32);
-
-  filter:
-    brightness(1.04);
-}
-
-#btn-entrar:hover::before {
-  animation:
-    brilho .8s ease;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 28px rgba(37, 99, 235, 0.35);
 }
 
 #btn-entrar:active {
-  transform:
-    translateY(1px) scale(.99);
-
-  box-shadow:
-    0 7px 16px
-    rgba(37, 99, 235, .22);
+  transform: scale(0.98);
 }
 
-/* =========================================================
-   ERRO LOGIN
-========================================================= */
-
-.erro-login {
-  min-height: 22px;
-
-  margin-top: 10px;
-
+#erro-login {
   color: var(--vermelho);
-
-  font-size: 13px;
-  font-weight: 600;
-
-  text-align: center;
+  font-size: 14px;
+  margin-top: 12px;
 }
 
 /* =========================================================
-   RODAPÉ LOGIN
+   TELA PRINCIPAL
 ========================================================= */
 
-.login-container::after {
-  content: "Cuidado Juntos • Cuidando de quem importa";
-
-  display: block;
-
-  margin-top: 25px;
-
-  color: #94a3b8;
-
-  font-size: 11px;
-
-  letter-spacing: .2px;
-}
-
-/* =========================================================
-   APLICATIVO
-========================================================= */
-
-.app {
+#tela-app {
   min-height: 100vh;
+  animation: aparecer 0.6s ease;
+}
 
-  background:
-    var(--fundo);
-
-  animation:
-    aparecer .45s ease;
+.container-app {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
 }
 
 /* =========================================================
@@ -721,208 +263,129 @@ img {
 
 .cabecalho {
   position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.2), transparent 25%),
+    linear-gradient(135deg, #1d4ed8, #2563eb 55%, #3b82f6);
+  color: var(--branco);
+  padding: 20px;
+  border-radius: 0 0 30px 30px;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.22);
+}
 
+.cabecalho::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -75px;
+  top: -85px;
+  border: 25px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.cabecalho-conteudo {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  gap: 14px;
-
-  padding:
-    17px 18px;
-
-  background:
-    rgba(255,255,255,.95);
-
-  border-bottom:
-    1px solid var(--borda);
-
-  box-shadow:
-    0 4px 18px
-    rgba(15,23,42,.04);
-
-  backdrop-filter: blur(12px);
-
-  z-index: 10;
+  gap: 16px;
 }
 
-.cabecalho-esquerda {
+.logo-area {
   display: flex;
   align-items: center;
-
-  gap: 11px;
-
+  gap: 12px;
   min-width: 0;
 }
 
 .logo-app {
-  width: 45px;
-  height: 45px;
-
+  width: 62px;
+  height: 62px;
   object-fit: contain;
-
-  border-radius: 13px;
-
   flex-shrink: 0;
-
-  box-shadow:
-    0 6px 15px
-    rgba(37,99,235,.14);
+  filter: drop-shadow(0 7px 12px rgba(0, 0, 0, 0.18));
+  animation: flutuar 4s ease-in-out infinite;
 }
 
 .marca-texto {
   min-width: 0;
 }
 
-.marca-texto strong {
-  display: block;
-
-  color: var(--azul-profundo);
-
-  font-size: 17px;
+.marca-texto h1 {
+  font-size: 22px;
   font-weight: 800;
-
-  white-space: nowrap;
+  letter-spacing: -0.5px;
 }
 
-.marca-texto span {
-  display: block;
-
-  margin-top: 2px;
-
-  color: var(--texto-secundario);
-
-  font-size: 11px;
+.marca-texto p {
+  font-size: 12px;
+  opacity: 0.88;
+  margin-top: 3px;
 }
 
-/* =========================================================
-   AÇÕES CABEÇALHO
-========================================================= */
-
-.cabecalho-acoes {
+.acoes-cabecalho {
   display: flex;
   align-items: center;
-
   gap: 8px;
 }
 
-.btn-notificacao,
-.btn-sair {
+#btn-notificacao,
+#btn-sair {
   width: 43px;
   height: 43px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid var(--borda);
-
-  border-radius: 13px;
-
-  background:
-    #ffffff;
-
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease,
-    background .2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 14px;
+  color: var(--branco);
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 19px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.btn-notificacao:hover,
-.btn-sair:hover {
-  transform:
-    translateY(-2px);
-
-  box-shadow:
-    var(--sombra);
-}
-
-.btn-notificacao img {
-  width: 22px;
-  height: 22px;
-
-  object-fit: contain;
-}
-
-.btn-notificacao.ativa {
-  background:
-    var(--azul-muito-claro);
-
-  border-color:
-    rgba(37,99,235,.20);
-
-  animation:
-    pulsarSuave 2.5s infinite;
+#btn-notificacao:hover,
+#btn-sair:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
 }
 
 /* =========================================================
    NAVEGAÇÃO
 ========================================================= */
 
-.navegacao-app {
+.navegacao {
+  width: 100%;
+  max-width: 1180px;
+  margin: 18px auto 0;
+  padding: 6px;
   display: flex;
-
-  padding: 8px 12px;
-
   gap: 8px;
-
-  background: #ffffff;
-
-  border-bottom:
-    1px solid var(--borda);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
 }
 
-.nav-btn {
+.navegacao button {
   flex: 1;
-
-  min-height: 45px;
-
+  min-height: 46px;
   border: none;
-
-  border-radius: 12px;
-
+  border-radius: 13px;
   background: transparent;
-
-  color: var(--texto-secundario);
-
+  color: var(--cinza-medio);
   font-size: 14px;
   font-weight: 700;
-
-  transition:
-    background .2s ease,
-    color .2s ease,
-    transform .2s ease;
+  cursor: pointer;
+  transition: 0.25s ease;
 }
 
-.nav-btn.ativo {
-  background:
-    var(--azul-muito-claro);
-
-  color:
-    var(--azul);
-
-  box-shadow:
-    inset 0 0 0 1px
-    rgba(37,99,235,.08);
-}
-
-.nav-btn:active {
-  transform:
-    scale(.98);
-}
-
-/* =========================================================
-   PÁGINA
-========================================================= */
-
-.pagina {
-  width: 100%;
-  max-width: 900px;
-
-  margin: 0 auto;
-
-  padding:
-    20px 16px 40px;
+.navegacao button.ativo,
+.navegacao button:hover {
+  color: var(--azul-principal);
+  background: var(--azul-suave);
 }
 
 /* =========================================================
@@ -930,803 +393,701 @@ img {
 ========================================================= */
 
 .boas-vindas {
-  position: relative;
-
-  overflow: hidden;
-
-  padding: 22px;
-
-  border-radius: 22px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #2563eb,
-      #1d4ed8
-    );
-
-  color: #ffffff;
-
-  box-shadow:
-    0 15px 35px
-    rgba(37,99,235,.20);
-
-  animation:
-    subir .5s ease;
-}
-
-.boas-vindas::after {
-  content: "";
-
-  position: absolute;
-
-  width: 150px;
-  height: 150px;
-
-  right: -50px;
-  top: -60px;
-
-  border-radius: 50%;
-
-  background:
-    rgba(255,255,255,.10);
-}
-
-.boas-vindas-conteudo {
-  position: relative;
-  z-index: 2;
-}
-
-.pequeno-texto {
-  font-size: 12px;
-
-  opacity: .78;
+  margin: 26px 0 18px;
+  animation: subir 0.7s ease;
 }
 
 .boas-vindas h2 {
-  margin-top: 5px;
-
-  font-size: 25px;
-
-  line-height: 1.2;
+  color: var(--azul-escuro);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
 }
 
-.coracao {
-  display: inline-block;
-
-  animation:
-    flutuar 2.5s ease-in-out infinite;
+.boas-vindas p {
+  margin-top: 6px;
+  color: var(--cinza-medio);
+  font-size: 14px;
 }
 
 /* =========================================================
-   RESUMO
+   RESUMO DO DIA
 ========================================================= */
 
-.resumo {
+.resumo-dia {
   display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
-  gap: 12px;
-
-  margin-top: 15px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
 .resumo-card {
-  padding: 16px 12px;
+  position: relative;
+  overflow: hidden;
+  min-height: 125px;
+  padding: 20px;
+  border-radius: var(--raio);
+  color: var(--branco);
+  box-shadow: var(--sombra);
+  animation: entradaCartao 0.6s ease both;
+}
 
-  background:
-    #ffffff;
-
-  border:
-    1px solid var(--borda);
-
-  border-radius: 18px;
-
-  box-shadow:
-    var(--sombra);
-
-  text-align: center;
-
-  animation:
-    entradaCartao .5s ease backwards;
+.resumo-card:nth-child(1) {
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
 }
 
 .resumo-card:nth-child(2) {
-  animation-delay: .08s;
+  background: linear-gradient(135deg, #16a34a, #4ade80);
 }
 
 .resumo-card:nth-child(3) {
-  animation-delay: .16s;
+  background: linear-gradient(135deg, #f97316, #fb923c);
+}
+
+.resumo-card::after {
+  content: "";
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  right: -25px;
+  bottom: -35px;
+  border: 18px solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
 }
 
 .resumo-icone {
-  width: 42px;
-  height: 42px;
-
-  margin: 0 auto 8px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 13px;
-
-  background:
-    var(--azul-muito-claro);
-
-  font-size: 20px;
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 
 .resumo-card strong {
+  position: relative;
+  z-index: 1;
   display: block;
-
-  font-size: 23px;
-
-  color: var(--azul-profundo);
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 900;
 }
 
 .resumo-card span {
-  color:
-    var(--texto-secundario);
-
-  font-size: 11px;
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.95;
 }
 
 /* =========================================================
-   MEDICAMENTOS
+   TÍTULOS DE SEÇÃO
 ========================================================= */
+
+.titulo-secao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 26px 0 15px;
+}
+
+.titulo-secao h2 {
+  color: var(--azul-escuro);
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.titulo-secao p {
+  color: var(--cinza-medio);
+  font-size: 13px;
+}
+
+/* =========================================================
+   LISTA DE MEDICAMENTOS
+========================================================= */
+
+#lista-medicamentos,
+.lista-medicamentos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
 
 .medicamento-card {
   position: relative;
-
   display: flex;
   align-items: center;
-
   gap: 14px;
+  min-width: 0;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  animation: entradaCartao 0.6s ease both;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
 
-  margin-top: 12px;
+.medicamento-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
 
-  padding: 16px;
+.medicamento-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
 
-  background:
-    #ffffff;
+.medicamento-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
 
-  border:
-    1px solid var(--borda);
+.medicamento-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
 
-  border-radius: 20px;
+.medicamento-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
 
-  box-shadow:
-    var(--sombra);
+.medicamento-card:nth-child(6) {
+  animation-delay: 0.3s;
+}
 
-  animation:
-    entradaCartao .45s ease backwards;
+.medicamento-card:nth-child(7) {
+  animation-delay: 0.35s;
+}
 
-  transition:
-    transform .25s ease,
-    box-shadow .25s ease,
-    border-color .25s ease;
+.medicamento-card:nth-child(8) {
+  animation-delay: 0.4s;
+}
+
+.medicamento-card:nth-child(9) {
+  animation-delay: 0.45s;
 }
 
 .medicamento-card:hover {
-  transform:
-    translateY(-2px);
-
-  box-shadow:
-    0 14px 35px
-    rgba(15,23,42,.10);
-}
-
-.medicamento-info {
-  display: flex;
-  align-items: center;
-
-  gap: 13px;
-
-  flex: 1;
-
-  min-width: 0;
+  transform: translateY(-5px);
+  box-shadow: 0 18px 35px rgba(37, 99, 235, 0.13);
 }
 
 .icone-medicamento {
-  width: 50px;
-  height: 50px;
-
+  width: 62px;
+  height: 62px;
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 15px;
-
-  background:
-    var(--azul-muito-claro);
-
-  font-size: 24px;
+  border-radius: 19px;
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  color: var(--azul-principal);
+  font-size: 29px;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.06);
+  animation: flutuar 5s ease-in-out infinite;
 }
 
-.medicamento-horario {
-  color: var(--azul-profundo);
+.medicamento-card:nth-child(3n + 2) .icone-medicamento {
+  background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+}
 
-  font-size: 18px;
-  font-weight: 800;
+.medicamento-card:nth-child(3n + 2) .medicamento-horario {
+  color: var(--verde);
+}
+
+.medicamento-card:nth-child(3n + 3) .icone-medicamento {
+  background: linear-gradient(135deg, #ffedd5, #fff7ed);
+}
+
+.medicamento-card:nth-child(3n + 3) .medicamento-horario {
+  color: var(--laranja);
+}
+
+.medicamento-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .medicamento-detalhes {
   min-width: 0;
 }
 
-.medicamento-detalhes strong {
-  display: block;
+.medicamento-horario,
+.horario {
+  display: inline-block;
+  color: var(--azul-principal);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
 
+.medicamento-info h3 {
+  color: var(--azul-escuro);
   font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 5px;
 }
 
 .status {
-  margin-top: 3px;
-
-  color:
-    var(--texto-secundario);
-
-  font-size: 11px;
-
+  color: var(--cinza-medio);
+  font-size: 12px;
   line-height: 1.4;
 }
 
 .btn-dar {
-  min-width: 82px;
-
+  min-width: 67px;
   min-height: 43px;
-
-  padding: 0 14px;
-
+  padding: 0 12px;
   border: none;
-
   border-radius: 13px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #2563eb,
-      #1d4ed8
-    );
-
-  color: #ffffff;
-
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: var(--branco);
   font-size: 13px;
-  font-weight: 700;
-
-  box-shadow:
-    0 7px 16px
-    rgba(37,99,235,.20);
-
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 7px 16px rgba(37, 99, 235, 0.22);
+  transition: 0.2s ease;
 }
 
 .btn-dar:hover {
-  transform:
-    translateY(-2px);
-
-  box-shadow:
-    0 10px 22px
-    rgba(37,99,235,.27);
+  transform: translateY(-2px);
+  box-shadow: 0 11px 22px rgba(37, 99, 235, 0.3);
 }
 
 .btn-dar:active {
-  transform:
-    scale(.97);
-}
-
-.btn-dar.registrado {
-  background:
-    var(--verde);
-
-  box-shadow:
-    0 7px 16px
-    rgba(22,163,74,.18);
+  transform: scale(0.96);
 }
 
 .medicamento-dado {
-  border-color:
-    rgba(22,163,74,.20);
+  border: 1px solid rgba(22, 163, 74, 0.22);
+  background: linear-gradient(135deg, #f0fdf4, #ffffff);
+}
 
-  background:
-    linear-gradient(
-      135deg,
-      #ffffff,
-      #f5fff8
-    );
+.medicamento-dado .icone-medicamento {
+  background: linear-gradient(135deg, #bbf7d0, #dcfce7);
+}
+
+.medicamento-dado .status {
+  color: var(--verde);
+  font-weight: 800;
+}
+
+.medicamento-dado .btn-dar {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  box-shadow: 0 7px 16px rgba(22, 163, 74, 0.2);
+  cursor: default;
+}
+
+.medicamento-dado .btn-dar::before {
+  content: "✓ ";
+}
+
+.medicamento-dado .btn-dar {
+  font-size: 0;
+}
+
+.medicamento-dado .btn-dar::before {
+  font-size: 17px;
 }
 
 /* =========================================================
    HISTÓRICO
 ========================================================= */
 
-.pagina-cabecalho {
+#pagina-historico {
+  animation: subir 0.6s ease;
+}
+
+.historico-cabecalho {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 12px;
-
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  margin: 25px 0 18px;
 }
 
-.pagina-cabecalho h2 {
-  color: var(--azul-profundo);
-
-  font-size: 22px;
-}
-
-.filtro-data {
-  padding: 10px 12px;
-
-  border:
-    1px solid var(--borda);
-
-  border-radius: 12px;
-
-  background: #ffffff;
-
-  color: var(--texto);
-
+#data-historico {
+  min-height: 45px;
+  padding: 0 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 13px;
+  background: var(--branco);
+  color: var(--azul-escuro);
+  font-size: 14px;
   outline: none;
 }
 
-.historico-resumo {
-  margin-bottom: 12px;
-
-  padding: 14px 16px;
-
-  border-radius: 15px;
-
-  background:
-    var(--azul-muito-claro);
-
-  color:
-    var(--azul);
-
-  font-size: 13px;
-  font-weight: 700;
+#historico-total {
+  color: var(--azul-principal);
+  font-size: 14px;
+  font-weight: 800;
 }
 
-.item-historico {
+#lista-historico {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historico-item {
   display: flex;
   align-items: center;
-
-  gap: 13px;
-
-  padding: 16px;
-
-  margin-bottom: 10px;
-
-  background: #ffffff;
-
-  border:
-    1px solid var(--borda);
-
-  border-radius: 18px;
-
-  box-shadow:
-    var(--sombra);
-
-  animation:
-    subir .35s ease;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 17px 19px;
+  background: var(--branco);
+  border: 1px solid #e2e8f0;
+  border-radius: 17px;
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.05);
+  animation: subir 0.5s ease;
 }
 
-.historico-horario {
-  min-width: 65px;
-
-  text-align: center;
-}
-
-.historico-horario strong {
+.historico-item strong {
   display: block;
-
-  color:
-    var(--azul-profundo);
-
-  font-size: 17px;
+  color: var(--azul-escuro);
+  font-size: 15px;
 }
 
-.historico-horario span {
+.historico-item span {
   display: block;
-
-  margin-top: 2px;
-
-  color:
-    var(--texto-claro);
-
-  font-size: 9px;
-}
-
-.historico-detalhes {
-  flex: 1;
-}
-
-.historico-detalhes strong {
-  font-size: 13px;
-}
-
-.historico-detalhes p {
+  color: var(--cinza-medio);
+  font-size: 12px;
   margin-top: 4px;
-
-  color:
-    var(--texto-secundario);
-
-  font-size: 11px;
 }
 
-.historico-detalhes small {
-  display: block;
-
-  margin-top: 3px;
-
-  color:
-    var(--texto-claro);
-
-  font-size: 10px;
-}
-
-.historico-check {
-  width: 34px;
-  height: 34px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background:
-    var(--verde-claro);
-
-  color:
-    var(--verde);
-
-  font-weight: 900;
-
-  animation:
-    checkPop .4s ease;
-}
-
-.historico-vazio {
-  padding: 45px 20px;
-
-  text-align: center;
-
-  background: #ffffff;
-
-  border-radius: 20px;
-
-  border:
-    1px solid var(--borda);
-
-  color:
-    var(--texto-secundario);
-}
-
-.historico-vazio span {
-  display: block;
-
-  margin-bottom: 10px;
-
-  font-size: 38px;
+.historico-status {
+  color: var(--verde);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 /* =========================================================
-   MODAL
+   MODAL DE CONFIRMAÇÃO
 ========================================================= */
 
-.modal {
+#modal-confirmacao {
   position: fixed;
-
   inset: 0;
-
-  z-index: 9999;
-
-  display: flex;
+  z-index: 1000;
+  display: none;
   align-items: center;
   justify-content: center;
+  padding: 22px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  animation: aparecer 0.25s ease;
+}
 
-  padding: 18px;
-
-  background:
-    rgba(15,23,42,.55);
-
-  backdrop-filter:
-    blur(5px);
-
-  animation:
-    aparecer .2s ease;
+#modal-confirmacao.ativo,
+#modal-confirmacao[style*="display: flex"] {
+  display: flex;
 }
 
 .modal-conteudo {
   width: 100%;
   max-width: 390px;
-
-  padding: 27px 22px;
-
-  background:
-    #ffffff;
-
-  border-radius: 25px;
-
-  box-shadow:
-    0 25px 70px
-    rgba(15,23,42,.25);
-
+  padding: 30px 24px;
   text-align: center;
-
-  animation:
-    entradaCartao .3s ease;
+  background: var(--branco);
+  border-radius: 27px;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+  animation: subir 0.35s ease;
 }
 
-.modal-icone {
-  width: 58px;
-  height: 58px;
-
-  margin: 0 auto 15px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 18px;
-
-  background:
-    var(--azul-muito-claro);
-
-  font-size: 28px;
-}
-
-.modal-conteudo h3 {
-  color:
-    var(--azul-profundo);
-
-  font-size: 20px;
+.modal-conteudo h2 {
+  color: var(--azul-escuro);
+  font-size: 23px;
+  margin-bottom: 12px;
 }
 
 .modal-conteudo p {
-  margin-top: 9px;
-
-  color:
-    var(--texto-secundario);
-
+  color: var(--cinza-medio);
   font-size: 14px;
-
-  line-height: 1.5;
+  line-height: 1.6;
+  margin-bottom: 23px;
 }
 
-.modal-botoes {
+.modal-acoes {
   display: flex;
-
   gap: 10px;
-
-  margin-top: 22px;
 }
 
-.modal-botoes button {
+#btn-cancelar,
+#btn-confirmar {
   flex: 1;
-
-  min-height: 48px;
-
+  min-height: 50px;
   border: none;
-
-  border-radius: 13px;
-
-  font-weight: 700;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.btn-cancelar {
-  background:
-    #f1f5f9;
-
-  color:
-    var(--texto-secundario);
+#btn-cancelar {
+  color: var(--cinza-texto);
+  background: #e2e8f0;
 }
 
-.btn-confirmar {
-  background:
-    linear-gradient(
-      135deg,
-      #16a34a,
-      #15803d
-    );
+#btn-confirmar {
+  color: var(--branco);
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.22);
+}
 
-  color: #ffffff;
-
-  box-shadow:
-    0 8px 18px
-    rgba(22,163,74,.20);
+#btn-cancelar:hover,
+#btn-confirmar:hover {
+  transform: translateY(-2px);
 }
 
 /* =========================================================
    AVISO DE REGISTRO
 ========================================================= */
 
-#aviso-registro {
-  animation:
-    aparecerAviso .3s ease;
+.aviso-registro {
+  position: fixed;
+  z-index: 2000;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 35px);
+  max-width: 420px;
+  padding: 16px 19px;
+  border-radius: 16px;
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  box-shadow: 0 12px 30px rgba(22, 101, 52, 0.15);
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  animation: aparecerAviso 0.4s ease;
 }
 
 /* =========================================================
-   ANDROID / CHROME
+   BOTÃO VOLTAR
 ========================================================= */
 
-input,
-button {
-  -webkit-appearance: none;
-  appearance: none;
+#btn-voltar-medicamentos {
+  margin-top: 20px;
+  min-height: 45px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 13px;
+  background: var(--azul-suave);
+  color: var(--azul-principal);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-input {
-  font-size: 16px;
+#btn-voltar-medicamentos:hover {
+  background: #dbeafe;
+  transform: translateY(-2px);
 }
+
+/* =========================================================
+   ESTADOS GERAIS
+========================================================= */
 
 button:focus-visible,
-input:focus-visible {
-  outline:
-    3px solid
-    rgba(37,99,235,.18);
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 3px;
+}
 
-  outline-offset: 2px;
+button:disabled {
+  opacity: 0.7;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 /* =========================================================
-   RESPONSIVO
+   RESPONSIVIDADE PARA CELULAR
 ========================================================= */
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
+  .container-app {
+    padding: 0 14px 30px;
+  }
 
-  .tela-login {
-    padding:
-      18px 14px;
+  .cabecalho {
+    padding: 17px 15px;
+    border-radius: 0 0 25px 25px;
+  }
+
+  .cabecalho-conteudo {
+    gap: 10px;
+  }
+
+  .logo-app {
+    width: 52px;
+    height: 52px;
+  }
+
+  .marca-texto h1 {
+    font-size: 18px;
+  }
+
+  .marca-texto p {
+    font-size: 10px;
+  }
+
+  #btn-notificacao,
+  #btn-sair {
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    font-size: 17px;
+  }
+
+  .navegacao {
+    margin-top: 14px;
+  }
+
+  .navegacao button {
+    min-height: 43px;
+    font-size: 13px;
+  }
+
+  .boas-vindas {
+    margin-top: 23px;
+  }
+
+  .boas-vindas h2 {
+    font-size: 23px;
+  }
+
+  .resumo-dia {
+    gap: 9px;
+  }
+
+  .resumo-card {
+    min-height: 112px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .resumo-icone {
+    font-size: 20px;
+  }
+
+  .resumo-card strong {
+    font-size: 26px;
+  }
+
+  .resumo-card span {
+    font-size: 10px;
+  }
+
+  #lista-medicamentos,
+  .lista-medicamentos {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .medicamento-card {
+    padding: 15px;
+    border-radius: 19px;
+  }
+
+  .icone-medicamento {
+    width: 56px;
+    height: 56px;
+    font-size: 26px;
+    border-radius: 17px;
+  }
+
+  .medicamento-horario,
+  .horario {
+    font-size: 21px;
+  }
+
+  .medicamento-info h3 {
+    font-size: 13px;
+  }
+
+  .btn-dar {
+    min-width: 62px;
+    min-height: 42px;
+    padding: 0 10px;
+  }
+
+  .titulo-secao h2 {
+    font-size: 19px;
+  }
+}
+
+/* =========================================================
+   CELULARES MUITO PEQUENOS
+========================================================= */
+
+@media (max-width: 380px) {
+  #tela-login {
+    padding: 15px;
   }
 
   .login-container {
-    max-width: 390px;
-
-    padding:
-      36px 22px 26px;
-
-    border-radius: 27px;
+    padding: 30px 20px;
+    border-radius: 25px;
   }
 
   .logo-login {
     width: 105px;
     height: 105px;
-
-    border-radius: 28px;
   }
 
   .login-container h1 {
-    font-size: 27px;
-  }
-
-  .subtitulo-login {
-    font-size: 14px;
-
-    margin-bottom: 24px;
-  }
-
-  .campo-login input,
-  #btn-entrar {
-    min-height: 56px;
-    height: 56px;
-  }
-
-  .pagina {
-    padding:
-      16px 13px 35px;
-  }
-
-  .boas-vindas {
-    padding: 20px;
-  }
-
-  .boas-vindas h2 {
-    font-size: 22px;
-  }
-
-  .resumo {
-    gap: 8px;
+    font-size: 26px;
   }
 
   .resumo-card {
-    padding: 13px 7px;
-  }
-
-  .resumo-icone {
-    width: 37px;
-    height: 37px;
+    padding: 12px 10px;
   }
 
   .resumo-card strong {
-    font-size: 20px;
+    font-size: 23px;
+  }
+
+  .resumo-card span {
+    font-size: 9px;
   }
 
   .medicamento-card {
-    padding: 13px;
-
     gap: 10px;
   }
 
   .icone-medicamento {
-    width: 45px;
-    height: 45px;
+    width: 49px;
+    height: 49px;
+    font-size: 23px;
   }
 
-  .medicamento-horario {
-    font-size: 16px;
+  .medicamento-horario,
+  .horario {
+    font-size: 19px;
   }
 
   .btn-dar {
-    min-width: 70px;
-
-    padding:
-      0 10px;
+    min-width: 56px;
+    padding: 0 8px;
   }
 }
 
 /* =========================================================
-   TELAS MUITO PEQUENAS
+   REDUZIR ANIMAÇÕES SE O CELULAR SOLICITAR
 ========================================================= */
 
-@media (max-width: 380px) {
-
-  .login-container {
-    padding:
-      30px 17px 23px;
-  }
-
-  .logo-login {
-    width: 90px;
-    height: 90px;
-  }
-
-  .login-container h1 {
-    font-size: 24px;
-  }
-
-  .subtitulo-login {
-    font-size: 13px;
-  }
-
-  .cabecalho {
-    padding:
-      13px 12px;
-  }
-
-  .logo-app {
-    width: 40px;
-    height: 40px;
-  }
-
-  .marca-texto strong {
-    font-size: 15px;
-  }
-
-  .btn-notificacao,
-  .btn-sair {
-    width: 39px;
-    height: 39px;
-  }
-
-  .medicamento-card {
-    align-items: flex-start;
-  }
-
-  .medicamento-info {
-    align-items: flex-start;
-  }
-
-  .btn-dar {
-    min-width: 64px;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
