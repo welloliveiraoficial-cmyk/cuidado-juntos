@@ -408,6 +408,41 @@ function proximaOcorrencia(horario, agora) {
 
 
 /* =========================================================
+   HORÁRIO DE TESTE
+   O horário "23:58" (Teste) some sozinho da lista de
+   "Tomado" depois de alguns minutos, para permitir repetir
+   o teste de notificação quantas vezes for preciso, sem
+   precisar apagar nada manualmente no Firestore.
+========================================================= */
+
+const HORARIO_TESTE = "23:58";
+
+const EXPIRACAO_TESTE_MS = 2 * 60 * 1000; // 2 minutos
+
+function obterRegistroAtivo(horario, agora) {
+
+  const registro = registros[horario];
+
+  if (!registro) {
+    return null;
+  }
+
+  if (horario === HORARIO_TESTE) {
+
+    const registradoEm = new Date(registro.dataCompleta).getTime();
+
+    if (agora.getTime() - registradoEm > EXPIRACAO_TESTE_MS) {
+      return null;
+    }
+
+  }
+
+  return registro;
+
+}
+
+
+/* =========================================================
    BADGE (STATUS) DE CADA HORÁRIO
 ========================================================= */
 
@@ -419,7 +454,7 @@ function calcularProximoPendente(agora) {
 
   HORARIOS.forEach(function (horario) {
 
-    if (registros[horario]) {
+    if (obterRegistroAtivo(horario, agora)) {
       return;
     }
 
@@ -443,7 +478,7 @@ function calcularProximoPendente(agora) {
 
 function calcularBadge(horario, agora, proximoPendente) {
 
-  if (registros[horario]) {
+  if (obterRegistroAtivo(horario, agora)) {
 
     return { rotulo: "Tomado", classe: "badge-tomado" };
 
@@ -510,7 +545,7 @@ function formatarDuracao(minutos) {
 
 function calcularTextoStatus(horario, agora) {
 
-  const registro = registros[horario];
+  const registro = obterRegistroAtivo(horario, agora);
 
   if (registro) {
 
@@ -925,7 +960,7 @@ function abrirModal(horario) {
   const nomesRemedios =
     (MEDICAMENTOS[horario] || []).join(" + ") || "Medicamento";
 
-  const registroExistente = registros[horario];
+  const registroExistente = obterRegistroAtivo(horario, new Date());
 
 
   if (modalTituloRemedios) {
@@ -1602,7 +1637,7 @@ function atualizarTela() {
       return;
     }
 
-    const registro = registros[horario];
+    const registro = obterRegistroAtivo(horario, agora);
 
     const badgeEl = cartao.querySelector("[data-badge]");
 
