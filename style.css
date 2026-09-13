@@ -417,6 +417,7 @@ body {
   gap: 8px;
 }
 
+#btn-instalar,
 #btn-notificacao,
 #btn-sair {
   width: 43px;
@@ -430,10 +431,15 @@ body {
   transition: 0.2s ease;
 }
 
+#btn-instalar:hover,
 #btn-notificacao:hover,
 #btn-sair:hover {
   background: rgba(255, 255, 255, 0.28);
   transform: translateY(-2px);
+}
+
+#btn-instalar {
+  animation: pulsarSuave 3s infinite;
 }
 
 #btn-notificacao.ativo {
@@ -1223,6 +1229,7 @@ button:disabled {
     font-size: 10px;
   }
 
+  #btn-instalar,
   #btn-notificacao,
   #btn-sair {
     width: 38px;
