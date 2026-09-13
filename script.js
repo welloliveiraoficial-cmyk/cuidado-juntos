@@ -1,7 +1,7 @@
 /* =========================================================
    CUIDADO JUNTOS
    SCRIPT PRINCIPAL
-   VERSÃO PREMIUM
+   VERSÃO PREMIUM (v17 — push instantâneo via Vercel)
 ========================================================= */
 
 
@@ -57,6 +57,18 @@ const firebaseConfig = {
 
 const VAPID_KEY = "BFVSP3o_fL9b9qYzNwaHR3-DytRPRlmsPMoaBdbwT0uZOcUMd8ZCkUrfpVaZu9SS2jTtQf6c9NnaJAEUIIH8X_8";
 
+/*
+ * IMPORTANTE: troque pela URL do seu projeto na Vercel
+ * (ex: https://cuidado-juntos-api.vercel.app/api/notificar-registro)
+ * e pela mesma chave que você colocar na variável de
+ * ambiente API_SECRET na Vercel.
+ */
+
+const URL_NOTIFICAR_PUSH =
+  "https://SEU-PROJETO.vercel.app/api/notificar-registro";
+
+const CHAVE_API_PUSH = "SUBSTITUA_PELA_SUA_CHAVE_SECRETA";
+
 
 /* =========================================================
    VARIÁVEIS
@@ -78,6 +90,8 @@ let horarioSelecionado = null;
 let primeiraCargaRegistrosHoje = true;
 
 let timerFecharSucesso = null;
+
+let meuTokenPush = null;
 
 
 /* =========================================================
@@ -1117,6 +1131,9 @@ if (botaoConfirmar) {
       registros[horario] = registro;
 
 
+      notificarPushInstantaneo(registro);
+
+
       atualizarTela();
 
 
@@ -1325,6 +1342,8 @@ async function registrarTokenPush() {
       return;
     }
 
+    meuTokenPush = token;
+
     await setDoc(
       doc(db, "dispositivos", token),
       {
@@ -1339,6 +1358,46 @@ async function registrarTokenPush() {
     console.error("Erro ao registrar notificação push:", erro);
 
   }
+
+}
+
+
+/* =========================================================
+   DISPARAR NOTIFICAÇÃO PUSH INSTANTÂNEA (via Vercel)
+   Chamado logo depois de salvar um registro no Firestore.
+   Quem está registrando já está com o app aberto, então o
+   aviso sai na mesma hora — sem precisar de Cloud Functions
+   nem do plano Blaze. Se a chamada falhar (ex: sem internet
+   por um instante), o registro em si já foi salvo antes e
+   não é afetado — só o aviso extra que não sai.
+========================================================= */
+
+function notificarPushInstantaneo(registro) {
+
+  if (!URL_NOTIFICAR_PUSH || URL_NOTIFICAR_PUSH.indexOf("SEU-PROJETO") !== -1) {
+    return;
+  }
+
+  if (!CHAVE_API_PUSH || CHAVE_API_PUSH === "SUBSTITUA_PELA_SUA_CHAVE_SECRETA") {
+    return;
+  }
+
+  fetch(URL_NOTIFICAR_PUSH, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": CHAVE_API_PUSH
+    },
+    body: JSON.stringify({
+      horario: registro.horario,
+      nome: registro.nome,
+      tokenRemetente: meuTokenPush
+    })
+  }).catch(function (erro) {
+
+    console.log("Aviso push instantâneo não enviado:", erro);
+
+  });
 
 }
 
