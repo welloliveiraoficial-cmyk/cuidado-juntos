@@ -1,7 +1,7 @@
 /* =========================================================
    CUIDADO JUNTOS
    SCRIPT PRINCIPAL
-   VERSÃO CORRIGIDA
+   VERSÃO PREMIUM
 ========================================================= */
 
 
@@ -60,6 +60,8 @@ let registrosHistorico = {};
 
 let horarioSelecionado = null;
 
+let timerFecharSucesso = null;
+
 
 /* =========================================================
    LOCAL STORAGE
@@ -107,8 +109,69 @@ const HORARIOS = [
 
 
 /* =========================================================
+   REMÉDIOS POR HORÁRIO
+   (só aparece ao clicar em "Dar" — a lista principal
+   mostra apenas o horário, de propósito)
+========================================================= */
+
+const MEDICAMENTOS = {
+  "08:00": ["Sertralina", "Levetiracetam"],
+  "09:00": ["Losartana", "Quetiapina"],
+  "10:00": ["Clopidogrel"],
+  "12:00": ["Rivaroxabana"],
+  "16:00": ["Levetiracetam"],
+  "20:00": ["Atorvastatina"],
+  "21:00": ["Losartana", "Quetiapina"],
+  "22:00": ["Clonazepam"],
+  "00:00": ["Levetiracetam"]
+};
+
+
+/* =========================================================
+   PERÍODO DO DIA POR HORÁRIO
+   (usado como cor/etiqueta quando o horário não está
+   "Tomado", "Próximo", "Agora" nem "Atrasado")
+========================================================= */
+
+const PERIODOS = {
+  "08:00": { rotulo: "Manhã", classe: "periodo-manha" },
+  "09:00": { rotulo: "Manhã", classe: "periodo-manha" },
+  "10:00": { rotulo: "Manhã", classe: "periodo-manha" },
+  "12:00": { rotulo: "Almoço", classe: "periodo-almoco" },
+  "16:00": { rotulo: "Tarde", classe: "periodo-tarde" },
+  "20:00": { rotulo: "Noturno", classe: "periodo-noite" },
+  "21:00": { rotulo: "Noturno", classe: "periodo-noite" },
+  "22:00": { rotulo: "Noturno", classe: "periodo-noite" },
+  "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" }
+};
+
+const TODAS_CLASSES_BADGE = [
+  "badge-tomado",
+  "badge-proximo",
+  "badge-agora",
+  "badge-atrasado",
+  "periodo-manha",
+  "periodo-almoco",
+  "periodo-tarde",
+  "periodo-noite",
+  "periodo-madrugada"
+];
+
+const MESES_POR_EXTENSO = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+];
+
+/* Perímetro da circunferência do anel (r=42 -> 2*pi*42) */
+const PERIMETRO_ANEL = 263.9;
+
+
+/* =========================================================
    ELEMENTOS DA PÁGINA
 ========================================================= */
+
+const telaSplash =
+  document.getElementById("tela-splash");
 
 const telaLogin =
   document.getElementById("tela-login");
@@ -137,8 +200,23 @@ const botaoNotificacao =
 const modalConfirmacao =
   document.getElementById("modal-confirmacao");
 
+const modalPassoConfirmar =
+  document.getElementById("modal-passo-confirmar");
+
+const modalPassoSucesso =
+  document.getElementById("modal-passo-sucesso");
+
+const modalBadge =
+  document.getElementById("modal-badge");
+
+const modalTituloRemedios =
+  document.getElementById("modal-titulo-remedios");
+
 const textoConfirmacao =
   document.getElementById("texto-confirmacao");
+
+const modalDadoPor =
+  document.getElementById("modal-dadopor");
 
 const botaoCancelar =
   document.getElementById("btn-cancelar");
@@ -146,14 +224,32 @@ const botaoCancelar =
 const botaoConfirmar =
   document.getElementById("btn-confirmar");
 
-const totalMedicamentos =
-  document.getElementById("total-medicamentos");
+const sucessoRemedios =
+  document.getElementById("sucesso-remedios");
 
-const totalDados =
-  document.getElementById("total-dados");
+const sucessoHorario =
+  document.getElementById("sucesso-horario");
 
-const totalPendentes =
-  document.getElementById("total-pendentes");
+const sucessoDadoPor =
+  document.getElementById("sucesso-dadopor");
+
+const botaoFecharSucesso =
+  document.getElementById("btn-fechar-sucesso");
+
+const dataAtualEl =
+  document.getElementById("data-atual");
+
+const resumoMensagemEl =
+  document.getElementById("resumo-mensagem");
+
+const anelBarra =
+  document.getElementById("anel-barra");
+
+const anelPercentual =
+  document.getElementById("anel-percentual");
+
+const contadorTotal =
+  document.getElementById("contador-total");
 
 const listaHistorico =
   document.getElementById("lista-historico");
@@ -164,6 +260,12 @@ const dataHistorico =
 const historicoTotal =
   document.getElementById("historico-total");
 
+const historicoAnelBarra =
+  document.getElementById("historico-anel-barra");
+
+const historicoAnelPercentual =
+  document.getElementById("historico-anel-percentual");
+
 const paginaMedicamentos =
   document.getElementById("pagina-medicamentos");
 
@@ -171,19 +273,13 @@ const paginaHistorico =
   document.getElementById("pagina-historico");
 
 const botaoPaginaMedicamentos =
-  document.getElementById(
-    "btn-pagina-medicamentos"
-  );
+  document.getElementById("btn-pagina-medicamentos");
 
 const botaoPaginaHistorico =
-  document.getElementById(
-    "btn-pagina-historico"
-  );
+  document.getElementById("btn-pagina-historico");
 
 const botaoVoltarMedicamentos =
-  document.getElementById(
-    "btn-voltar-medicamentos"
-  );
+  document.getElementById("btn-voltar-medicamentos");
 
 
 /* =========================================================
@@ -199,46 +295,247 @@ function obterDataHoje() {
    */
 
   if (agora.getHours() < 6) {
-    agora.setDate(
-      agora.getDate() - 1
-    );
+    agora.setDate(agora.getDate() - 1);
   }
 
-  const ano =
-    agora.getFullYear();
+  const ano = agora.getFullYear();
 
-  const mes =
-    String(
-      agora.getMonth() + 1
-    ).padStart(2, "0");
+  const mes = String(agora.getMonth() + 1).padStart(2, "0");
 
-  const dia =
-    String(
-      agora.getDate()
-    ).padStart(2, "0");
+  const dia = String(agora.getDate()).padStart(2, "0");
 
   return `${ano}-${mes}-${dia}`;
+
 }
 
 
 /* =========================================================
-   DATA BONITA
+   DATA POR EXTENSO
 ========================================================= */
 
-function formatarDataBonita(dataISO) {
+function formatarDataPorExtenso(dataISO) {
 
   if (!dataISO) {
-    return "";
+    return "Hoje";
   }
 
-  const partes =
-    dataISO.split("-");
+  const partes = dataISO.split("-");
 
   if (partes.length !== 3) {
-    return dataISO;
+    return "Hoje";
   }
 
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  const dia = parseInt(partes[2], 10);
+
+  const mes = MESES_POR_EXTENSO[parseInt(partes[1], 10) - 1] || "";
+
+  const ano = partes[0];
+
+  return `Hoje, ${dia} de ${mes} de ${ano}`;
+
+}
+
+
+/* =========================================================
+   PRÓXIMA OCORRÊNCIA DE UM HORÁRIO
+   (usada só para calcular contagem regressiva/atraso
+   visual — não interfere na gravação no Firestore)
+========================================================= */
+
+function proximaOcorrencia(horario, agora) {
+
+  const [hora, minuto] = horario.split(":").map(Number);
+
+  const data = new Date(
+    agora.getFullYear(),
+    agora.getMonth(),
+    agora.getDate(),
+    hora,
+    minuto,
+    0,
+    0
+  );
+
+  /*
+   * Se o horário já passou há mais de 12 horas,
+   * assume-se que é o de amanhã.
+   */
+
+  if (data.getTime() < agora.getTime() - 12 * 60 * 60 * 1000) {
+    data.setDate(data.getDate() + 1);
+  }
+
+  return data;
+
+}
+
+
+/* =========================================================
+   BADGE (STATUS) DE CADA HORÁRIO
+========================================================= */
+
+function calcularProximoPendente(agora) {
+
+  let horarioMaisProximo = null;
+
+  let menorDiferenca = Infinity;
+
+  HORARIOS.forEach(function (horario) {
+
+    if (registros[horario]) {
+      return;
+    }
+
+    const ocorrencia = proximaOcorrencia(horario, agora);
+
+    const diferenca = (ocorrencia.getTime() - agora.getTime()) / 60000;
+
+    if (diferenca >= 0 && diferenca < menorDiferenca) {
+
+      menorDiferenca = diferenca;
+
+      horarioMaisProximo = horario;
+
+    }
+
+  });
+
+  return horarioMaisProximo;
+
+}
+
+function calcularBadge(horario, agora, proximoPendente) {
+
+  if (registros[horario]) {
+
+    return { rotulo: "Tomado", classe: "badge-tomado" };
+
+  }
+
+  const ocorrencia = proximaOcorrencia(horario, agora);
+
+  const diferencaMin = Math.round(
+    (ocorrencia.getTime() - agora.getTime()) / 60000
+  );
+
+  if (diferencaMin < 0) {
+
+    return { rotulo: "Atrasado", classe: "badge-atrasado" };
+
+  }
+
+  if (diferencaMin <= 30) {
+
+    return { rotulo: "Agora", classe: "badge-agora" };
+
+  }
+
+  if (horario === proximoPendente) {
+
+    return { rotulo: "Próximo", classe: "badge-proximo" };
+
+  }
+
+  const periodo = PERIODOS[horario] || { rotulo: "Pendente", classe: "" };
+
+  return { rotulo: periodo.rotulo, classe: periodo.classe };
+
+}
+
+
+/* =========================================================
+   TEXTO DE APOIO (CONTAGEM / ATRASO / DADO POR)
+========================================================= */
+
+function formatarDuracao(minutos) {
+
+  const minutosAbsolutos = Math.abs(minutos);
+
+  const horas = Math.floor(minutosAbsolutos / 60);
+
+  const min = minutosAbsolutos % 60;
+
+  if (horas === 0) {
+
+    return `${min} min`;
+
+  }
+
+  if (min === 0) {
+
+    return `${horas}h`;
+
+  }
+
+  return `${horas}h ${min}min`;
+
+}
+
+function calcularTextoStatus(horario, agora) {
+
+  const registro = registros[horario];
+
+  if (registro) {
+
+    return `Dado por ${registro.nome} às ${registro.horaRegistro}`;
+
+  }
+
+  const ocorrencia = proximaOcorrencia(horario, agora);
+
+  const diferencaMin = Math.round(
+    (ocorrencia.getTime() - agora.getTime()) / 60000
+  );
+
+  if (diferencaMin < 0) {
+
+    return `Atrasado ${formatarDuracao(diferencaMin)}`;
+
+  }
+
+  if (diferencaMin === 0) {
+
+    return "É agora";
+
+  }
+
+  return `Falta ${formatarDuracao(diferencaMin)}`;
+
+}
+
+
+/* =========================================================
+   MENSAGEM MOTIVACIONAL
+========================================================= */
+
+function calcularMensagemMotivacional(dados, total) {
+
+  if (total === 0) {
+
+    return "Vamos cuidar dos horários de hoje.";
+
+  }
+
+  if (dados === 0) {
+
+    return "Vamos começar o dia! 💪";
+
+  }
+
+  if (dados === total) {
+
+    return "Dia concluído! 🎉 Parabéns pelo cuidado.";
+
+  }
+
+  if (dados / total >= 0.5) {
+
+    return "Quase lá! Falta pouco.";
+
+  }
+
+  return "Você está indo muito bem!";
+
 }
 
 
@@ -248,13 +545,9 @@ function formatarDataBonita(dataISO) {
 
 function salvarNome(nome) {
 
-  nomeUsuario =
-    nome.trim();
+  nomeUsuario = nome.trim();
 
-  localStorage.setItem(
-    CHAVE_USUARIO,
-    nomeUsuario
-  );
+  localStorage.setItem(CHAVE_USUARIO, nomeUsuario);
 
 }
 
@@ -266,26 +559,9 @@ function salvarNome(nome) {
 function mostrarAplicativo() {
 
   if (!telaLogin || !telaApp) {
-    console.error(
-      "Elementos da tela não encontrados."
-    );
-
+    console.error("Elementos da tela não encontrados.");
     return;
   }
-
-  telaLogin.classList.add(
-    "escondido"
-  );
-
-  telaApp.classList.remove(
-    "escondido"
-  );
-
-  /*
-   * Garante que a troca de tela funcione
-   * mesmo se o CSS não definir a classe
-   * "escondido" com display:none.
-   */
 
   telaLogin.style.display = "none";
 
@@ -294,8 +570,7 @@ function mostrarAplicativo() {
 
   if (nomeExibido) {
 
-    nomeExibido.textContent =
-      nomeUsuario;
+    nomeExibido.textContent = nomeUsuario;
 
   }
 
@@ -333,18 +608,9 @@ function mostrarLogin() {
     return;
   }
 
-  telaLogin.classList.remove(
-    "escondido"
-  );
-
-  telaApp.classList.add(
-    "escondido"
-  );
-
   telaLogin.style.display = "";
 
-  telaApp.style.display =
-    "none";
+  telaApp.style.display = "none";
 
 }
 
@@ -355,11 +621,7 @@ function mostrarLogin() {
 
 function realizarLogin() {
 
-  const nomeDigitado =
-    nomeInput
-      ? nomeInput.value.trim()
-      : "";
-
+  const nomeDigitado = nomeInput ? nomeInput.value.trim() : "";
 
   if (!nomeDigitado) {
 
@@ -381,39 +643,18 @@ function realizarLogin() {
   }
 
 
-  /*
-   * Remove mensagem de erro.
-   */
-
   if (erroLogin) {
 
-    erroLogin.textContent =
-      "";
+    erroLogin.textContent = "";
 
   }
 
 
-  /*
-   * Salva o nome imediatamente.
-   */
+  salvarNome(nomeDigitado);
 
-  salvarNome(
-    nomeDigitado
-  );
-
-
-  /*
-   * Entra no aplicativo SEM esperar
-   * o Firebase.
-   */
 
   mostrarAplicativo();
 
-
-  /*
-   * Se o Firebase já estiver pronto,
-   * carrega os registros.
-   */
 
   if (firebaseAutenticado) {
 
@@ -424,40 +665,26 @@ function realizarLogin() {
 }
 
 
-/*
- * Botão Entrar
- */
-
 if (botaoEntrar) {
 
-  botaoEntrar.addEventListener(
-    "click",
-    realizarLogin
-  );
+  botaoEntrar.addEventListener("click", realizarLogin);
 
 }
 
 
-/*
- * Enter no campo de nome
- */
-
 if (nomeInput) {
 
-  nomeInput.addEventListener(
-    "keydown",
-    function (evento) {
+  nomeInput.addEventListener("keydown", function (evento) {
 
-      if (evento.key === "Enter") {
+    if (evento.key === "Enter") {
 
-        evento.preventDefault();
+      evento.preventDefault();
 
-        realizarLogin();
-
-      }
+      realizarLogin();
 
     }
-  );
+
+  });
 
 }
 
@@ -468,21 +695,9 @@ if (nomeInput) {
 
 function mostrarPaginaMedicamentos() {
 
-  if (
-    !paginaMedicamentos ||
-    !paginaHistorico
-  ) {
+  if (!paginaMedicamentos || !paginaHistorico) {
     return;
   }
-
-
-  paginaMedicamentos.classList.remove(
-    "escondido"
-  );
-
-  paginaHistorico.classList.add(
-    "escondido"
-  );
 
   paginaMedicamentos.style.display = "";
 
@@ -491,47 +706,27 @@ function mostrarPaginaMedicamentos() {
 
   if (botaoPaginaMedicamentos) {
 
-    botaoPaginaMedicamentos.classList.add(
-      "ativo"
-    );
+    botaoPaginaMedicamentos.classList.add("ativo");
 
   }
-
 
   if (botaoPaginaHistorico) {
 
-    botaoPaginaHistorico.classList.remove(
-      "ativo"
-    );
+    botaoPaginaHistorico.classList.remove("ativo");
 
   }
 
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
 }
 
 
 function mostrarPaginaHistorico() {
 
-  if (
-    !paginaMedicamentos ||
-    !paginaHistorico
-  ) {
+  if (!paginaMedicamentos || !paginaHistorico) {
     return;
   }
-
-
-  paginaMedicamentos.classList.add(
-    "escondido"
-  );
-
-  paginaHistorico.classList.remove(
-    "escondido"
-  );
 
   paginaMedicamentos.style.display = "none";
 
@@ -540,18 +735,13 @@ function mostrarPaginaHistorico() {
 
   if (botaoPaginaMedicamentos) {
 
-    botaoPaginaMedicamentos.classList.remove(
-      "ativo"
-    );
+    botaoPaginaMedicamentos.classList.remove("ativo");
 
   }
 
-
   if (botaoPaginaHistorico) {
 
-    botaoPaginaHistorico.classList.add(
-      "ativo"
-    );
+    botaoPaginaHistorico.classList.add("ativo");
 
   }
 
@@ -559,52 +749,33 @@ function mostrarPaginaHistorico() {
   definirDataHistorico();
 
 
-  if (
-    firebaseAutenticado &&
-    dataHistorico
-  ) {
+  if (firebaseAutenticado && dataHistorico) {
 
-    carregarHistorico(
-      dataHistorico.value
-    );
+    carregarHistorico(dataHistorico.value);
 
   }
 
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
 }
 
 
 if (botaoPaginaMedicamentos) {
 
-  botaoPaginaMedicamentos.addEventListener(
-    "click",
-    mostrarPaginaMedicamentos
-  );
+  botaoPaginaMedicamentos.addEventListener("click", mostrarPaginaMedicamentos);
 
 }
-
 
 if (botaoPaginaHistorico) {
 
-  botaoPaginaHistorico.addEventListener(
-    "click",
-    mostrarPaginaHistorico
-  );
+  botaoPaginaHistorico.addEventListener("click", mostrarPaginaHistorico);
 
 }
 
-
 if (botaoVoltarMedicamentos) {
 
-  botaoVoltarMedicamentos.addEventListener(
-    "click",
-    mostrarPaginaMedicamentos
-  );
+  botaoVoltarMedicamentos.addEventListener("click", mostrarPaginaMedicamentos);
 
 }
 
@@ -615,13 +786,9 @@ if (botaoVoltarMedicamentos) {
 
 function definirDataHistorico() {
 
-  if (
-    dataHistorico &&
-    !dataHistorico.value
-  ) {
+  if (dataHistorico && !dataHistorico.value) {
 
-    dataHistorico.value =
-      obterDataHoje();
+    dataHistorico.value = obterDataHoje();
 
   }
 
@@ -630,27 +797,21 @@ function definirDataHistorico() {
 
 if (dataHistorico) {
 
-  dataHistorico.addEventListener(
-    "change",
-    function () {
+  dataHistorico.addEventListener("change", function () {
 
-      const dataSelecionada =
-        dataHistorico.value;
+    const dataSelecionada = dataHistorico.value;
 
-      if (!dataSelecionada) {
-        return;
-      }
+    if (!dataSelecionada) {
+      return;
+    }
 
-      if (firebaseAutenticado) {
+    if (firebaseAutenticado) {
 
-        carregarHistorico(
-          dataSelecionada
-        );
-
-      }
+      carregarHistorico(dataSelecionada);
 
     }
-  );
+
+  });
 
 }
 
@@ -661,99 +822,125 @@ if (dataHistorico) {
 
 if (botaoSair) {
 
-  botaoSair.addEventListener(
-    "click",
-    function () {
+  botaoSair.addEventListener("click", function () {
 
-      const confirmarSaida =
-        window.confirm(
-          "Deseja sair e trocar o familiar deste aparelho?"
-        );
+    const confirmarSaida = window.confirm(
+      "Deseja sair e trocar o familiar deste aparelho?"
+    );
 
-
-      if (!confirmarSaida) {
-        return;
-      }
+    if (!confirmarSaida) {
+      return;
+    }
 
 
-      localStorage.removeItem(
-        CHAVE_USUARIO
-      );
+    localStorage.removeItem(CHAVE_USUARIO);
 
 
-      nomeUsuario =
-        "";
+    nomeUsuario = "";
 
 
-      if (nomeInput) {
+    if (nomeInput) {
 
-        nomeInput.value =
-          "";
-
-      }
-
-
-      if (unsubscribeHoje) {
-
-        unsubscribeHoje();
-
-        unsubscribeHoje =
-          null;
-
-      }
-
-
-      if (unsubscribeHistorico) {
-
-        unsubscribeHistorico();
-
-        unsubscribeHistorico =
-          null;
-
-      }
-
-
-      registros = {};
-
-      registrosHistorico = {};
-
-
-      mostrarLogin();
+      nomeInput.value = "";
 
     }
-  );
+
+
+    if (unsubscribeHoje) {
+
+      unsubscribeHoje();
+
+      unsubscribeHoje = null;
+
+    }
+
+
+    if (unsubscribeHistorico) {
+
+      unsubscribeHistorico();
+
+      unsubscribeHistorico = null;
+
+    }
+
+
+    registros = {};
+
+    registrosHistorico = {};
+
+
+    mostrarLogin();
+
+  });
 
 }
 
 
 /* =========================================================
-   MODAL
+   MODAL — ETAPA 1: CONFIRMAR
 ========================================================= */
 
 function abrirModal(horario) {
 
-  horarioSelecionado =
-    horario;
+  horarioSelecionado = horario;
 
+
+  const nomesRemedios =
+    (MEDICAMENTOS[horario] || []).join(" + ") || "Medicamento";
+
+  const registroExistente = registros[horario];
+
+
+  if (modalTituloRemedios) {
+
+    modalTituloRemedios.textContent = nomesRemedios;
+
+  }
 
   if (textoConfirmacao) {
 
     textoConfirmacao.textContent =
-      "Você está registrando o medicamento das " +
-      horario +
-      ". Confirma que ele foi dado?";
+      `Confirma que o medicamento das ${horario} foi dado agora?`;
+
+  }
+
+  if (modalDadoPor) {
+
+    modalDadoPor.textContent = registroExistente
+      ? `Já registrado por: ${registroExistente.nome}`
+      : "Dado por: —";
+
+  }
+
+  if (modalBadge) {
+
+    const agora = new Date();
+
+    const proximoPendente = calcularProximoPendente(agora);
+
+    const badge = calcularBadge(horario, agora, proximoPendente);
+
+    modalBadge.textContent = badge.rotulo;
+
+  }
+
+
+  if (modalPassoConfirmar) {
+
+    modalPassoConfirmar.style.display = "";
+
+  }
+
+  if (modalPassoSucesso) {
+
+    modalPassoSucesso.style.display = "none";
 
   }
 
 
   if (modalConfirmacao) {
 
-    modalConfirmacao.classList.remove(
-      "escondido"
-    );
-
-    modalConfirmacao.style.display =
-      "flex";
+    modalConfirmacao.style.display = "flex";
 
   }
 
@@ -762,18 +949,21 @@ function abrirModal(horario) {
 
 function fecharModal() {
 
-  horarioSelecionado =
-    null;
+  horarioSelecionado = null;
+
+
+  if (timerFecharSucesso) {
+
+    clearTimeout(timerFecharSucesso);
+
+    timerFecharSucesso = null;
+
+  }
 
 
   if (modalConfirmacao) {
 
-    modalConfirmacao.classList.add(
-      "escondido"
-    );
-
-    modalConfirmacao.style.display =
-      "none";
+    modalConfirmacao.style.display = "none";
 
   }
 
@@ -782,93 +972,57 @@ function fecharModal() {
 
 if (botaoCancelar) {
 
-  botaoCancelar.addEventListener(
-    "click",
-    fecharModal
-  );
+  botaoCancelar.addEventListener("click", fecharModal);
+
+}
+
+if (botaoFecharSucesso) {
+
+  botaoFecharSucesso.addEventListener("click", fecharModal);
 
 }
 
 
 /* =========================================================
-   BOTÕES DAR
+   BOTÕES DAR / CLIQUE NO CARTÃO
 ========================================================= */
 
 function configurarBotoesDar() {
 
-  const botoes =
-    document.querySelectorAll(
-      ".btn-dar"
-    );
+  const cartoes = document.querySelectorAll(".medicamento-card");
+
+  cartoes.forEach(function (cartao) {
+
+    if (cartao.dataset.eventoConfigurado === "true") {
+      return;
+    }
+
+    cartao.dataset.eventoConfigurado = "true";
 
 
-  botoes.forEach(
-    function (botao) {
+    cartao.addEventListener("click", function (evento) {
 
-      if (
-        botao.dataset.eventoConfigurado ===
-        "true"
-      ) {
+      const botao = cartao.querySelector(".btn-dar");
+
+      if (botao && botao.disabled) {
         return;
       }
 
+      const horario = cartao.getAttribute("data-horario");
 
-      botao.dataset.eventoConfigurado =
-        "true";
+      if (!horario) {
 
+        console.error("Horário não encontrado.");
 
-      botao.addEventListener(
-        "click",
-        function () {
+        return;
 
-          if (botao.disabled) {
-            return;
-          }
+      }
 
+      abrirModal(horario);
 
-          const cartao =
-            botao.closest(
-              ".medicamento-card"
-            );
+    });
 
-
-          if (!cartao) {
-
-            console.error(
-              "Cartão do medicamento não encontrado."
-            );
-
-            return;
-
-          }
-
-
-          const horario =
-            cartao.getAttribute(
-              "data-horario"
-            );
-
-
-          if (!horario) {
-
-            console.error(
-              "Horário não encontrado."
-            );
-
-            return;
-
-          }
-
-
-          abrirModal(
-            horario
-          );
-
-        }
-      );
-
-    }
-  );
+  });
 
 }
 
@@ -879,280 +1033,157 @@ function configurarBotoesDar() {
 
 if (botaoConfirmar) {
 
-  botaoConfirmar.addEventListener(
-    "click",
-    async function () {
+  botaoConfirmar.addEventListener("click", async function () {
 
-      if (!horarioSelecionado) {
-        return;
-      }
+    if (!horarioSelecionado) {
+      return;
+    }
 
 
-      if (!firebaseAutenticado || !db) {
+    if (!firebaseAutenticado || !db) {
 
-        window.alert(
-          "Aguarde a conexão com o aplicativo."
-        );
+      window.alert("Aguarde a conexão com o aplicativo.");
 
-        return;
-
-      }
-
-
-      const horario =
-        horarioSelecionado;
-
-
-      const agora =
-        new Date();
-
-
-      const dataISO =
-        obterDataHoje();
-
-
-      const horaRegistro =
-        agora.toLocaleTimeString(
-          "pt-BR",
-          {
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        );
-
-
-      const dataRegistro =
-        agora.toLocaleDateString(
-          "pt-BR"
-        );
-
-
-      const idRegistro =
-        `${dataISO}_${horario.replace(
-          ":",
-          "-"
-        )}`;
-
-
-      const registro = {
-
-        horario:
-          horario,
-
-        nome:
-          nomeUsuario ||
-          "Familiar",
-
-        horaRegistro:
-          horaRegistro,
-
-        dataRegistro:
-          dataRegistro,
-
-        dataISO:
-          dataISO,
-
-        dataCompleta:
-          agora.toISOString()
-
-      };
-
-
-      try {
-
-        botaoConfirmar.disabled =
-          true;
-
-        botaoConfirmar.textContent =
-          "Salvando...";
-
-
-        await setDoc(
-          doc(
-            db,
-            "registros",
-            idRegistro
-          ),
-          registro
-        );
-
-
-        /*
-         * Atualização imediata.
-         */
-
-        registros[horario] =
-          registro;
-
-
-        atualizarTela();
-
-        fecharModal();
-
-
-        mostrarAvisoRegistro(
-          horario
-        );
-
-
-        /*
-         * Atualiza histórico.
-         */
-
-        if (
-          dataHistorico &&
-          dataHistorico.value === dataISO
-        ) {
-
-          carregarHistorico(
-            dataISO
-          );
-
-        }
-
-      } catch (erro) {
-
-        console.error(
-          "Erro ao salvar registro:",
-          erro
-        );
-
-
-        window.alert(
-          "Não foi possível salvar o registro."
-        );
-
-      } finally {
-
-        botaoConfirmar.disabled =
-          false;
-
-        botaoConfirmar.textContent =
-          "Confirmar";
-
-      }
+      return;
 
     }
-  );
+
+
+    const horario = horarioSelecionado;
+
+
+    const agora = new Date();
+
+
+    const dataISO = obterDataHoje();
+
+
+    const horaRegistro = agora.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+
+    const dataRegistro = agora.toLocaleDateString("pt-BR");
+
+
+    const idRegistro =
+      `${dataISO}_${horario.replace(":", "-")}`;
+
+
+    const registro = {
+      horario: horario,
+      nome: nomeUsuario || "Familiar",
+      horaRegistro: horaRegistro,
+      dataRegistro: dataRegistro,
+      dataISO: dataISO,
+      dataCompleta: agora.toISOString()
+    };
+
+
+    try {
+
+      botaoConfirmar.disabled = true;
+
+      botaoConfirmar.textContent = "Salvando...";
+
+
+      await setDoc(
+        doc(db, "registros", idRegistro),
+        registro
+      );
+
+
+      registros[horario] = registro;
+
+
+      atualizarTela();
+
+
+      mostrarSucesso(horario, registro);
+
+
+      if (dataHistorico && dataHistorico.value === dataISO) {
+
+        carregarHistorico(dataISO);
+
+      }
+
+    } catch (erro) {
+
+      console.error("Erro ao salvar registro:", erro);
+
+      window.alert("Não foi possível salvar o registro.");
+
+    } finally {
+
+      botaoConfirmar.disabled = false;
+
+      botaoConfirmar.textContent = "Confirmar";
+
+    }
+
+  });
 
 }
 
 
 /* =========================================================
-   AVISO DE REGISTRO
+   MODAL — ETAPA 2: SUCESSO
 ========================================================= */
 
-function mostrarAvisoRegistro(horario) {
+function mostrarSucesso(horario, registro) {
 
-  const antigo =
-    document.getElementById(
-      "aviso-registro"
-    );
+  const nomesRemedios =
+    (MEDICAMENTOS[horario] || []).join(" + ") || "Medicamento";
 
+  if (sucessoRemedios) {
 
-  if (antigo) {
-    antigo.remove();
+    sucessoRemedios.textContent = nomesRemedios;
+
+  }
+
+  if (sucessoHorario) {
+
+    sucessoHorario.textContent =
+      `Horário: ${horario} · registrado às ${registro.horaRegistro}`;
+
+  }
+
+  if (sucessoDadoPor) {
+
+    sucessoDadoPor.textContent = `Dado por: ${registro.nome}`;
+
   }
 
 
-  const aviso =
-    document.createElement(
-      "div"
-    );
+  if (modalPassoConfirmar) {
+
+    modalPassoConfirmar.style.display = "none";
+
+  }
+
+  if (modalPassoSucesso) {
+
+    modalPassoSucesso.style.display = "";
+
+  }
 
 
-  aviso.id =
-    "aviso-registro";
+  if (modalConfirmacao) {
+
+    modalConfirmacao.style.display = "flex";
+
+  }
 
 
-  aviso.innerHTML = `
-    <strong>✓ Medicamento registrado!</strong>
-    <span>Horário: ${horario}</span>
-    <span>Dado por: ${nomeUsuario}</span>
-  `;
+  if (timerFecharSucesso) {
 
+    clearTimeout(timerFecharSucesso);
 
-  aviso.style.position =
-    "fixed";
+  }
 
-  aviso.style.left =
-    "50%";
-
-  aviso.style.bottom =
-    "24px";
-
-  aviso.style.transform =
-    "translateX(-50%)";
-
-  aviso.style.zIndex =
-    "99999";
-
-  aviso.style.width =
-    "calc(100% - 32px)";
-
-  aviso.style.maxWidth =
-    "420px";
-
-  aviso.style.padding =
-    "18px";
-
-  aviso.style.borderRadius =
-    "18px";
-
-  aviso.style.background =
-    "#16a34a";
-
-  aviso.style.color =
-    "#ffffff";
-
-  aviso.style.boxShadow =
-    "0 12px 35px rgba(0,0,0,.25)";
-
-  aviso.style.display =
-    "flex";
-
-  aviso.style.flexDirection =
-    "column";
-
-  aviso.style.gap =
-    "5px";
-
-  aviso.style.textAlign =
-    "center";
-
-  aviso.style.fontFamily =
-    "Arial, sans-serif";
-
-
-  document.body.appendChild(
-    aviso
-  );
-
-
-  setTimeout(
-    function () {
-
-      aviso.style.opacity =
-        "0";
-
-      aviso.style.transition =
-        "opacity .3s ease";
-
-
-      setTimeout(
-        function () {
-
-          if (aviso) {
-            aviso.remove();
-          }
-
-        },
-        350
-      );
-
-    },
-    3500
-  );
+  timerFecharSucesso = setTimeout(fecharModal, 3200);
 
 }
 
@@ -1167,30 +1198,17 @@ function atualizarBotaoNotificacao() {
     return;
   }
 
-
   if (notificacaoAtiva) {
 
-    botaoNotificacao.classList.add(
-      "ativo"
-    );
+    botaoNotificacao.classList.add("ativo");
 
-
-    botaoNotificacao.setAttribute(
-      "aria-label",
-      "Notificações ativadas"
-    );
+    botaoNotificacao.setAttribute("aria-label", "Notificações ativadas");
 
   } else {
 
-    botaoNotificacao.classList.remove(
-      "ativo"
-    );
+    botaoNotificacao.classList.remove("ativo");
 
-
-    botaoNotificacao.setAttribute(
-      "aria-label",
-      "Ativar notificações"
-    );
+    botaoNotificacao.setAttribute("aria-label", "Ativar notificações");
 
   }
 
@@ -1203,111 +1221,75 @@ function atualizarBotaoNotificacao() {
 
 if (botaoNotificacao) {
 
-  botaoNotificacao.addEventListener(
-    "click",
-    async function () {
+  botaoNotificacao.addEventListener("click", async function () {
 
-      if (
-        !("Notification" in window)
-      ) {
+    if (!("Notification" in window)) {
 
-        window.alert(
-          "Este navegador não oferece suporte a notificações."
-        );
+      window.alert("Este navegador não oferece suporte a notificações.");
 
-        return;
+      return;
 
-      }
+    }
 
 
-      try {
+    try {
 
-        if (
-          Notification.permission ===
-          "default"
-        ) {
+      if (Notification.permission === "default") {
 
-          const permissao =
-            await Notification.requestPermission();
+        const permissao = await Notification.requestPermission();
 
-          if (
-            permissao !==
-            "granted"
-          ) {
+        if (permissao !== "granted") {
 
-            notificacaoAtiva =
-              false;
+          notificacaoAtiva = false;
 
-            localStorage.setItem(
-              CHAVE_NOTIFICACAO,
-              "false"
-            );
-
-            atualizarBotaoNotificacao();
-
-            return;
-
-          }
-
-        }
-
-
-        if (
-          Notification.permission ===
-          "granted"
-        ) {
-
-          notificacaoAtiva =
-            !notificacaoAtiva;
-
-
-          localStorage.setItem(
-            CHAVE_NOTIFICACAO,
-            String(
-              notificacaoAtiva
-            )
-          );
-
+          localStorage.setItem(CHAVE_NOTIFICACAO, "false");
 
           atualizarBotaoNotificacao();
 
+          return;
 
-          if (notificacaoAtiva) {
+        }
 
-            try {
+      }
 
-              new Notification(
-                "Cuidado Juntos",
-                {
-                  body:
-                    "As notificações foram ativadas."
-                }
-              );
 
-            } catch (erro) {
+      if (Notification.permission === "granted") {
 
-              console.log(
-                "Notificação não exibida:",
-                erro
-              );
+        notificacaoAtiva = !notificacaoAtiva;
 
-            }
+        localStorage.setItem(
+          CHAVE_NOTIFICACAO,
+          String(notificacaoAtiva)
+        );
+
+        atualizarBotaoNotificacao();
+
+
+        if (notificacaoAtiva) {
+
+          try {
+
+            new Notification("Cuidado Juntos", {
+              body: "As notificações foram ativadas."
+            });
+
+          } catch (erro) {
+
+            console.log("Notificação não exibida:", erro);
 
           }
 
         }
 
-      } catch (erro) {
-
-        console.error(
-          "Erro nas notificações:",
-          erro
-        );
-
       }
 
+    } catch (erro) {
+
+      console.error("Erro nas notificações:", erro);
+
     }
-  );
+
+  });
 
 }
 
@@ -1318,178 +1300,164 @@ if (botaoNotificacao) {
 
 function atualizarTela() {
 
-  const cartoes =
-    document.querySelectorAll(
-      ".medicamento-card"
-    );
+  const agora = new Date();
+
+  const proximoPendente = calcularProximoPendente(agora);
+
+  const cartoes = document.querySelectorAll(".medicamento-card");
+
+  const total = HORARIOS.length;
+
+  const dados = Object.keys(registros).length;
+
+  const pendentes = Math.max(total - dados, 0);
 
 
-  const total =
-    cartoes.length;
+  /*
+   * Card de resumo do dia.
+   */
 
+  if (dataAtualEl) {
 
-  const dados =
-    Object.keys(
-      registros
-    ).length;
+    dataAtualEl.textContent = formatarDataPorExtenso(obterDataHoje());
 
+  }
 
-  const pendentes =
-    Math.max(
-      total - dados,
-      0
-    );
+  if (resumoMensagemEl) {
 
+    resumoMensagemEl.textContent =
+      calcularMensagemMotivacional(dados, total);
 
-  if (totalMedicamentos) {
+  }
 
-    totalMedicamentos.textContent =
-      total;
+  if (contadorTotal) {
 
-         }
+    contadorTotal.textContent = `${dados}/${total}`;
 
+  }
 
-  if (totalDados) {
+  const percentual =
+    total > 0 ? Math.round((dados / total) * 100) : 0;
 
-    totalDados.textContent =
-      dados;
+  if (anelBarra) {
+
+    const offset =
+      PERIMETRO_ANEL - (PERIMETRO_ANEL * percentual) / 100;
+
+    anelBarra.style.strokeDashoffset = String(offset);
+
+    anelBarra.style.stroke =
+      percentual === 100 ? "#16a34a" : "#2563eb";
+
+  }
+
+  if (anelPercentual) {
+
+    anelPercentual.textContent = `${percentual}%`;
 
   }
 
 
-  if (totalPendentes) {
+  /*
+   * Cartões de cada horário.
+   */
 
-    totalPendentes.textContent =
-      pendentes;
+  cartoes.forEach(function (cartao) {
 
-  }
+    const horario = cartao.getAttribute("data-horario");
+
+    if (!horario) {
+      return;
+    }
+
+    const registro = registros[horario];
+
+    const badgeEl = cartao.querySelector("[data-badge]");
+
+    const statusEl = cartao.querySelector("[data-status]");
+
+    const botaoDar = cartao.querySelector(".btn-dar");
+
+    const badge = calcularBadge(horario, agora, proximoPendente);
 
 
-  cartoes.forEach(
-    function (cartao) {
+    cartao.classList.remove(...TODAS_CLASSES_BADGE);
 
-      const horario =
-        cartao.getAttribute(
-          "data-horario"
-        );
+    if (badge.classe) {
 
-      if (!horario) {
-        return;
-      }
+      cartao.classList.add(badge.classe);
 
-      const registro =
-        registros[horario];
+    }
 
-      const statusEl =
-        cartao.querySelector(
-          ".status"
-        );
 
-      const botaoDar =
-        cartao.querySelector(
-          ".btn-dar"
-        );
+    if (badgeEl) {
 
-      let dadoPorEl =
-        cartao.querySelector(
-          ".dado-por"
-        );
+      badgeEl.textContent = badge.rotulo;
 
-      if (registro) {
+      badgeEl.classList.remove(...TODAS_CLASSES_BADGE);
 
-        cartao.classList.add(
-          "registrado"
-        );
+      if (badge.classe) {
 
-        if (statusEl) {
-
-          statusEl.textContent =
-            "Registrado ✓";
-
-        }
-
-        if (botaoDar) {
-
-          botaoDar.disabled =
-            true;
-
-          botaoDar.textContent =
-            "Registrado";
-
-        }
-
-        if (!dadoPorEl) {
-
-          dadoPorEl =
-            document.createElement(
-              "span"
-            );
-
-          dadoPorEl.className =
-            "dado-por";
-
-          const detalhes =
-            cartao.querySelector(
-              ".medicamento-detalhes"
-            );
-
-          if (detalhes) {
-
-            detalhes.appendChild(
-              dadoPorEl
-            );
-
-          }
-
-        }
-
-        dadoPorEl.textContent =
-          `Dado por ${registro.nome} às ${registro.horaRegistro} em ${registro.dataRegistro}`;
-
-      } else {
-
-        cartao.classList.remove(
-          "registrado"
-        );
-
-        if (statusEl) {
-
-          statusEl.textContent =
-            "Pendente";
-
-        }
-
-        if (botaoDar) {
-
-          botaoDar.disabled =
-            false;
-
-          botaoDar.textContent =
-            "Dar";
-
-        }
-
-        if (dadoPorEl) {
-
-          dadoPorEl.remove();
-
-        }
+        badgeEl.classList.add(badge.classe);
 
       }
 
     }
-  );
+
+
+    if (statusEl) {
+
+      statusEl.textContent = calcularTextoStatus(horario, agora);
+
+    }
+
+
+    if (registro) {
+
+      cartao.classList.add("registrado");
+
+      if (botaoDar) {
+
+        botaoDar.disabled = true;
+
+        botaoDar.textContent = "Registrado";
+
+      }
+
+    } else {
+
+      cartao.classList.remove("registrado");
+
+      if (botaoDar) {
+
+        botaoDar.disabled = false;
+
+        botaoDar.textContent = "Dar";
+
+      }
+
+    }
+
+  });
 
 }
 
 
 /*
- * Liga os botões "Dar" assim que a
+ * Liga os cliques dos cartões assim que a
  * página carrega, já que os cartões
  * existem no HTML desde o início.
  */
 
 configurarBotoesDar();
+
+
+/*
+ * Atualiza os badges/contagens regressivas
+ * mesmo sem novos registros — o tempo passa.
+ */
+
+setInterval(atualizarTela, 30000);
 
 
 /* =========================================================
@@ -1506,62 +1474,44 @@ function carregarRegistrosHoje() {
 
     unsubscribeHoje();
 
-    unsubscribeHoje =
-      null;
+    unsubscribeHoje = null;
 
   }
 
-  const dataISO =
-    obterDataHoje();
+  const dataISO = obterDataHoje();
 
-  const consulta =
-    query(
-      collection(
-        db,
-        "registros"
-      ),
-      where(
-        "dataISO",
-        "==",
-        dataISO
-      )
-    );
+  const consulta = query(
+    collection(db, "registros"),
+    where("dataISO", "==", dataISO)
+  );
 
-  unsubscribeHoje =
-    onSnapshot(
-      consulta,
-      function (snapshot) {
+  unsubscribeHoje = onSnapshot(
+    consulta,
+    function (snapshot) {
 
-        registros = {};
+      registros = {};
 
-        snapshot.forEach(
-          function (docSnap) {
+      snapshot.forEach(function (docSnap) {
 
-            const dado =
-              docSnap.data();
+        const dado = docSnap.data();
 
-            if (dado && dado.horario) {
+        if (dado && dado.horario) {
 
-              registros[dado.horario] =
-                dado;
+          registros[dado.horario] = dado;
 
-            }
+        }
 
-          }
-        );
+      });
 
-        atualizarTela();
+      atualizarTela();
 
-      },
-      function (erro) {
+    },
+    function (erro) {
 
-        console.error(
-          "Erro ao carregar registros de hoje:",
-          erro
-        );
+      console.error("Erro ao carregar registros de hoje:", erro);
 
-      }
-    );
+    }
+  );
 
 }
 
@@ -1580,61 +1530,57 @@ function carregarHistorico(dataSelecionada) {
 
     unsubscribeHistorico();
 
-    unsubscribeHistorico =
-      null;
+    unsubscribeHistorico = null;
 
   }
 
-  const consulta =
-    query(
-      collection(
-        db,
-        "registros"
-      ),
-      where(
-        "dataISO",
-        "==",
-        dataSelecionada
-      )
-    );
+  const consulta = query(
+    collection(db, "registros"),
+    where("dataISO", "==", dataSelecionada)
+  );
 
-  unsubscribeHistorico =
-    onSnapshot(
-      consulta,
-      function (snapshot) {
+  unsubscribeHistorico = onSnapshot(
+    consulta,
+    function (snapshot) {
 
-        registrosHistorico = {};
+      registrosHistorico = {};
 
-        snapshot.forEach(
-          function (docSnap) {
+      snapshot.forEach(function (docSnap) {
 
-            const dado =
-              docSnap.data();
+        const dado = docSnap.data();
 
-            if (dado && dado.horario) {
+        if (dado && dado.horario) {
 
-              registrosHistorico[dado.horario] =
-                dado;
+          registrosHistorico[dado.horario] = dado;
 
-            }
+        }
 
-          }
-        );
+      });
 
-        renderizarHistorico();
+      renderizarHistorico();
 
-      },
-      function (erro) {
+    },
+    function (erro) {
 
-        console.error(
-          "Erro ao carregar histórico:",
-          erro
-        );
+      console.error("Erro ao carregar histórico:", erro);
 
-      }
-    );
+    }
+  );
 
 }
+
+
+const ICONES_HORARIO = {
+  "08:00": "☀️",
+  "09:00": "🌤️",
+  "10:00": "🌞",
+  "12:00": "🍽️",
+  "16:00": "🌤️",
+  "20:00": "🌙",
+  "21:00": "🌙",
+  "22:00": "🌙",
+  "00:00": "🌌"
+};
 
 
 function renderizarHistorico() {
@@ -1643,67 +1589,76 @@ function renderizarHistorico() {
     return;
   }
 
-  const horariosComRegistro =
-    HORARIOS.filter(
-      function (horario) {
+  const quantidadeRegistrada = HORARIOS.filter(function (horario) {
 
-        return Boolean(
-          registrosHistorico[horario]
-        );
+    return Boolean(registrosHistorico[horario]);
 
-      }
-    );
+  }).length;
+
 
   if (historicoTotal) {
 
-    const quantidade =
-      horariosComRegistro.length;
-
     historicoTotal.textContent =
-      quantidade +
-      (quantidade === 1
-        ? " registro"
-        : " registros");
+      quantidadeRegistrada +
+      (quantidadeRegistrada === 1 ? " registro" : " registros");
 
   }
 
-  if (horariosComRegistro.length === 0) {
-
-    listaHistorico.innerHTML =
-      '<p class="historico-vazio">Nenhum medicamento registrado nesta data.</p>';
-
-    return;
-
-  }
-
-  listaHistorico.innerHTML =
-    "";
-
-  horariosComRegistro.forEach(
-    function (horario) {
-
-      const registro =
-        registrosHistorico[horario];
-
-      const item =
-        document.createElement(
-          "div"
-        );
-
-      item.className =
-        "historico-item";
-
-      item.innerHTML =
-        "<strong>" + horario + "</strong>" +
-        "<span>Dado por " + registro.nome +
-        " às " + registro.horaRegistro + "</span>";
-
-      listaHistorico.appendChild(
-        item
-      );
-
-    }
+  const percentual = Math.round(
+    (quantidadeRegistrada / HORARIOS.length) * 100
   );
+
+  if (historicoAnelBarra) {
+
+    const offset =
+      PERIMETRO_ANEL - (PERIMETRO_ANEL * percentual) / 100;
+
+    historicoAnelBarra.style.strokeDashoffset = String(offset);
+
+    historicoAnelBarra.style.stroke =
+      percentual === 100 ? "#16a34a" : "#2563eb";
+
+  }
+
+  if (historicoAnelPercentual) {
+
+    historicoAnelPercentual.textContent = `${percentual}%`;
+
+  }
+
+
+  listaHistorico.innerHTML = "";
+
+  HORARIOS.forEach(function (horario) {
+
+    const registro = registrosHistorico[horario];
+
+    const icone = ICONES_HORARIO[horario] || "💊";
+
+    const item = document.createElement("div");
+
+    item.className = registro
+      ? "historico-item tomado"
+      : "historico-item nao-registrado";
+
+    const detalhe = registro
+      ? `Dado por ${registro.nome} às ${registro.horaRegistro}`
+      : "Ainda não registrado";
+
+    item.innerHTML = `
+      <div class="icone-medicamento">${icone}</div>
+      <div class="historico-item-detalhes">
+        <strong>${horario}</strong>
+        <span>${detalhe}</span>
+      </div>
+      <span class="historico-status-chip">
+        ${registro ? "Tomado" : "Pendente"}
+      </span>
+    `;
+
+    listaHistorico.appendChild(item);
+
+  });
 
 }
 
@@ -1713,70 +1668,75 @@ function renderizarHistorico() {
    (acontece em paralelo, sem travar o login)
 ========================================================= */
 
-const firebaseApp =
-  initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
-auth =
-  getAuth(firebaseApp);
+auth = getAuth(firebaseApp);
 
-db =
-  getFirestore(firebaseApp);
+db = getFirestore(firebaseApp);
 
 signInAnonymously(auth)
-  .then(
-    function () {
+  .then(function () {
 
-      firebaseAutenticado =
-        true;
+    firebaseAutenticado = true;
 
-      const appVisivel =
-        telaApp &&
-        telaApp.style.display !== "none";
+    const appVisivel =
+      telaApp && telaApp.style.display !== "none";
 
-      if (appVisivel) {
+    if (appVisivel) {
 
-        carregarRegistrosHoje();
+      carregarRegistrosHoje();
 
-        const historicoVisivel =
-          paginaHistorico &&
-          !paginaHistorico.classList.contains(
-            "escondido"
-          );
+      const historicoVisivel =
+        paginaHistorico && paginaHistorico.style.display !== "none";
 
-        if (historicoVisivel && dataHistorico) {
+      if (historicoVisivel && dataHistorico) {
 
-          carregarHistorico(
-            dataHistorico.value
-          );
-
-        }
+        carregarHistorico(dataHistorico.value);
 
       }
 
     }
-  )
-  .catch(
-    function (erro) {
 
-      console.error(
-        "Erro ao conectar ao Firebase:",
-        erro
-      );
+  })
+  .catch(function (erro) {
 
-    }
-  );
+    console.error("Erro ao conectar ao Firebase:", erro);
+
+  });
 
 
 /* =========================================================
-   TELA INICIAL
+   TELA INICIAL (COM SPLASH)
 ========================================================= */
 
-if (nomeUsuario) {
+function iniciarAposSplash() {
 
-  mostrarAplicativo();
+  if (nomeUsuario) {
 
-} else {
+    mostrarAplicativo();
 
-  mostrarLogin();
+  } else {
+
+    mostrarLogin();
+
+  }
 
 }
+
+setTimeout(function () {
+
+  if (telaSplash) {
+
+    telaSplash.style.opacity = "0";
+
+    setTimeout(function () {
+
+      telaSplash.style.display = "none";
+
+    }, 400);
+
+  }
+
+  iniciarAposSplash();
+
+}, 1400);
