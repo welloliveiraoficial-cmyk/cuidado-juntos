@@ -1,0 +1,15 @@
+name: Verificar atrasos de medicamentos
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar endpoint de verificação de atrasos
+        run: |
+          curl -s -X POST "https://SEU-PROJETO.vercel.app/api/verificar-atrasos" \
+            -H "x-api-key: ${{ secrets.API_SECRET }}"
