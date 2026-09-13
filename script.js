@@ -1,7 +1,7 @@
 /* =========================================================
    CUIDADO JUNTOS
    SCRIPT PRINCIPAL
-   VERSÃO PREMIUM (v17 — push instantâneo via Vercel)
+   VERSÃO PREMIUM (v18 — push instantâneo via Vercel)
 ========================================================= */
 
 
@@ -65,9 +65,9 @@ const VAPID_KEY = "BFVSP3o_fL9b9qYzNwaHR3-DytRPRlmsPMoaBdbwT0uZOcUMd8ZCkUrfpVaZu
  */
 
 const URL_NOTIFICAR_PUSH =
-  "https://cuidado-juntos-api.vercel.app";
+  "https://SEU-PROJETO.vercel.app/api/notificar-registro";
 
-const CHAVE_API_PUSH = "050619Well@";
+const CHAVE_API_PUSH = "SUBSTITUA_PELA_SUA_CHAVE_SECRETA";
 
 
 /* =========================================================
@@ -135,7 +135,8 @@ const HORARIOS = [
   "20:00",
   "21:00",
   "22:00",
-  "00:00"
+  "00:00",
+  "23:58"
 ];
 
 
@@ -154,7 +155,8 @@ const MEDICAMENTOS = {
   "20:00": ["Atorvastatina"],
   "21:00": ["Losartana", "Quetiapina"],
   "22:00": ["Clonazepam"],
-  "00:00": ["Levetiracetam"]
+  "00:00": ["Levetiracetam"],
+  "23:58": ["Teste"]
 };
 
 
@@ -173,7 +175,8 @@ const PERIODOS = {
   "20:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "21:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "22:00": { rotulo: "Noturno", classe: "periodo-noite" },
-  "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" }
+  "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" },
+  "23:58": { rotulo: "Teste", classe: "periodo-madrugada" }
 };
 
 const TODAS_CLASSES_BADGE = [
@@ -1838,7 +1841,8 @@ const ICONES_HORARIO = {
   "20:00": "🌙",
   "21:00": "🌙",
   "22:00": "🌙",
-  "00:00": "🌌"
+  "00:00": "🌌",
+  "23:58": "🧪"
 };
 
 
