@@ -25,8 +25,14 @@ import {
   where,
   onSnapshot,
   setDoc,
-  doc
+  doc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getMessaging,
+  getToken
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 
 /* =========================================================
@@ -41,6 +47,15 @@ const firebaseConfig = {
   messagingSenderId: "453583954077",
   appId: "1:453583954077:web:c55a6fd18f107a0c447474"
 };
+
+/*
+ * IMPORTANTE: troque pela sua chave gerada em
+ * Firebase Console → Configurações do projeto →
+ * Cloud Messaging → "Certificados push da Web" →
+ * Gerar par de chaves.
+ */
+
+const VAPID_KEY = "SUBSTITUA_PELA_SUA_CHAVE_VAPID";
 
 
 /* =========================================================
@@ -1264,6 +1279,70 @@ function avisarFamiliaSobreRegistro(registro) {
 
 }
 
+/* =========================================================
+   REGISTRAR NOTIFICAÇÃO PUSH DE VERDADE (FCM)
+   Salva no Firestore o "endereço" deste aparelho, para
+   que a Cloud Function consiga mandar notificação pra ele
+   mesmo com o app fechado.
+========================================================= */
+
+async function registrarTokenPush() {
+
+  if (!notificacaoAtiva) {
+    return;
+  }
+
+  if (!("Notification" in window) || Notification.permission !== "granted") {
+    return;
+  }
+
+  if (!("serviceWorker" in navigator)) {
+    return;
+  }
+
+  if (!VAPID_KEY || VAPID_KEY === "SUBSTITUA_PELA_SUA_CHAVE_VAPID") {
+
+    console.warn(
+      "Notificação push não configurada: defina VAPID_KEY em script.js."
+    );
+
+    return;
+
+  }
+
+  try {
+
+    const registroSW = await navigator.serviceWorker.ready;
+
+    const messaging = getMessaging(firebaseApp);
+
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registroSW
+    });
+
+    if (!token) {
+      return;
+    }
+
+    await setDoc(
+      doc(db, "dispositivos", token),
+      {
+        nome: nomeUsuario || "Família",
+        atualizadoEm: serverTimestamp()
+      },
+      { merge: true }
+    );
+
+  } catch (erro) {
+
+    console.error("Erro ao registrar notificação push:", erro);
+
+  }
+
+}
+
+
 function mostrarNotificacaoLocal(titulo, corpo) {
 
   const opcoes = {
@@ -1367,6 +1446,8 @@ if (botaoNotificacao) {
             console.log("Notificação não exibida:", erro);
 
           }
+
+          registrarTokenPush();
 
         }
 
@@ -1797,6 +1878,8 @@ signInAnonymously(auth)
   .then(function () {
 
     firebaseAutenticado = true;
+
+    registrarTokenPush();
 
     const appVisivel =
       telaApp && telaApp.style.display !== "none";
