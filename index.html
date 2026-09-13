@@ -18,7 +18,7 @@
   href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
   rel="stylesheet"
 >
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=17">
 <link rel="icon" type="image/png" href="img/logo.png">
 
 <!-- PWA: app instalável -->
@@ -344,15 +344,15 @@
 </div>
 
 <!-- SCRIPTS -->
-<script type="module" src="script.js?v=16"></script>
-<script src="native-notifications.js?v=16"></script>
+<script type="module" src="script.js?v=17"></script>
+<script src="native-notifications.js?v=17"></script>
 
 <!-- REGISTRO DO SERVICE WORKER (PWA instalável) -->
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker
-        .register("sw.js?v=1")
+        .register("sw.js?v=5")
         .catch(function (erro) {
           console.error("Erro ao registrar o service worker:", erro);
         });
@@ -362,4 +362,5 @@
 </body>
 </html>
 
-          
+
+  
