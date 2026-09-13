@@ -65,7 +65,7 @@ const VAPID_KEY = "BFVSP3o_fL9b9qYzNwaHR3-DytRPRlmsPMoaBdbwT0uZOcUMd8ZCkUrfpVaZu
  */
 
 const URL_NOTIFICAR_PUSH =
-  "https://vercel.com/well-oliveira/cuidado-juntos-api";
+  "https://cuidado-juntos-api.vercel.app";
 
 const CHAVE_API_PUSH = "cj9f8a2b7c1e4d6f0a3b5c8d1e2f4a6b";
 
