@@ -8,14 +8,52 @@
    sobre quem já tomou o remédio.
 ========================================================= */
 
-const CACHE_NAME = "cuidado-juntos-v3";
+/* =========================================================
+   NOTIFICAÇÃO PUSH COM O APP FECHADO (Firebase Messaging)
+   Isso roda mesmo sem nenhuma aba do site aberta — é o que
+   permite o aviso chegar na central de notificações do
+   celular de verdade.
+========================================================= */
+
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
+
+firebase.initializeApp({
+  apiKey: "AIzaSyAwywIKk97Ro_NHutu4T7zeL_uCdZ2juM8",
+  authDomain: "cuidado-juntos.firebaseapp.com",
+  projectId: "cuidado-juntos",
+  storageBucket: "cuidado-juntos.firebasestorage.app",
+  messagingSenderId: "453583954077",
+  appId: "1:453583954077:web:c55a6fd18f107a0c447474"
+});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function (payload) {
+
+  const titulo =
+    (payload.notification && payload.notification.title) || "Cuidado Juntos";
+
+  const corpo =
+    (payload.notification && payload.notification.body) || "";
+
+  self.registration.showNotification(titulo, {
+    body: corpo,
+    icon: "img/logo.png",
+    badge: "img/icone-notificacao.png",
+    tag: "cuidado-juntos-push"
+  });
+
+});
+
+const CACHE_NAME = "cuidado-juntos-v4";
 
 const ARQUIVOS_ESSENCIAIS = [
   "./",
   "./index.html",
-  "./style.css?v=15",
-  "./script.js?v=15",
-  "./native-notifications.js?v=15",
+  "./style.css?v=16",
+  "./script.js?v=16",
+  "./native-notifications.js?v=16",
   "./manifest.json",
   "./img/logo.png",
   "./img/icone-notificacao.png"
@@ -112,3 +150,4 @@ self.addEventListener("fetch", function (evento) {
   );
 
 });
+                                      
