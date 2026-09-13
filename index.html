@@ -29,9 +29,9 @@
 
 <body>
 
-  <!-- =========================
+  <!-- =====================================================
        TELA DE LOGIN
-  ========================== -->
+  ====================================================== -->
 
   <section
     id="tela-login"
@@ -42,14 +42,14 @@
 
       <img
         src="img/logo.png"
-        alt="Cuidado Juntos"
+        alt="Logo Cuidado Juntos"
         class="logo-login"
       >
 
       <h1>Cuidado Juntos</h1>
 
       <p class="subtitulo-login">
-        Cuidando de quem amamos
+        Cuidando juntos de quem amamos.
       </p>
 
       <div class="campo-login">
@@ -87,9 +87,9 @@
   </section>
 
 
-  <!-- =========================
+  <!-- =====================================================
        APLICATIVO
-  ========================== -->
+  ====================================================== -->
 
   <section
     id="tela-app"
@@ -97,7 +97,9 @@
     style="display: none;"
   >
 
-    <!-- CABEÇALHO -->
+    <!-- ===================================================
+         CABEÇALHO
+    ==================================================== -->
 
     <header class="cabecalho">
 
@@ -105,17 +107,19 @@
 
         <img
           src="img/logo.png"
-          alt="Cuidado Juntos"
+          alt="Logo Cuidado Juntos"
           class="logo-app"
         >
 
-        <div>
+        <div class="marca-texto">
 
-          <h1>Cuidado Juntos</h1>
+          <strong>
+            Cuidado Juntos
+          </strong>
 
-          <p>
+          <span>
             Cuidando em família
-          </p>
+          </span>
 
         </div>
 
@@ -125,16 +129,20 @@
 
         <button
           id="btn-notificacao"
+          class="btn-notificacao"
           type="button"
-          aria-label="Notificações"
+          aria-label="Ativar notificações"
+          title="Ativar notificações"
         >
           🔔
         </button>
 
         <button
           id="btn-sair"
+          class="btn-sair"
           type="button"
           aria-label="Sair"
+          title="Sair"
         >
           ↪️
         </button>
@@ -144,7 +152,9 @@
     </header>
 
 
-    <!-- NAVEGAÇÃO -->
+    <!-- ===================================================
+         NAVEGAÇÃO
+    ==================================================== -->
 
     <nav class="navegacao-app">
 
@@ -169,32 +179,43 @@
     </nav>
 
 
-    <!-- =========================
-         PÁGINA MEDICAMENTOS
-    ========================== -->
+    <!-- ===================================================
+         PÁGINA DE MEDICAMENTOS
+    ==================================================== -->
 
     <main
       id="pagina-medicamentos"
       class="pagina"
     >
 
-      <div class="boas-vindas">
+      <!-- BOAS-VINDAS -->
 
-        <h2>
-          Olá,
-          <span id="nome-exibido"></span>! 👋
-        </h2>
+      <section class="boas-vindas">
 
-        <p>
-          Confira os medicamentos programados para hoje.
-        </p>
+        <div class="boas-vindas-conteudo">
 
-      </div>
+          <span class="pequeno-texto">
+            Seu cuidado diário
+          </span>
+
+          <h2>
+            Olá,
+            <span id="nome-exibido"></span>!
+            <span class="coracao">💙</span>
+          </h2>
+
+          <p>
+            Confira os medicamentos programados para hoje.
+          </p>
+
+        </div>
+
+      </section>
 
 
-      <!-- RESUMO -->
+      <!-- RESUMO DO DIA -->
 
-      <div class="resumo">
+      <section class="resumo">
 
         <div class="resumo-card">
 
@@ -225,7 +246,7 @@
 
           <div>
 
-            <strong id="total-tomados">
+            <strong id="total-dados">
               0
             </strong>
 
@@ -237,17 +258,38 @@
 
         </div>
 
-      </div>
+
+        <div class="resumo-card">
+
+          <span class="resumo-icone">
+            ⏰
+          </span>
+
+          <div>
+
+            <strong id="total-pendentes">
+              9
+            </strong>
+
+            <span>
+              Pendentes
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
 
 
-      <!-- TÍTULO -->
+      <!-- TÍTULO DA LISTA -->
 
-      <div class="titulo-secao">
+      <section class="titulo-secao">
 
         <div>
 
           <h2>
-            Medicamentos de hoje
+            Seus medicamentos
           </h2>
 
           <p>
@@ -256,12 +298,14 @@
 
         </div>
 
-      </div>
+      </section>
 
 
-      <!-- LISTA DE HORÁRIOS -->
+      <!-- =================================================
+           LISTA DE MEDICAMENTOS
+      ================================================== -->
 
-      <div
+      <section
         id="lista-medicamentos"
         class="lista-medicamentos"
       >
@@ -274,19 +318,27 @@
           data-horario="08:00"
         >
 
-          <div class="horario">
-            <span>08:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 08:00
-            </p>
+              <span class="medicamento-horario">
+                08:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -308,19 +360,27 @@
           data-horario="09:00"
         >
 
-          <div class="horario">
-            <span>09:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 09:00
-            </p>
+              <span class="medicamento-horario">
+                09:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -342,19 +402,27 @@
           data-horario="10:00"
         >
 
-          <div class="horario">
-            <span>10:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 10:00
-            </p>
+              <span class="medicamento-horario">
+                10:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -376,19 +444,27 @@
           data-horario="12:00"
         >
 
-          <div class="horario">
-            <span>12:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 12:00
-            </p>
+              <span class="medicamento-horario">
+                12:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -410,19 +486,27 @@
           data-horario="16:00"
         >
 
-          <div class="horario">
-            <span>16:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 16:00
-            </p>
+              <span class="medicamento-horario">
+                16:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -444,19 +528,27 @@
           data-horario="20:00"
         >
 
-          <div class="horario">
-            <span>20:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 20:00
-            </p>
+              <span class="medicamento-horario">
+                20:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -478,19 +570,27 @@
           data-horario="21:00"
         >
 
-          <div class="horario">
-            <span>21:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 21:00
-            </p>
+              <span class="medicamento-horario">
+                21:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -512,19 +612,27 @@
           data-horario="22:00"
         >
 
-          <div class="horario">
-            <span>22:00</span>
+          <div class="icone-medicamento">
+            💊
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 22:00
-            </p>
+              <span class="medicamento-horario">
+                22:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -546,19 +654,27 @@
           data-horario="00:00"
         >
 
-          <div class="horario">
-            <span>00:00</span>
+          <div class="icone-medicamento">
+            🌙
           </div>
 
           <div class="medicamento-info">
 
-            <h3>
-              Medicamento
-            </h3>
+            <div class="medicamento-detalhes">
 
-            <p>
-              Horário das 00:00
-            </p>
+              <span class="medicamento-horario">
+                00:00
+              </span>
+
+              <h3>
+                Medicamento
+              </h3>
+
+              <p class="status">
+                Aguardando registro
+              </p>
+
+            </div>
 
           </div>
 
@@ -573,21 +689,21 @@
         </article>
 
 
-      </div>
+      </section>
 
     </main>
 
 
-    <!-- =========================
+    <!-- ===================================================
          PÁGINA HISTÓRICO
-    ========================== -->
+    ==================================================== -->
 
     <main
       id="pagina-historico"
       class="pagina escondido"
     >
 
-      <div class="titulo-secao">
+      <div class="pagina-cabecalho">
 
         <div>
 
@@ -638,9 +754,9 @@
 
         <div class="historico-vazio">
 
-          <div>
+          <span>
             📋
-          </div>
+          </span>
 
           <h3>
             Nenhum registro
@@ -668,9 +784,9 @@
   </section>
 
 
-  <!-- =========================
+  <!-- =====================================================
        MODAL DE CONFIRMAÇÃO
-  ========================== -->
+  ====================================================== -->
 
   <div
     id="modal-confirmacao"
@@ -716,196 +832,174 @@
   </div>
 
 
-  <!-- =========================
+  <!-- =====================================================
        LOGIN DIRETO
-       NÃO DEPENDE DO script.js
-  ========================== -->
+  ====================================================== -->
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
 
-      const telaLogin =
-        document.getElementById("tela-login");
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
 
-      const telaApp =
-        document.getElementById("tela-app");
+        const telaLogin =
+          document.getElementById("tela-login");
 
-      const nomeInput =
-        document.getElementById("nome-usuario");
+        const telaApp =
+          document.getElementById("tela-app");
 
-      const botaoEntrar =
-        document.getElementById("btn-entrar");
+        const nomeInput =
+          document.getElementById("nome-usuario");
 
-      const erroLogin =
-        document.getElementById("erro-login");
+        const botaoEntrar =
+          document.getElementById("btn-entrar");
 
-      const nomeExibido =
-        document.getElementById("nome-exibido");
+        const erroLogin =
+          document.getElementById("erro-login");
 
-
-      function entrarNoAplicativo() {
-
-        const nome =
-          nomeInput.value.trim();
+        const nomeExibido =
+          document.getElementById("nome-exibido");
 
 
-        if (nome === "") {
+        function entrarNoAplicativo() {
 
-          erroLogin.textContent =
-            "Digite seu primeiro nome para entrar.";
-
-          nomeInput.focus();
-
-          return;
-        }
+          const nome =
+            nomeInput.value.trim();
 
 
-        /*
-         * Salva o nome no aparelho
-         */
+          if (nome === "") {
 
-        localStorage.setItem(
-          "cuidadoJuntos_nomeUsuario",
-          nome
-        );
+            erroLogin.textContent =
+              "Digite seu primeiro nome para entrar.";
 
+            nomeInput.focus();
 
-        /*
-         * Mostra o nome
-         */
-
-        nomeExibido.textContent =
-          nome;
-
-
-        /*
-         * Remove mensagem de erro
-         */
-
-        erroLogin.textContent = "";
-
-
-        /*
-         * ESCONDE A TELA DE LOGIN
-         * usando display diretamente.
-         * Assim não dependemos do CSS.
-         */
-
-        telaLogin.style.display =
-          "none";
-
-
-        /*
-         * MOSTRA O APLICATIVO
-         */
-
-        telaApp.style.display =
-          "block";
-
-
-        /*
-         * Volta para o topo
-         */
-
-        window.scrollTo(
-          0,
-          0
-        );
-
-      }
-
-
-      /*
-       * Botão Entrar
-       */
-
-      botaoEntrar.addEventListener(
-        "click",
-        entrarNoAplicativo
-      );
-
-
-      /*
-       * Tecla Enter
-       */
-
-      nomeInput.addEventListener(
-        "keydown",
-        function (evento) {
-
-          if (evento.key === "Enter") {
-
-            evento.preventDefault();
-
-            entrarNoAplicativo();
-
+            return;
           }
 
+
+          localStorage.setItem(
+            "cuidadoJuntos_nomeUsuario",
+            nome
+          );
+
+
+          nomeExibido.textContent =
+            nome;
+
+
+          erroLogin.textContent =
+            "";
+
+
+          telaLogin.style.display =
+            "none";
+
+
+          telaApp.style.display =
+            "block";
+
+
+          telaApp.classList.remove(
+            "escondido"
+          );
+
+
+          window.scrollTo(
+            0,
+            0
+          );
+
         }
-      );
 
 
-      /*
-       * Se já existe um nome salvo,
-       * entra automaticamente.
-       */
-
-      const nomeSalvo =
-        localStorage.getItem(
-          "cuidadoJuntos_nomeUsuario"
+        botaoEntrar.addEventListener(
+          "click",
+          entrarNoAplicativo
         );
 
 
-      if (nomeSalvo) {
+        nomeInput.addEventListener(
+          "keydown",
+          function (evento) {
 
-        nomeInput.value =
-          nomeSalvo;
+            if (evento.key === "Enter") {
 
-        nomeExibido.textContent =
-          nomeSalvo;
+              evento.preventDefault();
 
-        telaLogin.style.display =
-          "none";
+              entrarNoAplicativo();
 
-        telaApp.style.display =
-          "block";
+            }
+
+          }
+        );
+
+
+        const nomeSalvo =
+          localStorage.getItem(
+            "cuidadoJuntos_nomeUsuario"
+          );
+
+
+        if (nomeSalvo) {
+
+          nomeInput.value =
+            nomeSalvo;
+
+          nomeExibido.textContent =
+            nomeSalvo;
+
+          telaLogin.style.display =
+            "none";
+
+          telaApp.style.display =
+            "block";
+
+          telaApp.classList.remove(
+            "escondido"
+          );
+
+        }
 
       }
 
-    });
+    );
+
   </script>
 
 
-  <!-- =========================
+  <!-- =====================================================
        FIREBASE / APLICATIVO
-  ========================== -->
+  ====================================================== -->
 
   <script
     type="module"
-    src="script.js?v=5"
+    src="script.js?v=6"
   ></script>
 
 
-  <!-- =========================
+  <!-- =====================================================
        CAPACITOR
-  ========================== -->
+  ====================================================== -->
 
   <script type="importmap">
+
   {
     "imports": {
       "@capacitor/core": "https://unpkg.com/@capacitor/core@8.5.2/dist/esm/index.js",
       "@capacitor/local-notifications": "https://unpkg.com/@capacitor/local-notifications@8.3.1/dist/esm/index.js"
     }
   }
+
   </script>
 
 
   <script
     type="module"
-    src="native-notifications.js?v=5"
+    src="native-notifications.js?v=6"
   ></script>
 
 
 </body>
 
-  </html>
+</html>
