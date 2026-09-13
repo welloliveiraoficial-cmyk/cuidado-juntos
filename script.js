@@ -1320,15 +1320,9 @@ function avisarFamiliaSobreRegistro(registro) {
     return;
   }
 
-  const remedios = MEDICAMENTOS[registro.horario];
-
-  const listaRemedios = Array.isArray(remedios) && remedios.length
-    ? remedios.join(", ")
-    : "medicamento";
-
   const titulo = "Cuidado Juntos";
 
-  const corpo = `${registro.nome || "Alguém"} registrou ${listaRemedios} das ${registro.horario}.`;
+  const corpo = `${registro.nome || "Alguém"} deu o remédio das ${registro.horario}.`;
 
   mostrarNotificacaoLocal(titulo, corpo);
 
