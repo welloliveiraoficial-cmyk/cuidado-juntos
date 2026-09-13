@@ -1,609 +1,341 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
-  >
-
-  <meta name="theme-color" content="#2563eb">
-
-  <meta
-    name="description"
-    content="Cuidado Juntos - organização dos medicamentos em família"
-  >
-
-  <title>Cuidado Juntos</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <link rel="icon" type="image/png" href="img/logo.png">
+<meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+>
+<meta name="theme-color" content="#2563eb">
+<meta
+  name="description"
+  content="Cuidado Juntos - organização dos medicamentos em família"
+>
+<title>Cuidado Juntos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+  rel="stylesheet"
+>
+<link rel="stylesheet" href="style.css?v=12">
+<link rel="icon" type="image/png" href="img/logo.png">
 </head>
-
 <body>
 
-  <!-- TELA DE LOGIN -->
-  <section id="tela-login" class="tela-login">
+<!-- TELA DE SPLASH -->
+<div id="tela-splash" class="tela-splash">
+  <div class="splash-conteudo">
+    <div class="splash-logo-area">
+      <img src="img/logo.png" alt="Logo Cuidado Juntos" class="splash-logo">
+    </div>
+    <h1>Cuidado Juntos</h1>
+    <p>Saúde em família, sempre!</p>
+    <div class="splash-carregando">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
 
-    <div class="login-container">
+<!-- TELA DE LOGIN -->
+<section id="tela-login" class="tela-login" style="display: none;">
+  <div class="login-container">
+    <div class="login-logo-area">
+      <img src="img/logo.png" alt="Logo Cuidado Juntos" class="logo-login">
+    </div>
 
-      <div class="login-logo-area">
-        <img
-          src="img/logo.png"
-          alt="Logo Cuidado Juntos"
-          class="logo-login"
-        >
-      </div>
+    <h1>Bem-vindo!</h1>
+    <p class="subtitulo-login">
+      Digite seu nome para entrar no aplicativo.
+    </p>
 
-      <h1>Cuidado Juntos</h1>
-
-      <p class="subtitulo-login">
-        Cuidando juntos de quem amamos.
-      </p>
-
-      <div class="login-form">
-
-        <label for="nome-usuario">
-          Como podemos chamar você?
-        </label>
-
+    <div class="login-form">
+      <div class="campo-com-icone">
+        <span class="icone-campo">👤</span>
         <input
           type="text"
           id="nome-usuario"
-          placeholder="Digite seu primeiro nome"
+          placeholder="Seu nome"
           autocomplete="given-name"
           maxlength="30"
         >
-
-        <button
-          type="button"
-          id="btn-entrar"
-          class="btn-entrar"
-        >
-          Entrar no aplicativo
-        </button>
-
-        <p id="erro-login" class="erro-login"></p>
-
       </div>
 
+      <button type="button" id="btn-entrar" class="btn-entrar">
+        <span>Entrar</span>
+        <span class="seta-entrar">→</span>
+      </button>
+
+      <p id="erro-login" class="erro-login"></p>
     </div>
 
-  </section>
+    <p class="login-seguranca">🛡️ Seus dados estão seguros</p>
+  </div>
 
+  <p class="login-rodape">Cuidando juntos de quem amamos.</p>
+</section>
 
-  <!-- TELA PRINCIPAL DO APP -->
-  <section id="tela-app" class="tela-app" style="display: none;">
+<!-- TELA PRINCIPAL DO APP -->
+<section id="tela-app" class="tela-app" style="display: none;">
 
-    <!-- CABEÇALHO -->
-    <header class="cabecalho">
-
-      <div class="cabecalho-esquerda">
-
-        <img
-          src="img/logo.png"
-          alt="Logo Cuidado Juntos"
-          class="logo-app"
-        >
-
+  <!-- CABEÇALHO -->
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <div class="logo-area">
+        <img src="img/logo.png" alt="Logo Cuidado Juntos" class="logo-app">
         <div class="marca-texto">
           <h1>Cuidado Juntos</h1>
-          <p>Família cuidando com amor</p>
+          <p>Saúde em família, sempre!</p>
         </div>
-
       </div>
 
-      <div class="cabecalho-direita">
-
-        <button
-          type="button"
-          id="btn-notificacao"
-          class="btn-icone"
-          aria-label="Notificações"
-        >
+      <div class="acoes-cabecalho">
+        <button type="button" id="btn-notificacao" class="btn-icone" aria-label="Notificações">
           🔔
         </button>
-
-        <button
-          type="button"
-          id="btn-sair"
-          class="btn-icone"
-          aria-label="Sair"
-        >
+        <button type="button" id="btn-sair" class="btn-icone" aria-label="Sair">
           ⎋
         </button>
-
       </div>
+    </div>
+  </header>
 
-    </header>
-
-
-    <!-- NAVEGAÇÃO -->
-    <nav class="navegacao">
-
-      <button
-        type="button"
-        id="btn-pagina-medicamentos"
-        class="btn-navegacao ativo"
-      >
-        💊 Medicamentos
-      </button>
-
-      <button
-        type="button"
-        id="btn-pagina-historico"
-        class="btn-navegacao"
-      >
-        📋 Histórico
-      </button>
-
-    </nav>
-
+  <div class="container-app">
 
     <!-- PÁGINA DE MEDICAMENTOS -->
     <main id="pagina-medicamentos" class="pagina">
 
-      <section class="boas-vindas">
-
-        <div>
-          <p class="pequeno-texto">Olá,</p>
-          <h2 id="nome-exibido">Família</h2>
-          <p class="texto-ajuda">
+      <!-- RESUMO DO DIA -->
+      <section class="resumo-dia-card">
+        <div class="resumo-info">
+          <span class="resumo-data" id="data-atual">Hoje</span>
+          <strong class="resumo-titulo">
+            Olá, <span id="nome-exibido">Família</span>
+          </strong>
+          <p class="resumo-mensagem" id="resumo-mensagem">
             Vamos cuidar dos horários de hoje.
           </p>
         </div>
 
-        <div class="data-atual" id="data-atual">
-          Hoje
+        <div class="anel-progresso-area">
+          <svg class="anel-progresso" viewBox="0 0 100 100">
+            <circle class="anel-fundo" cx="50" cy="50" r="42"></circle>
+            <circle class="anel-barra" id="anel-barra" cx="50" cy="50" r="42"></circle>
+          </svg>
+          <div class="anel-texto">
+            <strong id="anel-percentual">0%</strong>
+            <span>do dia</span>
+          </div>
         </div>
-
       </section>
-
-
-      <!-- RESUMO -->
-      <section class="resumo-dia">
-
-        <div class="resumo-card resumo-total">
-
-          <span class="resumo-icone">💊</span>
-
-          <div>
-            <strong id="total-medicamentos">9</strong>
-            <span>Horários</span>
-          </div>
-
-        </div>
-
-        <div class="resumo-card resumo-tomados">
-
-          <span class="resumo-icone">✓</span>
-
-          <div>
-            <strong id="total-dados">0</strong>
-            <span>Tomados</span>
-          </div>
-
-        </div>
-
-        <div class="resumo-card resumo-pendentes">
-
-          <span class="resumo-icone">⏰</span>
-
-          <div>
-            <strong id="total-pendentes">9</strong>
-            <span>Pendentes</span>
-          </div>
-
-        </div>
-
-      </section>
-
 
       <!-- LISTA DE MEDICAMENTOS -->
       <section class="secao-medicamentos">
-
         <div class="titulo-secao">
-
           <div>
-            <h2>Horários dos medicamentos</h2>
-            <p>Marque cada horário após administrar.</p>
+            <h2>Horários de hoje</h2>
+            <p>Toque em "Dar" após administrar.</p>
           </div>
-
+          <span class="contador-total" id="contador-total">0/9</span>
         </div>
 
-
-        <div class="lista-medicamentos">
+        <div class="lista-medicamentos" id="lista-medicamentos">
 
           <article class="medicamento-card" data-horario="08:00">
-
             <div class="icone-medicamento">☀️</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                08:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">08:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="09:00">
-
             <div class="icone-medicamento">🌤️</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                09:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">09:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="10:00">
-
             <div class="icone-medicamento">🌞</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                10:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">10:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="12:00">
-
             <div class="icone-medicamento">🍽️</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                12:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">12:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="16:00">
-
             <div class="icone-medicamento">🌤️</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                16:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">16:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="20:00">
-
             <div class="icone-medicamento">🌙</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                20:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">20:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="21:00">
-
             <div class="icone-medicamento">🌙</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                21:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">21:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="22:00">
-
             <div class="icone-medicamento">🌙</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                22:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">22:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
-
 
           <article class="medicamento-card" data-horario="00:00">
-
             <div class="icone-medicamento">🌌</div>
-
             <div class="medicamento-detalhes">
-
-              <span class="medicamento-label">
-                Medicamento
-              </span>
-
-              <strong class="medicamento-horario">
-                00:00
-              </strong>
-
-              <span class="status">
-                Pendente
-              </span>
-
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">00:00</strong>
+              <span class="status" data-status>—</span>
             </div>
-
-            <button
-              type="button"
-              class="btn-dar"
-            >
-              Dar
-            </button>
-
+            <button type="button" class="btn-dar">Dar</button>
           </article>
 
         </div>
-
       </section>
-
     </main>
 
-
     <!-- PÁGINA DE HISTÓRICO -->
-    <main
-      id="pagina-historico"
-      class="pagina"
-      style="display: none;"
-    >
-
+    <main id="pagina-historico" class="pagina" style="display: none;">
       <section class="secao-historico">
 
-        <div class="titulo-secao">
-
+        <div class="historico-cabecalho">
           <div>
-            <h2>Histórico de registros</h2>
+            <h2>Histórico</h2>
             <p>Veja quem registrou cada medicamento.</p>
           </div>
-
+          <input type="date" id="data-historico">
         </div>
 
-        <div class="historico-filtros">
-
-          <label for="data-historico">
-            Escolha a data
-          </label>
-
-          <input
-            type="date"
-            id="data-historico"
-          >
-
-        </div>
-
-        <div class="historico-resumo">
-
-          <strong id="historico-total">
-            0 registros
-          </strong>
-
+        <div class="historico-resumo-card">
+          <div>
+            <strong>Resumo do dia</strong>
+            <span id="historico-total">0 registros</span>
+          </div>
+          <div class="historico-mini-anel-area">
+            <svg class="anel-progresso mini" viewBox="0 0 100 100">
+              <circle class="anel-fundo" cx="50" cy="50" r="42"></circle>
+              <circle class="anel-barra" id="historico-anel-barra" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <div class="anel-texto mini">
+              <strong id="historico-anel-percentual">0%</strong>
+            </div>
+          </div>
         </div>
 
         <div id="lista-historico" class="lista-historico">
-
-          <p class="historico-vazio">
-            Nenhum registro encontrado.
-          </p>
-
+          <p class="historico-vazio">Nenhum registro encontrado.</p>
         </div>
 
-        <button
-          type="button"
-          id="btn-voltar-medicamentos"
-          class="btn-voltar"
-        >
+        <button type="button" id="btn-voltar-medicamentos" class="btn-voltar">
           ← Voltar aos medicamentos
         </button>
-
       </section>
-
     </main>
-
-  </section>
-
-
-  <!-- MODAL DE CONFIRMAÇÃO -->
-  <div
-    id="modal-confirmacao"
-    class="modal"
-    style="display: none;"
-  >
-
-    <div class="modal-conteudo">
-
-      <div class="modal-icone">
-        💊
-      </div>
-
-      <h2>Confirmar medicamento</h2>
-
-      <p id="texto-confirmacao">
-        Deseja registrar este medicamento?
-      </p>
-
-      <div class="modal-botoes">
-
-        <button
-          type="button"
-          id="btn-cancelar"
-          class="btn-cancelar"
-        >
-          Cancelar
-        </button>
-
-        <button
-          type="button"
-          id="btn-confirmar"
-          class="btn-confirmar"
-        >
-          Confirmar
-        </button>
-
-      </div>
-
-    </div>
 
   </div>
 
+  <!-- NAVEGAÇÃO INFERIOR -->
+  <nav class="navegacao-inferior">
+    <button type="button" id="btn-pagina-medicamentos" class="btn-navegacao ativo">
+      <span class="nav-icone">💊</span>
+      <span>Medicamentos</span>
+    </button>
+    <button type="button" id="btn-pagina-historico" class="btn-navegacao">
+      <span class="nav-icone">📋</span>
+      <span>Histórico</span>
+    </button>
+  </nav>
 
-  <!-- SCRIPTS -->
-  <script type="module" src="script.js?v=10"></script>
+</section>
 
-  <script src="native-notifications.js?v=10"></script>
+<!-- MODAL DE CONFIRMAÇÃO / SUCESSO -->
+<div id="modal-confirmacao" class="modal" style="display: none;">
+  <div class="modal-conteudo">
 
+    <!-- ETAPA 1: CONFIRMAR -->
+    <div id="modal-passo-confirmar">
+      <div class="modal-icone">💊</div>
+      <span class="modal-badge" id="modal-badge">Pendente</span>
+      <h2 id="modal-titulo-remedios">Medicamento</h2>
+      <p id="texto-confirmacao">Deseja registrar este medicamento?</p>
+      <p class="modal-dadopor" id="modal-dadopor">Dado por: —</p>
+
+      <div class="modal-botoes">
+        <button type="button" id="btn-cancelar" class="btn-cancelar">Cancelar</button>
+        <button type="button" id="btn-confirmar" class="btn-confirmar">Confirmar</button>
+      </div>
+    </div>
+
+    <!-- ETAPA 2: SUCESSO -->
+    <div id="modal-passo-sucesso" style="display: none;">
+      <div class="sucesso-check-area">
+        <span class="confete c1"></span>
+        <span class="confete c2"></span>
+        <span class="confete c3"></span>
+        <span class="confete c4"></span>
+        <span class="confete c5"></span>
+        <span class="confete c6"></span>
+        <div class="sucesso-check">✓</div>
+      </div>
+
+      <h2>Medicamento registrado!</h2>
+
+      <div class="sucesso-detalhes">
+        <p><span class="sucesso-icone">💊</span><span id="sucesso-remedios">—</span></p>
+        <p><span class="sucesso-icone">🕒</span><span id="sucesso-horario">—</span></p>
+        <p><span class="sucesso-icone">👤</span><span id="sucesso-dadopor">—</span></p>
+      </div>
+
+      <button type="button" id="btn-fechar-sucesso" class="btn-confirmar">OK</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script type="module" src="script.js?v=12"></script>
+<script src="native-notifications.js?v=12"></script>
 </body>
-
-</html>
+              </html>
+    
