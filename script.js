@@ -1269,7 +1269,7 @@ function mostrarNotificacaoLocal(titulo, corpo) {
   const opcoes = {
     body: corpo,
     icon: "img/logo.png",
-    badge: "img/logo.png",
+    badge: "img/icone-notificacao.png",
     tag: "cuidado-juntos-registro"
   };
 
@@ -1357,7 +1357,9 @@ if (botaoNotificacao) {
           try {
 
             new Notification("Cuidado Juntos", {
-              body: "As notificações foram ativadas."
+              body: "As notificações foram ativadas.",
+              icon: "img/logo.png",
+              badge: "img/icone-notificacao.png"
             });
 
           } catch (erro) {
