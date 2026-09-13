@@ -1334,3 +1334,436 @@ function atualizarTela() {
       total;
 
          }
+
+
+  if (totalDados) {
+
+    totalDados.textContent =
+      dados;
+
+  }
+
+
+  if (totalPendentes) {
+
+    totalPendentes.textContent =
+      pendentes;
+
+  }
+
+
+  cartoes.forEach(
+    function (cartao) {
+
+      const horario =
+        cartao.getAttribute(
+          "data-horario"
+        );
+
+      if (!horario) {
+        return;
+      }
+
+      const registro =
+        registros[horario];
+
+      const statusEl =
+        cartao.querySelector(
+          ".status"
+        );
+
+      const botaoDar =
+        cartao.querySelector(
+          ".btn-dar"
+        );
+
+      let dadoPorEl =
+        cartao.querySelector(
+          ".dado-por"
+        );
+
+      if (registro) {
+
+        cartao.classList.add(
+          "registrado"
+        );
+
+        if (statusEl) {
+
+          statusEl.textContent =
+            "Registrado ✓";
+
+        }
+
+        if (botaoDar) {
+
+          botaoDar.disabled =
+            true;
+
+          botaoDar.textContent =
+            "Registrado";
+
+        }
+
+        if (!dadoPorEl) {
+
+          dadoPorEl =
+            document.createElement(
+              "span"
+            );
+
+          dadoPorEl.className =
+            "dado-por";
+
+          const detalhes =
+            cartao.querySelector(
+              ".medicamento-detalhes"
+            );
+
+          if (detalhes) {
+
+            detalhes.appendChild(
+              dadoPorEl
+            );
+
+          }
+
+        }
+
+        dadoPorEl.textContent =
+          `Dado por ${registro.nome} às ${registro.horaRegistro} em ${registro.dataRegistro}`;
+
+      } else {
+
+        cartao.classList.remove(
+          "registrado"
+        );
+
+        if (statusEl) {
+
+          statusEl.textContent =
+            "Pendente";
+
+        }
+
+        if (botaoDar) {
+
+          botaoDar.disabled =
+            false;
+
+          botaoDar.textContent =
+            "Dar";
+
+        }
+
+        if (dadoPorEl) {
+
+          dadoPorEl.remove();
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/*
+ * Liga os botões "Dar" assim que a
+ * página carrega, já que os cartões
+ * existem no HTML desde o início.
+ */
+
+configurarBotoesDar();
+
+
+/* =========================================================
+   CARREGAR REGISTROS DE HOJE (TEMPO REAL)
+========================================================= */
+
+function carregarRegistrosHoje() {
+
+  if (!db) {
+    return;
+  }
+
+  if (unsubscribeHoje) {
+
+    unsubscribeHoje();
+
+    unsubscribeHoje =
+      null;
+
+  }
+
+  const dataISO =
+    obterDataHoje();
+
+  const consulta =
+    query(
+      collection(
+        db,
+        "registros"
+      ),
+      where(
+        "dataISO",
+        "==",
+        dataISO
+      )
+    );
+
+  unsubscribeHoje =
+    onSnapshot(
+      consulta,
+      function (snapshot) {
+
+        registros = {};
+
+        snapshot.forEach(
+          function (docSnap) {
+
+            const dado =
+              docSnap.data();
+
+            if (dado && dado.horario) {
+
+              registros[dado.horario] =
+                dado;
+
+            }
+
+          }
+        );
+
+        atualizarTela();
+
+      },
+      function (erro) {
+
+        console.error(
+          "Erro ao carregar registros de hoje:",
+          erro
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   CARREGAR HISTÓRICO
+========================================================= */
+
+function carregarHistorico(dataSelecionada) {
+
+  if (!db || !dataSelecionada) {
+    return;
+  }
+
+  if (unsubscribeHistorico) {
+
+    unsubscribeHistorico();
+
+    unsubscribeHistorico =
+      null;
+
+  }
+
+  const consulta =
+    query(
+      collection(
+        db,
+        "registros"
+      ),
+      where(
+        "dataISO",
+        "==",
+        dataSelecionada
+      )
+    );
+
+  unsubscribeHistorico =
+    onSnapshot(
+      consulta,
+      function (snapshot) {
+
+        registrosHistorico = {};
+
+        snapshot.forEach(
+          function (docSnap) {
+
+            const dado =
+              docSnap.data();
+
+            if (dado && dado.horario) {
+
+              registrosHistorico[dado.horario] =
+                dado;
+
+            }
+
+          }
+        );
+
+        renderizarHistorico();
+
+      },
+      function (erro) {
+
+        console.error(
+          "Erro ao carregar histórico:",
+          erro
+        );
+
+      }
+    );
+
+}
+
+
+function renderizarHistorico() {
+
+  if (!listaHistorico) {
+    return;
+  }
+
+  const horariosComRegistro =
+    HORARIOS.filter(
+      function (horario) {
+
+        return Boolean(
+          registrosHistorico[horario]
+        );
+
+      }
+    );
+
+  if (historicoTotal) {
+
+    const quantidade =
+      horariosComRegistro.length;
+
+    historicoTotal.textContent =
+      quantidade +
+      (quantidade === 1
+        ? " registro"
+        : " registros");
+
+  }
+
+  if (horariosComRegistro.length === 0) {
+
+    listaHistorico.innerHTML =
+      '<p class="historico-vazio">Nenhum medicamento registrado nesta data.</p>';
+
+    return;
+
+  }
+
+  listaHistorico.innerHTML =
+    "";
+
+  horariosComRegistro.forEach(
+    function (horario) {
+
+      const registro =
+        registrosHistorico[horario];
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "historico-item";
+
+      item.innerHTML =
+        "<strong>" + horario + "</strong>" +
+        "<span>Dado por " + registro.nome +
+        " às " + registro.horaRegistro + "</span>";
+
+      listaHistorico.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   INICIALIZAÇÃO DO FIREBASE
+   (acontece em paralelo, sem travar o login)
+========================================================= */
+
+const firebaseApp =
+  initializeApp(firebaseConfig);
+
+auth =
+  getAuth(firebaseApp);
+
+db =
+  getFirestore(firebaseApp);
+
+signInAnonymously(auth)
+  .then(
+    function () {
+
+      firebaseAutenticado =
+        true;
+
+      const appVisivel =
+        telaApp &&
+        telaApp.style.display !== "none";
+
+      if (appVisivel) {
+
+        carregarRegistrosHoje();
+
+        const historicoVisivel =
+          paginaHistorico &&
+          !paginaHistorico.classList.contains(
+            "escondido"
+          );
+
+        if (historicoVisivel && dataHistorico) {
+
+          carregarHistorico(
+            dataHistorico.value
+          );
+
+        }
+
+      }
+
+    }
+  )
+  .catch(
+    function (erro) {
+
+      console.error(
+        "Erro ao conectar ao Firebase:",
+        erro
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   TELA INICIAL
+========================================================= */
+
+if (nomeUsuario) {
+
+  mostrarAplicativo();
+
+} else {
+
+  mostrarLogin();
+
+}
