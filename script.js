@@ -55,7 +55,7 @@ const firebaseConfig = {
  * Gerar par de chaves.
  */
 
-const VAPID_KEY = "SUBSTITUA_PELA_SUA_CHAVE_VAPID";
+const VAPID_KEY = "BFVSP3o_fL9b9qYzNwaHR3-DytRPRlmsPMoaBdbwT0uZOcUMd8ZCkUrfpVaZu9SS2jTtQf6c9NnaJAEUIIH8X_8";
 
 
 /* =========================================================
