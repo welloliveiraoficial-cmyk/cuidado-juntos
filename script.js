@@ -282,9 +282,12 @@ function mostrarAplicativo() {
   );
 
   /*
-   * Garante que o aplicativo fique visível
-   * mesmo se o CSS usar display.
+   * Garante que a troca de tela funcione
+   * mesmo se o CSS não definir a classe
+   * "escondido" com display:none.
    */
+
+  telaLogin.style.display = "none";
 
   telaApp.style.display = "";
 
@@ -337,6 +340,8 @@ function mostrarLogin() {
   telaApp.classList.add(
     "escondido"
   );
+
+  telaLogin.style.display = "";
 
   telaApp.style.display =
     "none";
@@ -479,6 +484,10 @@ function mostrarPaginaMedicamentos() {
     "escondido"
   );
 
+  paginaMedicamentos.style.display = "";
+
+  paginaHistorico.style.display = "none";
+
 
   if (botaoPaginaMedicamentos) {
 
@@ -523,6 +532,10 @@ function mostrarPaginaHistorico() {
   paginaHistorico.classList.remove(
     "escondido"
   );
+
+  paginaMedicamentos.style.display = "none";
+
+  paginaHistorico.style.display = "";
 
 
   if (botaoPaginaMedicamentos) {
