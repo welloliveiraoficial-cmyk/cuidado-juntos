@@ -197,6 +197,9 @@ const botaoSair =
 const botaoNotificacao =
   document.getElementById("btn-notificacao");
 
+const botaoInstalar =
+  document.getElementById("btn-instalar");
+
 const modalConfirmacao =
   document.getElementById("modal-confirmacao");
 
@@ -1703,6 +1706,62 @@ signInAnonymously(auth)
     console.error("Erro ao conectar ao Firebase:", erro);
 
   });
+
+
+/* =========================================================
+   INSTALAR APLICATIVO (PWA)
+   O navegador dispara "beforeinstallprompt" quando o app
+   cumpre os requisitos (manifest + service worker + https).
+   Guardamos o evento e só mostramos o botão nesse momento.
+========================================================= */
+
+let eventoInstalacaoAdiado = null;
+
+window.addEventListener("beforeinstallprompt", function (evento) {
+
+  evento.preventDefault();
+
+  eventoInstalacaoAdiado = evento;
+
+  if (botaoInstalar) {
+
+    botaoInstalar.style.display = "inline-flex";
+
+  }
+
+});
+
+if (botaoInstalar) {
+
+  botaoInstalar.addEventListener("click", async function () {
+
+    if (!eventoInstalacaoAdiado) {
+      return;
+    }
+
+    botaoInstalar.style.display = "none";
+
+    eventoInstalacaoAdiado.prompt();
+
+    await eventoInstalacaoAdiado.userChoice;
+
+    eventoInstalacaoAdiado = null;
+
+  });
+
+}
+
+window.addEventListener("appinstalled", function () {
+
+  if (botaoInstalar) {
+
+    botaoInstalar.style.display = "none";
+
+  }
+
+  eventoInstalacaoAdiado = null;
+
+});
 
 
 /* =========================================================
