@@ -1608,7 +1608,7 @@ function atualizarTela() {
     anelBarra.style.strokeDashoffset = String(offset);
 
     anelBarra.style.stroke =
-      percentual === 100 ? "#16a34a" : "#2563eb";
+      percentual === 100 ? "#16a34a" : "#1fb8db";
 
   }
 
@@ -1908,7 +1908,7 @@ function renderizarHistorico() {
     historicoAnelBarra.style.strokeDashoffset = String(offset);
 
     historicoAnelBarra.style.stroke =
-      percentual === 100 ? "#16a34a" : "#2563eb";
+      percentual === 100 ? "#16a34a" : "#1fb8db";
 
   }
 
