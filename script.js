@@ -60,6 +60,8 @@ let registrosHistorico = {};
 
 let horarioSelecionado = null;
 
+let primeiraCargaRegistrosHoje = true;
+
 let timerFecharSucesso = null;
 
 
@@ -1219,6 +1221,88 @@ function atualizarBotaoNotificacao() {
 
 
 /* =========================================================
+   AVISAR FAMÍLIA SOBRE REGISTROS
+   Dispara um aviso quando OUTRA pessoa (não quem está
+   usando este aparelho agora) registra um medicamento.
+   Só funciona enquanto o app estiver aberto (em primeiro
+   ou segundo plano) neste navegador — não é um push de
+   verdade vindo de um servidor, pois o projeto não usa
+   Firebase Cloud Messaging.
+========================================================= */
+
+function avisarFamiliaSobreRegistro(registro) {
+
+  if (!registro || !registro.horario) {
+    return;
+  }
+
+  /* Quem acabou de registrar já viu a confirmação na tela. */
+
+  if (registro.nome && registro.nome === nomeUsuario) {
+    return;
+  }
+
+  if (!notificacaoAtiva) {
+    return;
+  }
+
+  if (!("Notification" in window) || Notification.permission !== "granted") {
+    return;
+  }
+
+  const remedios = MEDICAMENTOS[registro.horario];
+
+  const listaRemedios = Array.isArray(remedios) && remedios.length
+    ? remedios.join(", ")
+    : "medicamento";
+
+  const titulo = "Cuidado Juntos";
+
+  const corpo = `${registro.nome || "Alguém"} registrou ${listaRemedios} das ${registro.horario}.`;
+
+  mostrarNotificacaoLocal(titulo, corpo);
+
+}
+
+function mostrarNotificacaoLocal(titulo, corpo) {
+
+  const opcoes = {
+    body: corpo,
+    icon: "img/logo.png",
+    badge: "img/logo.png",
+    tag: "cuidado-juntos-registro"
+  };
+
+  if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker.ready
+      .then(function (registro) {
+        return registro.showNotification(titulo, opcoes);
+      })
+      .catch(function () {
+
+        try {
+          new Notification(titulo, opcoes);
+        } catch (erro) {
+          console.log("Notificação não exibida:", erro);
+        }
+
+      });
+
+  } else {
+
+    try {
+      new Notification(titulo, opcoes);
+    } catch (erro) {
+      console.log("Notificação não exibida:", erro);
+    }
+
+  }
+
+}
+
+
+/* =========================================================
    NOTIFICAÇÕES
 ========================================================= */
 
@@ -1481,6 +1565,8 @@ function carregarRegistrosHoje() {
 
   }
 
+  primeiraCargaRegistrosHoje = true;
+
   const dataISO = obterDataHoje();
 
   const consulta = query(
@@ -1492,7 +1578,9 @@ function carregarRegistrosHoje() {
     consulta,
     function (snapshot) {
 
-      registros = {};
+      const registrosAnteriores = registros;
+
+      const registrosNovos = {};
 
       snapshot.forEach(function (docSnap) {
 
@@ -1500,11 +1588,37 @@ function carregarRegistrosHoje() {
 
         if (dado && dado.horario) {
 
-          registros[dado.horario] = dado;
+          registrosNovos[dado.horario] = dado;
 
         }
 
       });
+
+      /*
+       * Só avisa a família a partir da segunda leitura em
+       * diante — a primeira é só o carregamento inicial da
+       * tela e não deve gerar notificação de "acabou de dar".
+       */
+
+      if (!primeiraCargaRegistrosHoje) {
+
+        Object.keys(registrosNovos).forEach(function (horario) {
+
+          const jaExistia = Boolean(registrosAnteriores[horario]);
+
+          if (!jaExistia) {
+
+            avisarFamiliaSobreRegistro(registrosNovos[horario]);
+
+          }
+
+        });
+
+      }
+
+      primeiraCargaRegistrosHoje = false;
+
+      registros = registrosNovos;
 
       atualizarTela();
 
