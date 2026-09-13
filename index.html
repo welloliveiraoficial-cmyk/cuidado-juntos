@@ -18,8 +18,15 @@
   href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
   rel="stylesheet"
 >
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 <link rel="icon" type="image/png" href="img/logo.png">
+
+<!-- PWA: app instalável -->
+<link rel="manifest" href="manifest.json?v=1">
+<link rel="apple-touch-icon" href="img/logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cuidado Juntos">
 </head>
 <body>
 
@@ -90,6 +97,9 @@
       </div>
 
       <div class="acoes-cabecalho">
+        <button type="button" id="btn-instalar" class="btn-icone" aria-label="Instalar aplicativo" style="display: none;">
+          ⬇️
+        </button>
         <button type="button" id="btn-notificacao" class="btn-icone" aria-label="Notificações">
           🔔
         </button>
@@ -334,8 +344,22 @@
 </div>
 
 <!-- SCRIPTS -->
-<script type="module" src="script.js?v=12"></script>
-<script src="native-notifications.js?v=12"></script>
+<script type="module" src="script.js?v=13"></script>
+<script src="native-notifications.js?v=13"></script>
+
+<!-- REGISTRO DO SERVICE WORKER (PWA instalável) -->
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("sw.js?v=1")
+        .catch(function (erro) {
+          console.error("Erro ao registrar o service worker:", erro);
+        });
+    });
+  }
+</script>
 </body>
-              </html>
-    
+</html>
+
+  
