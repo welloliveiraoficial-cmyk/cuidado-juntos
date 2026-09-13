@@ -1,18 +1,16 @@
 {
-  "name": "cuidado-juntos",
-  "version": "1.0.0",
+  "name": "functions",
+  "description": "Cloud Functions do Cuidado Juntos — avisos instantâneos e de atraso",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
   "private": true,
-  "description": "Cuidado Juntos - organização dos medicamentos em família",
   "scripts": {
-    "build": "node build-www.js"
+    "deploy": "firebase deploy --only functions"
   },
   "dependencies": {
-    "@capacitor/android": "^7.4.0",
-    "@capacitor/core": "^7.4.0",
-    "@capacitor/local-notifications": "^7.0.0"
-  },
-  "devDependencies": {
-    "@capacitor/cli": "^7.4.0",
-    "@capacitor/assets": "^3.0.5"
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
   }
 }
