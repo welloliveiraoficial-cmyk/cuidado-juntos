@@ -46,14 +46,14 @@ messaging.onBackgroundMessage(function (payload) {
 
 });
 
-const CACHE_NAME = "cuidado-juntos-v6";
+const CACHE_NAME = "cuidado-juntos-v7";
 
 const ARQUIVOS_ESSENCIAIS = [
   "./",
   "./index.html",
-  "./style.css?v=18",
-  "./script.js?v=18",
-  "./native-notifications.js?v=18",
+  "./style.css?v=13",
+  "./script.js?v=13",
+  "./native-notifications.js?v=13",
   "./manifest.json",
   "./img/logo.png",
   "./img/icone-notificacao.png"
