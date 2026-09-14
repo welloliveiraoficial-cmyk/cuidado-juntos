@@ -1,7 +1,7 @@
 /* =========================================================
    CUIDADO JUNTOS
    SCRIPT PRINCIPAL
-   VERSÃO PREMIUM
+   VERSÃO PREMIUM (v18 — push instantâneo via Vercel)
 ========================================================= */
 
 
@@ -25,8 +25,14 @@ import {
   where,
   onSnapshot,
   setDoc,
-  doc
+  doc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getMessaging,
+  getToken
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 
 /* =========================================================
@@ -41,6 +47,27 @@ const firebaseConfig = {
   messagingSenderId: "453583954077",
   appId: "1:453583954077:web:c55a6fd18f107a0c447474"
 };
+
+/*
+ * IMPORTANTE: troque pela sua chave gerada em
+ * Firebase Console → Configurações do projeto →
+ * Cloud Messaging → "Certificados push da Web" →
+ * Gerar par de chaves.
+ */
+
+const VAPID_KEY = "BFVSP3o_fL9b9qYzNwaHR3-DytRPRlmsPMoaBdbwT0uZOcUMd8ZCkUrfpVaZu9SS2jTtQf6c9NnaJAEUIIH8X_8";
+
+/*
+ * IMPORTANTE: troque pela URL do seu projeto na Vercel
+ * (ex: https://cuidado-juntos-api.vercel.app/api/notificar-registro)
+ * e pela mesma chave que você colocar na variável de
+ * ambiente API_SECRET na Vercel.
+ */
+
+const URL_NOTIFICAR_PUSH =
+  "https://cuidado-juntos-api.vercel.app/api/notificar-registro";
+
+const CHAVE_API_PUSH = "050619Well@";
 
 
 /* =========================================================
@@ -60,7 +87,11 @@ let registrosHistorico = {};
 
 let horarioSelecionado = null;
 
+let primeiraCargaRegistrosHoje = true;
+
 let timerFecharSucesso = null;
+
+let meuTokenPush = null;
 
 
 /* =========================================================
@@ -104,7 +135,8 @@ const HORARIOS = [
   "20:00",
   "21:00",
   "22:00",
-  "00:00"
+  "00:00",
+  "23:58"
 ];
 
 
@@ -123,7 +155,8 @@ const MEDICAMENTOS = {
   "20:00": ["Atorvastatina"],
   "21:00": ["Losartana", "Quetiapina"],
   "22:00": ["Clonazepam"],
-  "00:00": ["Levetiracetam"]
+  "00:00": ["Levetiracetam"],
+  "23:58": ["Teste"]
 };
 
 
@@ -142,7 +175,8 @@ const PERIODOS = {
   "20:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "21:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "22:00": { rotulo: "Noturno", classe: "periodo-noite" },
-  "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" }
+  "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" },
+  "23:58": { rotulo: "Teste", classe: "periodo-madrugada" }
 };
 
 const TODAS_CLASSES_BADGE = [
@@ -194,8 +228,20 @@ const nomeExibido =
 const botaoSair =
   document.getElementById("btn-sair");
 
+const modalSair =
+  document.getElementById("modal-sair");
+
+const botaoCancelarSair =
+  document.getElementById("btn-cancelar-sair");
+
+const botaoConfirmarSair =
+  document.getElementById("btn-confirmar-sair");
+
 const botaoNotificacao =
   document.getElementById("btn-notificacao");
+
+const botaoInstalar =
+  document.getElementById("btn-instalar");
 
 const modalConfirmacao =
   document.getElementById("modal-confirmacao");
@@ -280,15 +326,6 @@ const botaoPaginaHistorico =
 
 const botaoVoltarMedicamentos =
   document.getElementById("btn-voltar-medicamentos");
-
-const bannerInstalar =
-  document.getElementById("banner-instalar");
-
-const botaoInstalarApp =
-  document.getElementById("btn-instalar-app");
-
-const botaoInstalarDepois =
-  document.getElementById("btn-instalar-depois");
 
 
 /* =========================================================
@@ -380,6 +417,41 @@ function proximaOcorrencia(horario, agora) {
 
 
 /* =========================================================
+   HORÁRIO DE TESTE
+   O horário "23:58" (Teste) some sozinho da lista de
+   "Tomado" depois de alguns minutos, para permitir repetir
+   o teste de notificação quantas vezes for preciso, sem
+   precisar apagar nada manualmente no Firestore.
+========================================================= */
+
+const HORARIO_TESTE = "23:58";
+
+const EXPIRACAO_TESTE_MS = 2 * 60 * 1000; // 2 minutos
+
+function obterRegistroAtivo(horario, agora) {
+
+  const registro = registros[horario];
+
+  if (!registro) {
+    return null;
+  }
+
+  if (horario === HORARIO_TESTE) {
+
+    const registradoEm = new Date(registro.dataCompleta).getTime();
+
+    if (agora.getTime() - registradoEm > EXPIRACAO_TESTE_MS) {
+      return null;
+    }
+
+  }
+
+  return registro;
+
+}
+
+
+/* =========================================================
    BADGE (STATUS) DE CADA HORÁRIO
 ========================================================= */
 
@@ -391,7 +463,7 @@ function calcularProximoPendente(agora) {
 
   HORARIOS.forEach(function (horario) {
 
-    if (registros[horario]) {
+    if (obterRegistroAtivo(horario, agora)) {
       return;
     }
 
@@ -415,7 +487,7 @@ function calcularProximoPendente(agora) {
 
 function calcularBadge(horario, agora, proximoPendente) {
 
-  if (registros[horario]) {
+  if (obterRegistroAtivo(horario, agora)) {
 
     return { rotulo: "Tomado", classe: "badge-tomado" };
 
@@ -433,13 +505,21 @@ function calcularBadge(horario, agora, proximoPendente) {
 
   }
 
-  if (diferencaMin <= 30) {
-
-    return { rotulo: "Agora", classe: "badge-agora" };
-
-  }
+  /*
+   * Só o horário mais urgente (o "proximoPendente") pode virar
+   * cartão em destaque (Agora/Próximo). Isso evita que dois
+   * horários próximos um do outro (ex.: o de teste "23:58" e
+   * o "00:00") virem dois cartões gigantes pulsando ao mesmo
+   * tempo, brigando pela atenção na tela.
+   */
 
   if (horario === proximoPendente) {
+
+    if (diferencaMin <= 30) {
+
+      return { rotulo: "Agora", classe: "badge-agora" };
+
+    }
 
     return { rotulo: "Próximo", classe: "badge-proximo" };
 
@@ -482,7 +562,7 @@ function formatarDuracao(minutos) {
 
 function calcularTextoStatus(horario, agora) {
 
-  const registro = registros[horario];
+  const registro = obterRegistroAtivo(horario, agora);
 
   if (registro) {
 
@@ -833,12 +913,40 @@ if (botaoSair) {
 
   botaoSair.addEventListener("click", function () {
 
-    const confirmarSaida = window.confirm(
-      "Deseja sair e trocar o familiar deste aparelho?"
-    );
+    if (modalSair) {
 
-    if (!confirmarSaida) {
-      return;
+      modalSair.style.display = "flex";
+
+    }
+
+  });
+
+}
+
+
+if (botaoCancelarSair) {
+
+  botaoCancelarSair.addEventListener("click", function () {
+
+    if (modalSair) {
+
+      modalSair.style.display = "none";
+
+    }
+
+  });
+
+}
+
+
+if (botaoConfirmarSair) {
+
+  botaoConfirmarSair.addEventListener("click", function () {
+
+    if (modalSair) {
+
+      modalSair.style.display = "none";
+
     }
 
 
@@ -897,7 +1005,7 @@ function abrirModal(horario) {
   const nomesRemedios =
     (MEDICAMENTOS[horario] || []).join(" + ") || "Medicamento";
 
-  const registroExistente = registros[horario];
+  const registroExistente = obterRegistroAtivo(horario, new Date());
 
 
   if (modalTituloRemedios) {
@@ -1106,6 +1214,9 @@ if (botaoConfirmar) {
       registros[horario] = registro;
 
 
+      notificarPushInstantaneo(registro);
+
+
       atualizarTela();
 
 
@@ -1225,6 +1336,188 @@ function atualizarBotaoNotificacao() {
 
 
 /* =========================================================
+   AVISAR FAMÍLIA SOBRE REGISTROS
+   Dispara um aviso quando OUTRA pessoa (não quem está
+   usando este aparelho agora) registra um medicamento.
+   Só funciona enquanto o app estiver aberto (em primeiro
+   ou segundo plano) neste navegador — não é um push de
+   verdade vindo de um servidor, pois o projeto não usa
+   Firebase Cloud Messaging.
+========================================================= */
+
+function avisarFamiliaSobreRegistro(registro) {
+
+  if (!registro || !registro.horario) {
+    return;
+  }
+
+  /* Quem acabou de registrar já viu a confirmação na tela. */
+
+  if (registro.nome && registro.nome === nomeUsuario) {
+    return;
+  }
+
+  if (!notificacaoAtiva) {
+    return;
+  }
+
+  if (!("Notification" in window) || Notification.permission !== "granted") {
+    return;
+  }
+
+  const titulo = "Cuidado Juntos";
+
+  const corpo = `${registro.nome || "Alguém"} deu o remédio das ${registro.horario}.`;
+
+  mostrarNotificacaoLocal(titulo, corpo);
+
+}
+
+/* =========================================================
+   REGISTRAR NOTIFICAÇÃO PUSH DE VERDADE (FCM)
+   Salva no Firestore o "endereço" deste aparelho, para
+   que a Cloud Function consiga mandar notificação pra ele
+   mesmo com o app fechado.
+========================================================= */
+
+async function registrarTokenPush() {
+
+  if (!notificacaoAtiva) {
+    return;
+  }
+
+  if (!("Notification" in window) || Notification.permission !== "granted") {
+    return;
+  }
+
+  if (!("serviceWorker" in navigator)) {
+    return;
+  }
+
+  if (!VAPID_KEY || VAPID_KEY === "SUBSTITUA_PELA_SUA_CHAVE_VAPID") {
+
+    console.warn(
+      "Notificação push não configurada: defina VAPID_KEY em script.js."
+    );
+
+    return;
+
+  }
+
+  try {
+
+    const registroSW = await navigator.serviceWorker.ready;
+
+    const messaging = getMessaging(firebaseApp);
+
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registroSW
+    });
+
+    if (!token) {
+      return;
+    }
+
+    meuTokenPush = token;
+
+    await setDoc(
+      doc(db, "dispositivos", token),
+      {
+        nome: nomeUsuario || "Família",
+        atualizadoEm: serverTimestamp()
+      },
+      { merge: true }
+    );
+
+  } catch (erro) {
+
+    console.error("Erro ao registrar notificação push:", erro);
+
+  }
+
+}
+
+
+/* =========================================================
+   DISPARAR NOTIFICAÇÃO PUSH INSTANTÂNEA (via Vercel)
+   Chamado logo depois de salvar um registro no Firestore.
+   Quem está registrando já está com o app aberto, então o
+   aviso sai na mesma hora — sem precisar de Cloud Functions
+   nem do plano Blaze. Se a chamada falhar (ex: sem internet
+   por um instante), o registro em si já foi salvo antes e
+   não é afetado — só o aviso extra que não sai.
+========================================================= */
+
+function notificarPushInstantaneo(registro) {
+
+  if (!URL_NOTIFICAR_PUSH || URL_NOTIFICAR_PUSH.indexOf("SEU-PROJETO") !== -1) {
+    return;
+  }
+
+  if (!CHAVE_API_PUSH || CHAVE_API_PUSH === "SUBSTITUA_PELA_SUA_CHAVE_SECRETA") {
+    return;
+  }
+
+  fetch(URL_NOTIFICAR_PUSH, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": CHAVE_API_PUSH
+    },
+    body: JSON.stringify({
+      horario: registro.horario,
+      nome: registro.nome,
+      tokenRemetente: meuTokenPush
+    })
+  }).catch(function (erro) {
+
+    console.log("Aviso push instantâneo não enviado:", erro);
+
+  });
+
+}
+
+
+function mostrarNotificacaoLocal(titulo, corpo) {
+
+  const opcoes = {
+    body: corpo,
+    icon: "img/logo.png",
+    badge: "img/icone-notificacao.png",
+    tag: "cuidado-juntos-registro"
+  };
+
+  if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker.ready
+      .then(function (registro) {
+        return registro.showNotification(titulo, opcoes);
+      })
+      .catch(function () {
+
+        try {
+          new Notification(titulo, opcoes);
+        } catch (erro) {
+          console.log("Notificação não exibida:", erro);
+        }
+
+      });
+
+  } else {
+
+    try {
+      new Notification(titulo, opcoes);
+    } catch (erro) {
+      console.log("Notificação não exibida:", erro);
+    }
+
+  }
+
+}
+
+
+/* =========================================================
    NOTIFICAÇÕES
 ========================================================= */
 
@@ -1279,7 +1572,9 @@ if (botaoNotificacao) {
           try {
 
             new Notification("Cuidado Juntos", {
-              body: "As notificações foram ativadas."
+              body: "As notificações foram ativadas.",
+              icon: "img/logo.png",
+              badge: "img/icone-notificacao.png"
             });
 
           } catch (erro) {
@@ -1287,6 +1582,8 @@ if (botaoNotificacao) {
             console.log("Notificação não exibida:", erro);
 
           }
+
+          registrarTokenPush();
 
         }
 
@@ -1356,7 +1653,7 @@ function atualizarTela() {
     anelBarra.style.strokeDashoffset = String(offset);
 
     anelBarra.style.stroke =
-      percentual === 100 ? "#16a34a" : "#2563eb";
+      percentual === 100 ? "#d1477f" : "#1fb8db";
 
   }
 
@@ -1379,7 +1676,7 @@ function atualizarTela() {
       return;
     }
 
-    const registro = registros[horario];
+    const registro = obterRegistroAtivo(horario, agora);
 
     const badgeEl = cartao.querySelector("[data-badge]");
 
@@ -1487,6 +1784,8 @@ function carregarRegistrosHoje() {
 
   }
 
+  primeiraCargaRegistrosHoje = true;
+
   const dataISO = obterDataHoje();
 
   const consulta = query(
@@ -1498,7 +1797,9 @@ function carregarRegistrosHoje() {
     consulta,
     function (snapshot) {
 
-      registros = {};
+      const registrosAnteriores = registros;
+
+      const registrosNovos = {};
 
       snapshot.forEach(function (docSnap) {
 
@@ -1506,11 +1807,37 @@ function carregarRegistrosHoje() {
 
         if (dado && dado.horario) {
 
-          registros[dado.horario] = dado;
+          registrosNovos[dado.horario] = dado;
 
         }
 
       });
+
+      /*
+       * Só avisa a família a partir da segunda leitura em
+       * diante — a primeira é só o carregamento inicial da
+       * tela e não deve gerar notificação de "acabou de dar".
+       */
+
+      if (!primeiraCargaRegistrosHoje) {
+
+        Object.keys(registrosNovos).forEach(function (horario) {
+
+          const jaExistia = Boolean(registrosAnteriores[horario]);
+
+          if (!jaExistia) {
+
+            avisarFamiliaSobreRegistro(registrosNovos[horario]);
+
+          }
+
+        });
+
+      }
+
+      primeiraCargaRegistrosHoje = false;
+
+      registros = registrosNovos;
 
       atualizarTela();
 
@@ -1588,7 +1915,8 @@ const ICONES_HORARIO = {
   "20:00": "🌙",
   "21:00": "🌙",
   "22:00": "🌙",
-  "00:00": "🌌"
+  "00:00": "🌌",
+  "23:58": "🧪"
 };
 
 
@@ -1625,7 +1953,7 @@ function renderizarHistorico() {
     historicoAnelBarra.style.strokeDashoffset = String(offset);
 
     historicoAnelBarra.style.stroke =
-      percentual === 100 ? "#16a34a" : "#2563eb";
+      percentual === 100 ? "#d1477f" : "#1fb8db";
 
   }
 
@@ -1673,182 +2001,6 @@ function renderizarHistorico() {
 
 
 /* =========================================================
-   INSTALAÇÃO DO APP (PWA)
-   O Android mostra, por conta própria, uma caixa nativa
-   com a URL ao instalar — isso não dá para estilizar,
-   é uma proteção do próprio sistema. O que fazemos aqui é
-   interceptar o convite do navegador (`beforeinstallprompt`)
-   e mostrar nosso próprio cartão animado antes dela — só
-   quando o usuário toca em "Instalar" é que a caixa nativa
-   do Android aparece, como confirmação final.
-========================================================= */
-
-const CHAVE_INSTALACAO_ADIADA =
-  "cuidadoJuntos_instalacaoAdiada";
-
-const DIAS_PARA_PERGUNTAR_DE_NOVO = 7;
-
-let eventoInstalacao = null;
-
-
-function appJaInstalado() {
-
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.navigator.standalone === true
-  );
-
-}
-
-
-function podeMostrarBannerInstalar() {
-
-  if (appJaInstalado()) {
-
-    return false;
-
-  }
-
-  const adiadoEm = localStorage.getItem(CHAVE_INSTALACAO_ADIADA);
-
-  if (!adiadoEm) {
-
-    return true;
-
-  }
-
-  const diasPassados =
-    (Date.now() - Number(adiadoEm)) / (1000 * 60 * 60 * 24);
-
-  return diasPassados >= DIAS_PARA_PERGUNTAR_DE_NOVO;
-
-}
-
-
-function mostrarBannerInstalar() {
-
-  if (!bannerInstalar) {
-    return;
-  }
-
-  bannerInstalar.style.display = "flex";
-
-  requestAnimationFrame(function () {
-
-    bannerInstalar.classList.add("visivel");
-
-  });
-
-}
-
-
-function esconderBannerInstalar() {
-
-  if (!bannerInstalar) {
-    return;
-  }
-
-  bannerInstalar.classList.remove("visivel");
-
-  setTimeout(function () {
-
-    bannerInstalar.style.display = "none";
-
-  }, 400);
-
-}
-
-
-window.addEventListener("beforeinstallprompt", function (evento) {
-
-  evento.preventDefault();
-
-  eventoInstalacao = evento;
-
-  if (podeMostrarBannerInstalar()) {
-
-    mostrarBannerInstalar();
-
-  }
-
-});
-
-
-if (botaoInstalarDepois) {
-
-  botaoInstalarDepois.addEventListener("click", function () {
-
-    localStorage.setItem(CHAVE_INSTALACAO_ADIADA, String(Date.now()));
-
-    esconderBannerInstalar();
-
-  });
-
-}
-
-
-if (botaoInstalarApp) {
-
-  botaoInstalarApp.addEventListener("click", async function () {
-
-    esconderBannerInstalar();
-
-    if (!eventoInstalacao) {
-      return;
-    }
-
-    eventoInstalacao.prompt();
-
-    try {
-
-      await eventoInstalacao.userChoice;
-
-    } catch (erro) {
-
-      console.log("Instalação cancelada ou indisponível:", erro);
-
-    }
-
-    eventoInstalacao = null;
-
-  });
-
-}
-
-
-window.addEventListener("appinstalled", function () {
-
-  eventoInstalacao = null;
-
-  esconderBannerInstalar();
-
-  localStorage.removeItem(CHAVE_INSTALACAO_ADIADA);
-
-});
-
-
-/* =========================================================
-   SERVICE WORKER
-========================================================= */
-
-if ("serviceWorker" in navigator) {
-
-  window.addEventListener("load", function () {
-
-    navigator.serviceWorker
-      .register("sw.js?v=13")
-      .catch(function (erro) {
-
-        console.error("Erro ao registrar o service worker:", erro);
-
-      });
-
-  });
-
-}
-
-
-/* =========================================================
    INICIALIZAÇÃO DO FIREBASE
    (acontece em paralelo, sem travar o login)
 ========================================================= */
@@ -1863,6 +2015,8 @@ signInAnonymously(auth)
   .then(function () {
 
     firebaseAutenticado = true;
+
+    registrarTokenPush();
 
     const appVisivel =
       telaApp && telaApp.style.display !== "none";
@@ -1888,6 +2042,62 @@ signInAnonymously(auth)
     console.error("Erro ao conectar ao Firebase:", erro);
 
   });
+
+
+/* =========================================================
+   INSTALAR APLICATIVO (PWA)
+   O navegador dispara "beforeinstallprompt" quando o app
+   cumpre os requisitos (manifest + service worker + https).
+   Guardamos o evento e só mostramos o botão nesse momento.
+========================================================= */
+
+let eventoInstalacaoAdiado = null;
+
+window.addEventListener("beforeinstallprompt", function (evento) {
+
+  evento.preventDefault();
+
+  eventoInstalacaoAdiado = evento;
+
+  if (botaoInstalar) {
+
+    botaoInstalar.style.display = "inline-flex";
+
+  }
+
+});
+
+if (botaoInstalar) {
+
+  botaoInstalar.addEventListener("click", async function () {
+
+    if (!eventoInstalacaoAdiado) {
+      return;
+    }
+
+    botaoInstalar.style.display = "none";
+
+    eventoInstalacaoAdiado.prompt();
+
+    await eventoInstalacaoAdiado.userChoice;
+
+    eventoInstalacaoAdiado = null;
+
+  });
+
+}
+
+window.addEventListener("appinstalled", function () {
+
+  if (botaoInstalar) {
+
+    botaoInstalar.style.display = "none";
+
+  }
+
+  eventoInstalacaoAdiado = null;
+
+});
 
 
 /* =========================================================
