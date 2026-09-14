@@ -1662,7 +1662,7 @@ function atualizarTela() {
     anelBarra.style.strokeDashoffset = String(offset);
 
     anelBarra.style.stroke =
-      percentual === 100 ? "#d1477f" : "#1fb8db";
+      percentual === 100 ? "#16a34a" : "#1fb8db";
 
   }
 
@@ -1862,26 +1862,14 @@ function carregarRegistrosHoje() {
       });
 
       /*
-       * Só avisa a família a partir da segunda leitura em
-       * diante — a primeira é só o carregamento inicial da
-       * tela e não deve gerar notificação de "acabou de dar".
+       * O aviso de "fulano deu o remédio" já é enviado pelo
+       * push de verdade (notificarPushInstantaneo → Vercel →
+       * Firebase Cloud Messaging → sw.js), que funciona mesmo
+       * com o app fechado e mostra o ícone certo do app. Por
+       * isso NÃO chamamos mais avisarFamiliaSobreRegistro()
+       * aqui — evita a notificação duplicada (a segunda, com
+       * o sininho genérico, que só aparecia com o app aberto).
        */
-
-      if (!primeiraCargaRegistrosHoje) {
-
-        Object.keys(registrosNovos).forEach(function (horario) {
-
-          const jaExistia = Boolean(registrosAnteriores[horario]);
-
-          if (!jaExistia) {
-
-            avisarFamiliaSobreRegistro(registrosNovos[horario]);
-
-          }
-
-        });
-
-      }
 
       primeiraCargaRegistrosHoje = false;
 
@@ -2001,7 +1989,7 @@ function renderizarHistorico() {
     historicoAnelBarra.style.strokeDashoffset = String(offset);
 
     historicoAnelBarra.style.stroke =
-      percentual === 100 ? "#d1477f" : "#1fb8db";
+      percentual === 100 ? "#16a34a" : "#1fb8db";
 
   }
 
