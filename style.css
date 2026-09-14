@@ -112,6 +112,11 @@ body {
   50% { box-shadow: 0 0 0 9px rgba(59, 147, 176, 0); }
 }
 
+@keyframes pulsarInstalar {
+  0%, 100% { box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4), 0 0 0 0 rgba(59, 147, 176, 0.35); }
+  50% { box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4), 0 0 0 8px rgba(59, 147, 176, 0); }
+}
+
 @keyframes pulsarAtrasado {
   0%, 100% { box-shadow: 0 0 0 0 rgba(226, 84, 74, 0.35); }
   50% { box-shadow: 0 0 0 9px rgba(226, 84, 74, 0); }
@@ -510,7 +515,8 @@ body {
 #btn-instalar {
   background: var(--ciano);
   color: var(--petroleo-escuro);
-  animation: pulsarAmbar 2.6s infinite;
+  box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4);
+  animation: pulsarInstalar 2.8s ease-in-out infinite;
 }
 
 #btn-notificacao.ativo {
@@ -1306,6 +1312,17 @@ body {
   color: var(--branco);
   background: var(--sucesso-azul);
   box-shadow: var(--sombra-sucesso);
+}
+
+#btn-fechar-sucesso {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px;
+  letter-spacing: 0.2px;
 }
 
 #btn-confirmar:hover,
