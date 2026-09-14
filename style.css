@@ -1357,6 +1357,11 @@ body {
   box-shadow: var(--sombra-sucesso);
 }
 
+.btn-perigo {
+  background: var(--rust);
+  box-shadow: 0 8px 18px rgba(226, 84, 74, 0.28);
+}
+
 #btn-fechar-sucesso {
   width: 100%;
   min-height: 54px;
