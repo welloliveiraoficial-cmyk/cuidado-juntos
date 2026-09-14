@@ -18,7 +18,7 @@
   href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
   rel="stylesheet"
 >
-<link rel="stylesheet" href="style.css?v=25">
+<link rel="stylesheet" href="style.css?v=26">
 <link rel="icon" type="image/png" href="img/logo.png">
 
 <!-- PWA: app instalável -->
@@ -361,8 +361,21 @@
   </div>
 </div>
 
+<!-- MODAL DE SAIR -->
+<div id="modal-sair" class="modal" style="display: none;">
+  <div class="modal-conteudo">
+    <div class="modal-icone">⎋</div>
+    <h2>Sair do aplicativo</h2>
+    <p id="texto-confirmacao-sair">Deseja sair e trocar o familiar deste aparelho?</p>
+    <div class="modal-botoes">
+      <button type="button" id="btn-cancelar-sair" class="btn-cancelar">Cancelar</button>
+      <button type="button" id="btn-confirmar-sair" class="btn-confirmar btn-perigo">Sair</button>
+    </div>
+  </div>
+</div>
+
 <!-- SCRIPTS -->
-<script type="module" src="script.js?v=19"></script>
+<script type="module" src="script.js?v=20"></script>
 <script src="native-notifications.js?v=18"></script>
 
 <!-- REGISTRO DO SERVICE WORKER (PWA instalável) -->
@@ -385,4 +398,4 @@
 
 
 
-            
+                                                  
