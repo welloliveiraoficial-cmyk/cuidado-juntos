@@ -67,7 +67,7 @@ const VAPID_KEY = "BFVSP3o_fL9b9qYzNwaHR3-DytRPRlmsPMoaBdbwT0uZOcUMd8ZCkUrfpVaZu
 const URL_NOTIFICAR_PUSH =
   "https://cuidado-juntos-api.vercel.app/api/notificar-registro";
 
-const CHAVE_API_PUSH = "050619Well@";
+const CHAVE_API_PUSH = "c4f933a7091095cc81043ee3e5b96ef4bfba700fbbf4eb005c067a299f66ee99";
 
 
 /* =========================================================
