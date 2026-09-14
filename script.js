@@ -136,7 +136,7 @@ const HORARIOS = [
   "21:00",
   "22:00",
   "00:00",
-  "23:58"
+  "19:40"
 ];
 
 
@@ -156,7 +156,7 @@ const MEDICAMENTOS = {
   "21:00": ["Losartana", "Quetiapina"],
   "22:00": ["Clonazepam"],
   "00:00": ["Levetiracetam"],
-  "23:58": ["Teste"]
+  "19:40": ["Teste"]
 };
 
 
@@ -176,7 +176,7 @@ const PERIODOS = {
   "21:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "22:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" },
-  "23:58": { rotulo: "Teste", classe: "periodo-madrugada" }
+  "19:40": { rotulo: "Teste", classe: "periodo-madrugada" }
 };
 
 const TODAS_CLASSES_BADGE = [
@@ -418,13 +418,13 @@ function proximaOcorrencia(horario, agora) {
 
 /* =========================================================
    HORÁRIO DE TESTE
-   O horário "23:58" (Teste) some sozinho da lista de
+   O horário "19:40" (Teste) some sozinho da lista de
    "Tomado" depois de alguns minutos, para permitir repetir
    o teste de notificação quantas vezes for preciso, sem
    precisar apagar nada manualmente no Firestore.
 ========================================================= */
 
-const HORARIO_TESTE = "23:58";
+const HORARIO_TESTE = "19:40";
 
 const EXPIRACAO_TESTE_MS = 1 * 60 * 1000; // 1 minuto
 
@@ -510,7 +510,7 @@ function calcularBadge(horario, agora, proximoPendente) {
   /*
    * Só o horário mais urgente (o "proximoPendente") pode virar
    * cartão em destaque (Agora/Próximo). Isso evita que dois
-   * horários próximos um do outro (ex.: o de teste "23:58" e
+   * horários próximos um do outro (ex.: o de teste "19:40" e
    * o "00:00") virem dois cartões gigantes pulsando ao mesmo
    * tempo, brigando pela atenção na tela.
    */
@@ -1675,7 +1675,7 @@ function atualizarTela() {
 
   /*
    * TESTE: AVISO DE ATRASO
-   * Só para o horário de teste (23:58) — dispara uma
+   * Só para o horário de teste (19:40) — dispara uma
    * notificação local 1 minuto depois do horário passar,
    * caso ainda não tenha sido registrado. Serve para testar
    * o alerta de atraso sem precisar esperar um horário real.
@@ -1702,7 +1702,7 @@ function atualizarTela() {
 
         mostrarNotificacaoLocal(
           "Cuidado Juntos 🧪",
-          "Teste: o medicamento das 23:58 ficou atrasado."
+          "Teste: o medicamento das 19:40 ficou atrasado."
         );
 
       }
@@ -1952,7 +1952,7 @@ const ICONES_HORARIO = {
   "21:00": "🌙",
   "22:00": "🌙",
   "00:00": "🌌",
-  "23:58": "🧪"
+  "19:40": "🧪"
 };
 
 
