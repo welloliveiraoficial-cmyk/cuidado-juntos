@@ -48,12 +48,45 @@ messaging.onBackgroundMessage(function (payload) {
     body: corpo,
     icon: "img/logo.png",
     badge: "img/icone-notificacao.png",
-    tag: "cuidado-juntos-push"
+    tag: "cuidado-juntos-push",
+    requireInteraction: true,
+    vibrate: [400, 200, 400, 200, 400],
+    renotify: true
   });
 
 });
 
-const CACHE_NAME = "cuidado-juntos-v8";
+/* =========================================================
+   TOQUE NA NOTIFICAÇÃO — abre o app já na tela principal
+========================================================= */
+
+self.addEventListener("notificationclick", function (evento) {
+
+  evento.notification.close();
+
+  evento.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then(function (listaClientes) {
+
+        for (const cliente of listaClientes) {
+
+          if (cliente.url.includes(self.registration.scope) && "focus" in cliente) {
+            return cliente.focus();
+          }
+
+        }
+
+        if (self.clients.openWindow) {
+          return self.clients.openWindow("./");
+        }
+
+      })
+  );
+
+});
+
+const CACHE_NAME = "cuidado-juntos-v9";
 
 const ARQUIVOS_ESSENCIAIS = [
   "./",
