@@ -117,6 +117,14 @@ body {
   50% { box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4), 0 0 0 8px rgba(59, 147, 176, 0); }
 }
 
+@keyframes balancarInstalar {
+  0%, 78%, 100% { transform: translateY(0) rotate(0deg); }
+  82% { transform: translateY(-3px) rotate(-10deg); }
+  86% { transform: translateY(0) rotate(8deg); }
+  90% { transform: translateY(-2px) rotate(-6deg); }
+  94% { transform: translateY(0) rotate(0deg); }
+}
+
 @keyframes pulsarAtrasado {
   0%, 100% { box-shadow: 0 0 0 0 rgba(226, 84, 74, 0.35); }
   50% { box-shadow: 0 0 0 9px rgba(226, 84, 74, 0); }
@@ -151,6 +159,30 @@ body {
 @keyframes anelAcender {
   0% { box-shadow: 0 0 0 0 rgba(59, 147, 176, 0.55); }
   100% { box-shadow: 0 0 0 10px rgba(59, 147, 176, 0); }
+}
+
+@keyframes brilhoSol {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(245, 165, 36, 0));
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(245, 165, 36, 0.65));
+    transform: scale(1.08) rotate(10deg);
+  }
+}
+
+@keyframes brilhoLua {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(124, 92, 214, 0));
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 9px rgba(124, 92, 214, 0.6));
+    opacity: 0.88;
+    transform: scale(1.05);
+  }
 }
 
 /* =========================================================
@@ -490,6 +522,9 @@ body {
   position: relative;
   width: 40px;
   height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   border-radius: 12px;
   color: var(--branco);
@@ -497,6 +532,10 @@ body {
   font-size: 17px;
   cursor: pointer;
   transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.icone-download {
+  flex-shrink: 0;
 }
 
 #btn-instalar:hover,
@@ -516,7 +555,7 @@ body {
   background: var(--ciano);
   color: var(--petroleo-escuro);
   box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4);
-  animation: pulsarInstalar 2.8s ease-in-out infinite;
+  animation: pulsarInstalar 2.8s ease-in-out infinite, balancarInstalar 4.5s ease-in-out infinite;
 }
 
 #btn-notificacao.ativo {
@@ -949,6 +988,7 @@ body {
 .medicamento-card.periodo-manha .icone-medicamento { background: var(--ciano-suave); }
 .medicamento-card.periodo-manha .medicamento-badge { background: var(--ciano-escuro); }
 .medicamento-card.periodo-manha { border-left-color: var(--ciano); }
+.medicamento-card.periodo-manha .icone-medicamento { animation: brilhoSol 3.4s ease-in-out infinite; }
 
 .medicamento-card.periodo-almoco .icone-medicamento { background: var(--teal-suave); }
 .medicamento-card.periodo-almoco .medicamento-badge { background: var(--teal); }
@@ -957,14 +997,17 @@ body {
 .medicamento-card.periodo-tarde .icone-medicamento { background: var(--amarelo-suave); }
 .medicamento-card.periodo-tarde .medicamento-badge { background: var(--amarelo); }
 .medicamento-card.periodo-tarde { border-left-color: var(--amarelo); }
+.medicamento-card.periodo-tarde .icone-medicamento { animation: brilhoSol 3.4s ease-in-out infinite; }
 
 .medicamento-card.periodo-noite .icone-medicamento { background: var(--roxo-suave); }
 .medicamento-card.periodo-noite .medicamento-badge { background: var(--roxo); }
 .medicamento-card.periodo-noite { border-left-color: var(--roxo); }
+.medicamento-card.periodo-noite .icone-medicamento { animation: brilhoLua 3.6s ease-in-out infinite; }
 
 .medicamento-card.periodo-madrugada .icone-medicamento { background: var(--creme-forte); }
 .medicamento-card.periodo-madrugada .medicamento-badge { background: var(--petroleo-escuro); }
 .medicamento-card.periodo-madrugada { border-left-color: var(--petroleo-escuro); }
+.medicamento-card.periodo-madrugada .icone-medicamento { animation: brilhoLua 3.6s ease-in-out infinite; }
 
 /* =========================================================
    HISTÓRICO
