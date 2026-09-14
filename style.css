@@ -1,25 +1,26 @@
 /* =========================================================
    CUIDADO JUNTOS
-   INTERFACE — v4 (dashboard profissional, paleta da logo)
-   Azul-royal + ciano (logo) como marca. Rosa no lugar do
-   verde para "tomado" (pedido do usuário). Layout em lista
-   com destaque hero para o próximo remédio, estilo painel.
-   Tipografia: Fraunces (títulos) + Nunito Sans (interface).
+   INTERFACE — v5 (dashboard profissional, azul refinado)
+   Azul-royal (mais suave) + ciano da logo como marca. Rosa
+   no lugar do verde para "tomado" (pedido do usuário).
+   Layout em lista com destaque hero para o próximo remédio,
+   estilo painel. Tipografia: Inter (única, limpa e moderna).
+   Botão "Dar" agora com ícone + texto.
 ========================================================= */
 
 :root {
-  /* ---- Marca (cores da logo) ---- */
-  --petroleo: #0b3fd1;
-  --petroleo-escuro: #072a94;
-  --petroleo-claro: #4d8fe0;
-  --ciano: #22d3ee;
-  --ciano-escuro: #0e93a8;
-  --ciano-suave: #e0f9fc;
+  /* ---- Marca (azul refinado) ---- */
+  --petroleo: #2b4c8c;
+  --petroleo-escuro: #1b2f5c;
+  --petroleo-claro: #6f8fc9;
+  --ciano: #4fa8c9;
+  --ciano-escuro: #2e7a93;
+  --ciano-suave: #e7f3f7;
 
   /* ---- Destaque / ação (mesmo tom da logo) ---- */
-  --ambar: #1fb8db;
-  --ambar-escuro: #0e7f97;
-  --ambar-suave: #dff6fb;
+  --ambar: #3b93b0;
+  --ambar-escuro: #256b80;
+  --ambar-suave: #e4f2f6;
 
   /* ---- Status "tomado" — rosa no lugar do verde ---- */
   --salvia: #d1477f;
@@ -52,16 +53,16 @@
   --branco: #ffffff;
 
   /* ---- Sombras ---- */
-  --sombra: 0 10px 26px rgba(11, 63, 209, 0.08);
-  --sombra-forte: 0 20px 44px rgba(11, 63, 209, 0.16);
-  --sombra-ciano: 0 12px 26px rgba(31, 184, 219, 0.3);
+  --sombra: 0 10px 26px rgba(43, 76, 140, 0.08);
+  --sombra-forte: 0 20px 44px rgba(43, 76, 140, 0.16);
+  --sombra-ciano: 0 12px 26px rgba(59, 147, 176, 0.3);
   --sombra-rosa: 0 10px 22px rgba(209, 71, 127, 0.28);
 
   --raio: 18px;
 
   /* ---- Tipografia ---- */
-  --fonte-titulo: "Fraunces", "Georgia", serif;
-  --fonte-base: "Nunito Sans", "Segoe UI", Arial, sans-serif;
+  --fonte-titulo: "Inter", "Segoe UI", Arial, sans-serif;
+  --fonte-base: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 * {
@@ -107,8 +108,8 @@ body {
 }
 
 @keyframes pulsarAmbar {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.35); }
-  50% { box-shadow: 0 0 0 9px rgba(31, 184, 219, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 147, 176, 0.35); }
+  50% { box-shadow: 0 0 0 9px rgba(59, 147, 176, 0); }
 }
 
 @keyframes pulsarAtrasado {
@@ -143,8 +144,8 @@ body {
 }
 
 @keyframes anelAcender {
-  0% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.55); }
-  100% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(59, 147, 176, 0.55); }
+  100% { box-shadow: 0 0 0 10px rgba(59, 147, 176, 0); }
 }
 
 /* =========================================================
@@ -190,7 +191,6 @@ body {
   font-family: var(--fonte-titulo);
   font-size: 32px;
   font-weight: 700;
-  font-style: italic;
   letter-spacing: -0.3px;
 }
 
@@ -279,7 +279,7 @@ body {
   justify-content: center;
   border-radius: 26px;
   background: var(--branco);
-  box-shadow: 0 16px 34px rgba(11, 63, 209, 0.3);
+  box-shadow: 0 16px 34px rgba(43, 76, 140, 0.3);
 }
 
 .logo-login {
@@ -294,7 +294,6 @@ body {
   color: var(--branco);
   font-size: 28px;
   font-weight: 700;
-  font-style: italic;
   margin-bottom: 8px;
 }
 
@@ -337,7 +336,7 @@ body {
 
 #nome-usuario:focus {
   border-color: var(--ambar);
-  box-shadow: 0 0 0 4px rgba(31, 184, 219, 0.22);
+  box-shadow: 0 0 0 4px rgba(59, 147, 176, 0.22);
 }
 
 #btn-entrar {
@@ -396,7 +395,6 @@ body {
   font-family: var(--fonte-titulo);
   color: var(--branco);
   font-size: 15px;
-  font-style: italic;
   font-weight: 600;
   opacity: 0.85;
   text-align: center;
@@ -428,7 +426,7 @@ body {
   color: var(--branco);
   padding: 18px 20px;
   border-radius: 0 0 22px 22px;
-  box-shadow: 0 10px 24px rgba(11, 63, 209, 0.22);
+  box-shadow: 0 10px 24px rgba(43, 76, 140, 0.22);
 }
 
 .cabecalho-conteudo {
@@ -463,7 +461,6 @@ body {
   font-family: var(--fonte-titulo);
   font-size: 19px;
   font-weight: 700;
-  font-style: italic;
   letter-spacing: -0.2px;
 }
 
@@ -576,7 +573,6 @@ body {
   color: var(--carvao);
   font-size: 22px;
   font-weight: 700;
-  font-style: italic;
   letter-spacing: -0.3px;
 }
 
@@ -674,7 +670,6 @@ body {
   color: var(--carvao);
   font-size: 19px;
   font-weight: 700;
-  font-style: italic;
 }
 
 .titulo-secao p {
@@ -795,9 +790,13 @@ body {
 
 .btn-dar {
   flex-shrink: 0;
-  min-width: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 76px;
   min-height: 40px;
-  padding: 0 12px;
+  padding: 0 14px;
   border: none;
   border-radius: 12px;
   background: var(--petroleo);
@@ -807,6 +806,16 @@ body {
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.btn-dar-icone {
+  display: inline-flex;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.btn-dar-texto {
+  line-height: 1;
 }
 
 .btn-dar:hover {
@@ -837,11 +846,14 @@ body {
 }
 .medicamento-card.badge-tomado .btn-dar {
   background: var(--salvia);
-  font-size: 0;
+  min-width: 40px;
+  padding: 0;
 }
-.medicamento-card.badge-tomado .btn-dar::before {
-  content: "✓";
-  font-size: 17px;
+.medicamento-card.badge-tomado .btn-dar .btn-dar-texto {
+  display: none;
+}
+.medicamento-card.badge-tomado .btn-dar .btn-dar-icone {
+  font-size: 18px;
 }
 
 /* ---- Estado: PRÓXIMO — vira card hero, ocupa a linha toda ---- */
@@ -873,7 +885,7 @@ body {
 .medicamento-card.badge-proximo .btn-dar {
   background: var(--branco);
   color: var(--petroleo);
-  min-width: 70px;
+  min-width: 80px;
 }
 
 /* ---- Estado: AGORA — hero mais urgente, ciano pulsante ---- */
@@ -906,7 +918,7 @@ body {
 .medicamento-card.badge-agora .btn-dar {
   background: var(--branco);
   color: var(--ambar-escuro);
-  min-width: 70px;
+  min-width: 80px;
 }
 
 /* ---- Estado: ATRASADO ---- */
@@ -970,7 +982,6 @@ body {
   color: var(--carvao);
   font-size: 21px;
   font-weight: 700;
-  font-style: italic;
 }
 
 .historico-cabecalho p {
@@ -1036,7 +1047,7 @@ body {
   background: var(--branco);
   border-left: 4px solid var(--linha);
   border-radius: 15px;
-  box-shadow: 0 5px 16px rgba(11, 63, 209, 0.06);
+  box-shadow: 0 5px 16px rgba(43, 76, 140, 0.06);
   animation: subir 0.5s ease;
 }
 
@@ -1133,7 +1144,7 @@ body {
   display: flex;
   background: rgba(255, 255, 255, 0.97);
   border-top: 1px solid var(--linha);
-  box-shadow: 0 -8px 22px rgba(11, 63, 209, 0.08);
+  box-shadow: 0 -8px 22px rgba(43, 76, 140, 0.08);
   backdrop-filter: blur(10px);
   padding: 8px max(10px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));
 }
@@ -1198,7 +1209,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 22px;
-  background: rgba(7, 42, 148, 0.55);
+  background: rgba(27, 47, 92, 0.55);
   backdrop-filter: blur(8px);
   animation: aparecer 0.25s ease;
 }
@@ -1210,7 +1221,7 @@ body {
   text-align: center;
   background: var(--branco);
   border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(7, 42, 148, 0.28);
+  box-shadow: 0 24px 60px rgba(27, 47, 92, 0.28);
   animation: subir 0.35s ease;
 }
 
@@ -1244,7 +1255,6 @@ body {
   color: var(--carvao);
   font-size: 22px;
   font-weight: 700;
-  font-style: italic;
   margin-bottom: 10px;
 }
 
@@ -1386,7 +1396,7 @@ button {
 
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid rgba(31, 184, 219, 0.5);
+  outline: 3px solid rgba(59, 147, 176, 0.5);
   outline-offset: 3px;
 }
 
