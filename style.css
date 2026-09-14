@@ -1250,7 +1250,8 @@ body {
    MODAL DE CONFIRMAÇÃO / SUCESSO
 ========================================================= */
 
-#modal-confirmacao {
+#modal-confirmacao,
+#modal-sair {
   position: fixed;
   inset: 0;
   z-index: 1000;
