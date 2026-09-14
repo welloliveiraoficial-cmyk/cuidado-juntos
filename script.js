@@ -426,7 +426,9 @@ function proximaOcorrencia(horario, agora) {
 
 const HORARIO_TESTE = "23:58";
 
-const EXPIRACAO_TESTE_MS = 2 * 60 * 1000; // 2 minutos
+const EXPIRACAO_TESTE_MS = 1 * 60 * 1000; // 1 minuto
+
+let avisoAtrasoTesteEnviado = false;
 
 function obterRegistroAtivo(horario, agora) {
 
@@ -1214,6 +1216,13 @@ if (botaoConfirmar) {
       registros[horario] = registro;
 
 
+      if (horario === HORARIO_TESTE) {
+
+        avisoAtrasoTesteEnviado = false;
+
+      }
+
+
       notificarPushInstantaneo(registro);
 
 
@@ -1660,6 +1669,45 @@ function atualizarTela() {
   if (anelPercentual) {
 
     anelPercentual.textContent = `${percentual}%`;
+
+  }
+
+
+  /*
+   * TESTE: AVISO DE ATRASO
+   * Só para o horário de teste (23:58) — dispara uma
+   * notificação local 1 minuto depois do horário passar,
+   * caso ainda não tenha sido registrado. Serve para testar
+   * o alerta de atraso sem precisar esperar um horário real.
+   * Zera sozinho quando o teste é registrado de novo.
+   */
+
+  if (!obterRegistroAtivo(HORARIO_TESTE, agora)) {
+
+    const ocorrenciaTeste = proximaOcorrencia(HORARIO_TESTE, agora);
+
+    const diferencaTeste = Math.round(
+      (ocorrenciaTeste.getTime() - agora.getTime()) / 60000
+    );
+
+    if (diferencaTeste <= -1 && !avisoAtrasoTesteEnviado) {
+
+      avisoAtrasoTesteEnviado = true;
+
+      if (
+        notificacaoAtiva &&
+        "Notification" in window &&
+        Notification.permission === "granted"
+      ) {
+
+        mostrarNotificacaoLocal(
+          "Cuidado Juntos 🧪",
+          "Teste: o medicamento das 23:58 ficou atrasado."
+        );
+
+      }
+
+    }
 
   }
 
