@@ -6,7 +6,7 @@
   name="viewport"
   content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
 >
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#2b4c8c">
 <meta
   name="description"
   content="Cuidado Juntos - organização dos medicamentos em família"
@@ -15,13 +15,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
-  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
   rel="stylesheet"
 >
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=29">
 <link rel="icon" type="image/png" href="img/logo.png">
-<link rel="manifest" href="manifest.json">
+
+<!-- PWA: app instalável -->
+<link rel="manifest" href="manifest.json?v=1">
 <link rel="apple-touch-icon" href="img/logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cuidado Juntos">
 </head>
 <body>
 
@@ -92,6 +97,13 @@
       </div>
 
       <div class="acoes-cabecalho">
+        <button type="button" id="btn-instalar" class="btn-icone" aria-label="Instalar aplicativo" style="display: none;">
+          <svg class="icone-download" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12"></path>
+            <path d="M7 10l5 5 5-5"></path>
+            <path d="M4 19h16"></path>
+          </svg>
+        </button>
         <button type="button" id="btn-notificacao" class="btn-icone" aria-label="Notificações">
           🔔
         </button>
@@ -150,7 +162,7 @@
               <strong class="medicamento-horario">08:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="09:00">
@@ -160,7 +172,7 @@
               <strong class="medicamento-horario">09:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="10:00">
@@ -170,7 +182,7 @@
               <strong class="medicamento-horario">10:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="12:00">
@@ -180,7 +192,7 @@
               <strong class="medicamento-horario">12:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="16:00">
@@ -190,7 +202,7 @@
               <strong class="medicamento-horario">16:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="20:00">
@@ -200,7 +212,7 @@
               <strong class="medicamento-horario">20:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="21:00">
@@ -210,7 +222,7 @@
               <strong class="medicamento-horario">21:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="22:00">
@@ -220,7 +232,7 @@
               <strong class="medicamento-horario">22:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
           <article class="medicamento-card" data-horario="00:00">
@@ -230,7 +242,18 @@
               <strong class="medicamento-horario">00:00</strong>
               <span class="status" data-status>—</span>
             </div>
-            <button type="button" class="btn-dar">Dar</button>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
+          </article>
+
+          <!-- HORÁRIO DE TESTE — REMOVER DEPOIS DE TESTAR O PUSH -->
+          <article class="medicamento-card" data-horario="23:58">
+            <div class="icone-medicamento">🧪</div>
+            <div class="medicamento-detalhes">
+              <span class="medicamento-badge" data-badge>Pendente</span>
+              <strong class="medicamento-horario">23:58</strong>
+              <span class="status" data-status>—</span>
+            </div>
+            <button type="button" class="btn-dar"><span class="btn-dar-icone" aria-hidden="true">✓</span><span class="btn-dar-texto">Dar</span></button>
           </article>
 
         </div>
@@ -291,23 +314,6 @@
 
 </section>
 
-<!-- CARTÃO DE INSTALAÇÃO DO APP -->
-<div id="banner-instalar" class="banner-instalar" style="display: none;">
-  <div class="banner-instalar-icone">
-    <img src="img/logo.png" alt="Logo Cuidado Juntos">
-  </div>
-  <div class="banner-instalar-texto">
-    <strong>Instalar Cuidado Juntos</strong>
-    <span>Acesse mais rápido, direto da tela inicial do celular.</span>
-  </div>
-  <div class="banner-instalar-botoes">
-    <button type="button" id="btn-instalar-depois" class="btn-instalar-depois">Agora não</button>
-    <button type="button" id="btn-instalar-app" class="btn-instalar-app">
-      <span class="icone-instalar">⬇️</span> Instalar
-    </button>
-  </div>
-</div>
-
 <!-- MODAL DE CONFIRMAÇÃO / SUCESSO -->
 <div id="modal-confirmacao" class="modal" style="display: none;">
   <div class="modal-conteudo">
@@ -346,15 +352,50 @@
         <p><span class="sucesso-icone">👤</span><span id="sucesso-dadopor">—</span></p>
       </div>
 
-      <button type="button" id="btn-fechar-sucesso" class="btn-confirmar">OK</button>
+      <button type="button" id="btn-fechar-sucesso" class="btn-confirmar">
+        <span aria-hidden="true">✓</span>
+        <span>OK, entendi</span>
+      </button>
     </div>
 
   </div>
 </div>
 
+<!-- MODAL DE SAIR -->
+<div id="modal-sair" class="modal" style="display: none;">
+  <div class="modal-conteudo">
+    <div class="modal-icone">⎋</div>
+    <h2>Sair do aplicativo</h2>
+    <p id="texto-confirmacao-sair">Deseja sair e trocar o familiar deste aparelho?</p>
+    <div class="modal-botoes">
+      <button type="button" id="btn-cancelar-sair" class="btn-cancelar">Cancelar</button>
+      <button type="button" id="btn-confirmar-sair" class="btn-confirmar btn-perigo">Sair</button>
+    </div>
+  </div>
+</div>
+
 <!-- SCRIPTS -->
-<script type="module" src="script.js?v=13"></script>
-<script src="native-notifications.js?v=13"></script>
+<script type="module" src="script.js?v=21"></script>
+<script src="native-notifications.js?v=18"></script>
+
+<!-- REGISTRO DO SERVICE WORKER (PWA instalável) -->
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("sw.js?v=6")
+        .catch(function (erro) {
+          console.error("Erro ao registrar o service worker:", erro);
+        });
+    });
+  }
+</script>
 </body>
-  </html>
-                                                    
+</html>
+
+
+
+
+
+
+  
