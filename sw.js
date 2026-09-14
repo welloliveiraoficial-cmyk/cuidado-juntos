@@ -31,11 +31,18 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function (payload) {
 
+  /*
+   * Lemos de "payload.data" (não "payload.notification"),
+   * porque o servidor agora manda só dados — isso evita que
+   * o Chrome/Android exiba um aviso automático genérico por
+   * conta própria além deste, que já sai com o ícone certo.
+   */
+
   const titulo =
-    (payload.notification && payload.notification.title) || "Cuidado Juntos";
+    (payload.data && payload.data.title) || "Cuidado Juntos";
 
   const corpo =
-    (payload.notification && payload.notification.body) || "";
+    (payload.data && payload.data.body) || "";
 
   self.registration.showNotification(titulo, {
     body: corpo,
@@ -46,14 +53,14 @@ messaging.onBackgroundMessage(function (payload) {
 
 });
 
-const CACHE_NAME = "cuidado-juntos-v7";
+const CACHE_NAME = "cuidado-juntos-v8";
 
 const ARQUIVOS_ESSENCIAIS = [
   "./",
   "./index.html",
-  "./style.css?v=13",
-  "./script.js?v=13",
-  "./native-notifications.js?v=13",
+  "./style.css?v=30",
+  "./script.js?v=24",
+  "./native-notifications.js?v=18",
   "./manifest.json",
   "./img/logo.png",
   "./img/icone-notificacao.png"
