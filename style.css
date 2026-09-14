@@ -22,10 +22,10 @@
   --ambar-escuro: #256b80;
   --ambar-suave: #e4f2f6;
 
-  /* ---- Status "tomado" — rosa no lugar do verde ---- */
-  --salvia: #d1477f;
-  --salvia-escura: #a3335f;
-  --salvia-suave: #fbe7ef;
+  /* ---- Status "tomado" — azul (era rosa, pedido do usuário) ---- */
+  --sucesso-azul: #2f6fed;
+  --sucesso-azul-escuro: #1d4fbf;
+  --sucesso-azul-suave: #e4ecfc;
 
   /* ---- Status "atrasado" ---- */
   --rust: #e2544a;
@@ -56,7 +56,7 @@
   --sombra: 0 10px 26px rgba(43, 76, 140, 0.08);
   --sombra-forte: 0 20px 44px rgba(43, 76, 140, 0.16);
   --sombra-ciano: 0 12px 26px rgba(59, 147, 176, 0.3);
-  --sombra-rosa: 0 10px 22px rgba(209, 71, 127, 0.28);
+  --sombra-sucesso: 0 10px 22px rgba(47, 111, 237, 0.28);
 
   --raio: 18px;
 
@@ -528,7 +528,7 @@ body {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: var(--salvia);
+  background: var(--sucesso-azul);
   border: 2px solid var(--petroleo);
 }
 
@@ -835,17 +835,17 @@ body {
 /* ---- Estado: TOMADO (rosa, no lugar do verde) ---- */
 
 .medicamento-card.badge-tomado {
-  border-left-color: var(--salvia);
-  background: var(--salvia-suave);
+  border-left-color: var(--sucesso-azul);
+  background: var(--sucesso-azul-suave);
 }
 .medicamento-card.badge-tomado .icone-medicamento {
-  background: #f6d3e2;
+  background: #d7e3fc;
 }
 .medicamento-card.badge-tomado .medicamento-badge {
-  background: var(--salvia);
+  background: var(--sucesso-azul);
 }
 .medicamento-card.badge-tomado .btn-dar {
-  background: var(--salvia);
+  background: var(--sucesso-azul);
   min-width: 40px;
   padding: 0;
 }
@@ -1091,9 +1091,9 @@ body {
   letter-spacing: 0.3px;
 }
 
-.historico-item.tomado { border-left-color: var(--salvia); }
-.historico-item.tomado .icone-medicamento { background: var(--salvia-suave); }
-.historico-item.tomado .historico-status-chip { background: var(--salvia); }
+.historico-item.tomado { border-left-color: var(--sucesso-azul); }
+.historico-item.tomado .icone-medicamento { background: var(--sucesso-azul-suave); }
+.historico-item.tomado .historico-status-chip { background: var(--sucesso-azul); }
 
 .historico-item.nao-registrado { border-left-color: var(--linha); opacity: 0.75; }
 .historico-item.nao-registrado .icone-medicamento { background: var(--creme-forte); }
@@ -1304,8 +1304,8 @@ body {
 #btn-confirmar,
 #btn-fechar-sucesso {
   color: var(--branco);
-  background: var(--salvia);
-  box-shadow: var(--sombra-rosa);
+  background: var(--sucesso-azul);
+  box-shadow: var(--sombra-sucesso);
 }
 
 #btn-confirmar:hover,
@@ -1336,11 +1336,11 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--salvia);
+  background: var(--sucesso-azul);
   color: var(--branco);
   font-size: 40px;
   font-weight: 900;
-  box-shadow: var(--sombra-rosa);
+  box-shadow: var(--sombra-sucesso);
   animation: checkPop 0.5s ease;
 }
 
@@ -1357,7 +1357,7 @@ body {
 
 .confete.c1 { background: var(--ciano); transform: translateX(-55px); animation-delay: 0.05s; }
 .confete.c2 { background: var(--petroleo); transform: translateX(-25px); animation-delay: 0.12s; }
-.confete.c3 { background: var(--salvia); transform: translateX(5px); animation-delay: 0.02s; }
+.confete.c3 { background: var(--sucesso-azul); transform: translateX(5px); animation-delay: 0.02s; }
 .confete.c4 { background: var(--roxo); transform: translateX(30px); animation-delay: 0.18s; }
 .confete.c5 { background: var(--amarelo); transform: translateX(55px); animation-delay: 0.08s; }
 .confete.c6 { background: var(--teal); transform: translateX(-8px); animation-delay: 0.22s; }
