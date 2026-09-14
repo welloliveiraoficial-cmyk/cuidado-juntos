@@ -228,6 +228,15 @@ const nomeExibido =
 const botaoSair =
   document.getElementById("btn-sair");
 
+const modalSair =
+  document.getElementById("modal-sair");
+
+const botaoCancelarSair =
+  document.getElementById("btn-cancelar-sair");
+
+const botaoConfirmarSair =
+  document.getElementById("btn-confirmar-sair");
+
 const botaoNotificacao =
   document.getElementById("btn-notificacao");
 
@@ -896,12 +905,40 @@ if (botaoSair) {
 
   botaoSair.addEventListener("click", function () {
 
-    const confirmarSaida = window.confirm(
-      "Deseja sair e trocar o familiar deste aparelho?"
-    );
+    if (modalSair) {
 
-    if (!confirmarSaida) {
-      return;
+      modalSair.style.display = "flex";
+
+    }
+
+  });
+
+}
+
+
+if (botaoCancelarSair) {
+
+  botaoCancelarSair.addEventListener("click", function () {
+
+    if (modalSair) {
+
+      modalSair.style.display = "none";
+
+    }
+
+  });
+
+}
+
+
+if (botaoConfirmarSair) {
+
+  botaoConfirmarSair.addEventListener("click", function () {
+
+    if (modalSair) {
+
+      modalSair.style.display = "none";
+
     }
 
 
