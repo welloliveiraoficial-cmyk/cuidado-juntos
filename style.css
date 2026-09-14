@@ -22,10 +22,10 @@
   --ambar-escuro: #256b80;
   --ambar-suave: #e4f2f6;
 
-  /* ---- Status "tomado" — azul (era rosa, pedido do usuário) ---- */
-  --sucesso-azul: #2f6fed;
-  --sucesso-azul-escuro: #1d4fbf;
-  --sucesso-azul-suave: #e4ecfc;
+  /* ---- Status "tomado" — verde (pedido do usuário) ---- */
+  --sucesso-azul: #16a34a;
+  --sucesso-azul-escuro: #15803d;
+  --sucesso-azul-suave: #dcfce7;
 
   /* ---- Status "atrasado" ---- */
   --rust: #e2544a;
@@ -56,7 +56,7 @@
   --sombra: 0 10px 26px rgba(43, 76, 140, 0.08);
   --sombra-forte: 0 20px 44px rgba(43, 76, 140, 0.16);
   --sombra-ciano: 0 12px 26px rgba(59, 147, 176, 0.3);
-  --sombra-sucesso: 0 10px 22px rgba(47, 111, 237, 0.28);
+  --sombra-sucesso: 0 10px 22px rgba(22, 163, 74, 0.28);
 
   --raio: 18px;
 
@@ -876,7 +876,7 @@ body {
   background: var(--sucesso-azul-suave);
 }
 .medicamento-card.badge-tomado .icone-medicamento {
-  background: #d7e3fc;
+  background: #bbf0d1;
 }
 .medicamento-card.badge-tomado .medicamento-badge {
   background: var(--sucesso-azul);
@@ -1369,7 +1369,7 @@ body {
 .btn-confirmar:hover {
   filter: brightness(1.1);
   transform: translateY(-3px);
-  box-shadow: 0 14px 26px rgba(47, 111, 237, 0.32);
+  box-shadow: 0 14px 26px rgba(22, 163, 74, 0.32);
 }
 
 .btn-perigo:hover {
