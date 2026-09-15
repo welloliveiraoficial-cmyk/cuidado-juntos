@@ -1,68 +1,52 @@
 /* =========================================================
    CUIDADO JUNTOS
-   INTERFACE — v5 (dashboard profissional, azul refinado)
-   Azul-royal (mais suave) + ciano da logo como marca. Rosa
-   no lugar do verde para "tomado" (pedido do usuário).
-   Layout em lista com destaque hero para o próximo remédio,
-   estilo painel. Tipografia: Inter (única, limpa e moderna).
-   Botão "Dar" agora com ícone + texto.
+   INTERFACE — v3 (paleta da logo oficial)
+   Paleta: azul-royal + ciano (cores da logo) sobre fundo frio claro.
+   Verde/vermelho/roxo semânticos (tomado/atrasado/noite) mantidos.
+   Tipografia: Fraunces (títulos) + Nunito Sans (interface).
 ========================================================= */
 
 :root {
-  /* ---- Marca (azul refinado) ---- */
-  --petroleo: #2b4c8c;
-  --petroleo-escuro: #1b2f5c;
-  --petroleo-claro: #6f8fc9;
-  --ciano: #4fa8c9;
-  --ciano-escuro: #2e7a93;
-  --ciano-suave: #e7f3f7;
+  /* ---- Marca ---- */
+  --petroleo: #123f94;
+  --petroleo-escuro: #0b2c6e;
+  --petroleo-claro: #4d8fe0;
 
-  /* ---- Destaque / ação (mesmo tom da logo) ---- */
-  --ambar: #3b93b0;
-  --ambar-escuro: #256b80;
-  --ambar-suave: #e4f2f6;
+  /* ---- Destaque / ação ---- */
+  --ambar: #1fb8db;
+  --ambar-escuro: #0e7f97;
+  --ambar-suave: #dff6fb;
 
-  /* ---- Status "tomado" — verde (pedido do usuário) ---- */
-  --sucesso-azul: #16a34a;
-  --sucesso-azul-escuro: #15803d;
-  --sucesso-azul-suave: #dcfce7;
+  /* ---- Status ---- */
+  --salvia: #4b7a57;
+  --salvia-escura: #396044;
+  --salvia-suave: #e3ede4;
 
-  /* ---- Status "atrasado" ---- */
-  --rust: #e2544a;
-  --rust-escuro: #ad342c;
-  --rust-suave: #fbe3e0;
+  --rust: #a6472b;
+  --rust-escuro: #832f1a;
+  --rust-suave: #f3ded7;
 
-  /* ---- Período: tarde ---- */
-  --amarelo: #f5a524;
-  --amarelo-suave: #fdf1dc;
+  --roxo: #6b5b95;
+  --roxo-suave: #e6e1f0;
 
-  /* ---- Período: noite ---- */
-  --roxo: #7c5cd6;
-  --roxo-suave: #ece6fa;
-
-  /* ---- Período: almoço ---- */
-  --teal: #16a394;
-  --teal-suave: #dcf5f1;
-
-  /* ---- Neutros ---- */
+  /* ---- Neutros quentes ---- */
   --creme: #f2f6fc;
-  --creme-forte: #e6eefb;
+  --creme-forte: #e3edf9;
   --carvao: #10192b;
-  --carvao-suave: #5b6478;
-  --linha: #dde6f5;
+  --carvao-suave: #55647a;
+  --linha: #dce6f5;
   --branco: #ffffff;
 
-  /* ---- Sombras ---- */
-  --sombra: 0 10px 26px rgba(43, 76, 140, 0.08);
-  --sombra-forte: 0 20px 44px rgba(43, 76, 140, 0.16);
-  --sombra-ciano: 0 12px 26px rgba(59, 147, 176, 0.3);
-  --sombra-sucesso: 0 10px 22px rgba(22, 163, 74, 0.28);
+  /* ---- Sombras (tingidas de petróleo, não cinza genérico) ---- */
+  --sombra: 0 12px 32px rgba(18, 63, 148, 0.10);
+  --sombra-forte: 0 20px 46px rgba(18, 63, 148, 0.20);
+  --sombra-ambar: 0 14px 30px rgba(31, 184, 219, 0.30);
 
-  --raio: 18px;
+  --raio: 20px;
 
   /* ---- Tipografia ---- */
-  --fonte-titulo: "Inter", "Segoe UI", Arial, sans-serif;
-  --fonte-base: "Inter", "Segoe UI", Arial, sans-serif;
+  --fonte-titulo: "Fraunces", "Georgia", serif;
+  --fonte-base: "Nunito Sans", "Segoe UI", Arial, sans-serif;
 }
 
 * {
@@ -79,7 +63,9 @@ body {
   min-height: 100vh;
   font-family: var(--fonte-base);
   color: var(--carvao);
-  background: var(--creme);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(31, 184, 219, 0.10), transparent 38%),
+    linear-gradient(180deg, #eef4fc 0%, var(--creme) 100%);
   overflow-x: hidden;
 }
 
@@ -93,12 +79,12 @@ body {
 }
 
 @keyframes subir {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(22px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes entradaCartao {
-  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -108,26 +94,8 @@ body {
 }
 
 @keyframes pulsarAmbar {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 147, 176, 0.35); }
-  50% { box-shadow: 0 0 0 9px rgba(59, 147, 176, 0); }
-}
-
-@keyframes pulsarInstalar {
-  0%, 100% { box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4), 0 0 0 0 rgba(59, 147, 176, 0.35); }
-  50% { box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4), 0 0 0 8px rgba(59, 147, 176, 0); }
-}
-
-@keyframes balancarBaixar {
-  0%, 80%, 100% { transform: translateY(0) rotate(0deg); }
-  84% { transform: translateY(-3px) rotate(-10deg); }
-  88% { transform: translateY(0) rotate(8deg); }
-  92% { transform: translateY(-2px) rotate(-6deg); }
-  96% { transform: translateY(0) rotate(0deg); }
-}
-
-@keyframes pulsarAtrasado {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(226, 84, 74, 0.35); }
-  50% { box-shadow: 0 0 0 9px rgba(226, 84, 74, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.35); }
+  50% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
 }
 
 @keyframes checkPop {
@@ -146,6 +114,10 @@ body {
   100% { transform: translateY(90px) rotate(340deg); opacity: 0; }
 }
 
+/*
+ * Animação do sino: toca uma vez quando é ATIVADO,
+ * pra deixar óbvio que o clique funcionou.
+ */
 @keyframes sinoBalancar {
   0% { transform: rotate(0deg); }
   15% { transform: rotate(-18deg); }
@@ -157,53 +129,8 @@ body {
 }
 
 @keyframes anelAcender {
-  0% { box-shadow: 0 0 0 0 rgba(59, 147, 176, 0.55); }
-  100% { box-shadow: 0 0 0 10px rgba(59, 147, 176, 0); }
-}
-
-@keyframes brilhoSol {
-  0%, 100% {
-    filter: drop-shadow(0 0 0 rgba(245, 165, 36, 0));
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    filter: drop-shadow(0 0 8px rgba(245, 165, 36, 0.65));
-    transform: scale(1.08) rotate(10deg);
-  }
-}
-
-@keyframes brilhoLua {
-  0%, 100% {
-    filter: drop-shadow(0 0 0 rgba(124, 92, 214, 0));
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 9px rgba(124, 92, 214, 0.6));
-    opacity: 0.88;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes vaporAlmoco {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-3px) rotate(-6deg); }
-}
-
-@keyframes brilhoTomado {
-  0%, 100% {
-    filter: drop-shadow(0 0 0 rgba(22, 163, 74, 0));
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 7px rgba(22, 163, 74, 0.55));
-    transform: scale(1.06);
-  }
-}
-
-@keyframes brilhoProximo {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0)); }
-  50% { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.55)); }
+  0% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.55); }
+  100% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
 }
 
 /* =========================================================
@@ -217,7 +144,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(160deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--ciano) 130%);
+  background:
+    radial-gradient(circle at 80% 10%, rgba(31, 184, 219, 0.22), transparent 42%),
+    linear-gradient(160deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--petroleo-claro));
   transition: opacity 0.4s ease;
 }
 
@@ -249,6 +178,7 @@ body {
   font-family: var(--fonte-titulo);
   font-size: 32px;
   font-weight: 700;
+  font-style: italic;
   letter-spacing: -0.3px;
 }
 
@@ -271,7 +201,7 @@ body {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--ciano);
+  background: var(--ambar);
   animation: pontinhos 1.2s ease-in-out infinite;
 }
 
@@ -292,7 +222,7 @@ body {
   gap: 22px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--petroleo-escuro) 0%, var(--petroleo) 55%, var(--ciano) 130%);
+  background: linear-gradient(160deg, var(--petroleo-escuro) 0%, var(--petroleo) 55%, var(--petroleo-claro) 100%);
   animation: aparecer 0.7s ease;
 }
 
@@ -303,7 +233,7 @@ body {
   height: 260px;
   right: -90px;
   top: -100px;
-  border: 22px solid rgba(255, 255, 255, 0.12);
+  border: 22px solid rgba(31, 184, 219, 0.18);
   border-radius: 50%;
 }
 
@@ -314,7 +244,7 @@ body {
   height: 180px;
   left: -60px;
   bottom: -40px;
-  border: 16px solid rgba(255, 255, 255, 0.1);
+  border: 16px solid rgba(31, 184, 219, 0.14);
   border-radius: 50%;
 }
 
@@ -335,15 +265,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 26px;
-  background: var(--branco);
-  box-shadow: 0 16px 34px rgba(43, 76, 140, 0.3);
 }
 
 .logo-login {
-  width: 62px;
-  height: 62px;
+  width: 88px;
+  height: 88px;
   object-fit: contain;
+  filter: drop-shadow(0 12px 22px rgba(11, 44, 110, 0.45));
   animation: flutuar 4s ease-in-out infinite;
 }
 
@@ -352,11 +280,12 @@ body {
   color: var(--branco);
   font-size: 28px;
   font-weight: 700;
+  font-style: italic;
   margin-bottom: 8px;
 }
 
 .login-container p.subtitulo-login {
-  color: #d6e8fb;
+  color: #cfe4f7;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.6;
@@ -381,9 +310,9 @@ body {
   width: 100%;
   height: 56px;
   padding: 0 18px 0 46px;
-  border: 2px solid transparent;
+  border: 2px solid var(--linha);
   border-radius: 16px;
-  background: var(--branco);
+  background: var(--creme);
   color: var(--carvao);
   font-family: var(--fonte-base);
   font-weight: 700;
@@ -394,7 +323,8 @@ body {
 
 #nome-usuario:focus {
   border-color: var(--ambar);
-  box-shadow: 0 0 0 4px rgba(59, 147, 176, 0.22);
+  background: var(--branco);
+  box-shadow: 0 0 0 4px rgba(31, 184, 219, 0.18);
 }
 
 #btn-entrar {
@@ -402,8 +332,8 @@ body {
   min-height: 56px;
   border: none;
   border-radius: 16px;
-  color: var(--petroleo-escuro);
-  background: var(--branco);
+  color: var(--branco);
+  background: linear-gradient(135deg, var(--ambar), var(--ambar-escuro));
   font-family: var(--fonte-base);
   font-size: 16px;
   font-weight: 800;
@@ -412,7 +342,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 26px rgba(31, 184, 219, 0.4);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
@@ -422,8 +352,9 @@ body {
 }
 
 #btn-entrar:hover {
+  filter: brightness(1.08);
   transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.5);
 }
 
 #btn-entrar:hover .seta-entrar {
@@ -432,10 +363,11 @@ body {
 
 #btn-entrar:active {
   transform: scale(0.97);
+  filter: brightness(0.96);
 }
 
 #erro-login {
-  color: #ffd7d2;
+  color: #ffb4b4;
   font-weight: 700;
   font-size: 13px;
   margin-top: 12px;
@@ -444,7 +376,7 @@ body {
 
 .login-seguranca {
   margin-top: 24px;
-  color: #b9d6f5;
+  color: #8fb6e0;
   font-size: 12px;
   font-weight: 700;
 }
@@ -453,8 +385,9 @@ body {
   font-family: var(--fonte-titulo);
   color: var(--branco);
   font-size: 15px;
+  font-style: italic;
   font-weight: 600;
-  opacity: 0.85;
+  opacity: 0.75;
   text-align: center;
 }
 
@@ -464,7 +397,7 @@ body {
 
 #tela-app {
   min-height: 100vh;
-  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  padding-bottom: 94px;
   animation: aparecer 0.6s ease;
 }
 
@@ -476,18 +409,35 @@ body {
 }
 
 /* =========================================================
-   CABEÇALHO — mais sóbrio, cor sólida da marca
+   CABEÇALHO
 ========================================================= */
 
 .cabecalho {
-  background: var(--petroleo);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 5%, rgba(31, 184, 219, 0.28), transparent 30%),
+    linear-gradient(135deg, var(--petroleo-escuro), var(--petroleo) 55%, var(--petroleo-claro));
   color: var(--branco);
-  padding: 18px 20px;
-  border-radius: 0 0 22px 22px;
-  box-shadow: 0 10px 24px rgba(43, 76, 140, 0.22);
+  padding: 20px;
+  border-radius: 0 0 28px 28px;
+  box-shadow: 0 14px 32px rgba(18, 63, 148, 0.28);
+}
+
+.cabecalho::after {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  right: -80px;
+  top: -95px;
+  border: 24px solid rgba(31, 184, 219, 0.12);
+  border-radius: 50%;
 }
 
 .cabecalho-conteudo {
+  position: relative;
+  z-index: 1;
   max-width: 1180px;
   margin: 0 auto;
   display: flex;
@@ -504,11 +454,12 @@ body {
 }
 
 .logo-app {
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
   object-fit: contain;
   flex-shrink: 0;
-  border-radius: 12px;
+  filter: drop-shadow(0 7px 14px rgba(0, 0, 0, 0.22));
+  animation: flutuar 4s ease-in-out infinite;
 }
 
 .marca-texto {
@@ -517,73 +468,73 @@ body {
 
 .marca-texto h1 {
   font-family: var(--fonte-titulo);
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 700;
+  font-style: italic;
   letter-spacing: -0.2px;
 }
 
 .marca-texto p {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  opacity: 0.8;
+  opacity: 0.85;
   margin-top: 2px;
 }
 
 .acoes-cabecalho {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* ---- Botões redondos do cabeçalho ---- */
 
-#btn-baixar-apk,
+#btn-instalar,
 #btn-notificacao,
 #btn-sair {
   position: relative;
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
   color: var(--branco);
-  background: rgba(255, 255, 255, 0.14);
-  font-size: 17px;
+  background: rgba(31, 184, 219, 0.14);
+  font-size: 19px;
   cursor: pointer;
-  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-  text-decoration: none;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.icone-download {
-  flex-shrink: 0;
-}
-
-#btn-baixar-apk:hover,
+#btn-instalar:hover,
 #btn-notificacao:hover,
 #btn-sair:hover {
-  background: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.45);
   transform: translateY(-2px);
 }
 
-#btn-baixar-apk:active,
+#btn-instalar:active,
 #btn-notificacao:active,
 #btn-sair:active {
   transform: scale(0.92);
 }
 
-#btn-baixar-apk {
-  background: var(--ciano);
+#btn-instalar {
+  border-color: var(--ambar);
+  background: var(--ambar);
   color: var(--petroleo-escuro);
-  box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4);
-  animation: pulsarInstalar 2.8s ease-in-out infinite, balancarBaixar 4.5s ease-in-out infinite;
+  animation: pulsarAmbar 2.6s infinite;
 }
 
+/*
+ * SININHO — estado claramente diferente quando ativo:
+ * preenche de dourado, ganha anel e "toca" uma vez.
+ */
+
 #btn-notificacao.ativo {
-  background: var(--ciano);
+  background: var(--ambar);
+  border-color: var(--ambar);
   color: var(--petroleo-escuro);
-  box-shadow: var(--sombra-ciano);
+  box-shadow: var(--sombra-ambar);
   animation: sinoBalancar 0.55s ease;
 }
 
@@ -592,15 +543,15 @@ body {
   position: absolute;
   top: -3px;
   right: -3px;
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: var(--sucesso-azul);
-  border: 2px solid var(--petroleo);
+  background: var(--salvia);
+  border: 2px solid var(--petroleo-escuro);
 }
 
 /* =========================================================
-   RESUMO DO DIA — cartão de destaque estilo painel
+   RESUMO DO DIA (CARD ÚNICO + ANEL)
 ========================================================= */
 
 .resumo-dia-card {
@@ -610,12 +561,21 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin: 20px 0 8px;
-  padding: 22px 24px;
+  margin: 22px 0 10px;
+  padding: 24px;
   background: var(--branco);
+  border: 1px solid var(--linha);
   border-radius: var(--raio);
   box-shadow: var(--sombra);
-  animation: subir 0.6s ease;
+  animation: subir 0.7s ease;
+}
+
+.resumo-dia-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(31, 184, 219, 0.06), transparent 55%);
+  pointer-events: none;
 }
 
 .resumo-info {
@@ -626,7 +586,7 @@ body {
 .resumo-data {
   display: inline-block;
   color: var(--petroleo);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   background: var(--creme-forte);
   padding: 4px 11px;
@@ -637,9 +597,10 @@ body {
 .resumo-titulo {
   display: block;
   font-family: var(--fonte-titulo);
-  color: var(--carvao);
-  font-size: 22px;
+  color: var(--petroleo);
+  font-size: 24px;
   font-weight: 700;
+  font-style: italic;
   letter-spacing: -0.3px;
 }
 
@@ -653,8 +614,8 @@ body {
 
 .anel-progresso-area {
   position: relative;
-  width: 82px;
-  height: 82px;
+  width: 86px;
+  height: 86px;
   flex-shrink: 0;
 }
 
@@ -692,7 +653,7 @@ body {
 .anel-texto strong {
   font-family: var(--fonte-titulo);
   color: var(--petroleo);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1;
 }
@@ -711,8 +672,8 @@ body {
 
 .historico-mini-anel-area {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   flex-shrink: 0;
 }
 
@@ -729,14 +690,15 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin: 24px 0 14px;
+  margin: 26px 0 14px;
 }
 
 .titulo-secao h2 {
   font-family: var(--fonte-titulo);
-  color: var(--carvao);
-  font-size: 19px;
+  color: var(--petroleo);
+  font-size: 20px;
   font-weight: 700;
+  font-style: italic;
 }
 
 .titulo-secao p {
@@ -758,31 +720,29 @@ body {
 
 /* =========================================================
    LISTA DE MEDICAMENTOS
-   — cards "compactos" para o resto, e um destaque "hero"
-   automático para quem está badge-agora/badge-proximo,
-   sem precisar mexer no HTML nem no JS.
 ========================================================= */
 
 .lista-medicamentos {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .medicamento-card {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 13px;
   min-width: 0;
-  padding: 14px;
+  padding: 16px;
   background: var(--branco);
-  border-left: 4px solid var(--linha);
-  border-radius: 16px;
+  border: 1px solid var(--linha);
+  border-left: 5px solid #c7d6ee;
+  border-radius: 18px;
   box-shadow: var(--sombra);
   cursor: pointer;
   animation: entradaCartao 0.5s ease both;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .medicamento-card:nth-child(1) { animation-delay: 0.02s; }
@@ -796,8 +756,8 @@ body {
 .medicamento-card:nth-child(9) { animation-delay: 0.26s; }
 
 .medicamento-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--sombra-forte);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 34px rgba(18, 63, 148, 0.14);
 }
 
 .medicamento-card:active {
@@ -805,15 +765,15 @@ body {
 }
 
 .icone-medicamento {
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--creme-forte);
-  font-size: 21px;
+  font-size: 24px;
 }
 
 .medicamento-detalhes {
@@ -840,8 +800,8 @@ body {
 
 .medicamento-horario {
   font-family: var(--fonte-titulo);
-  color: var(--carvao);
-  font-size: 18px;
+  color: var(--petroleo);
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.3px;
   line-height: 1.1;
@@ -857,37 +817,25 @@ body {
 
 .btn-dar {
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-width: 76px;
-  min-height: 40px;
-  padding: 0 14px;
+  min-width: 62px;
+  min-height: 42px;
+  padding: 0 12px;
   border: none;
   border-radius: 12px;
-  background: var(--petroleo);
+  background: linear-gradient(135deg, var(--ambar), var(--ambar-escuro));
   color: var(--branco);
   font-family: var(--fonte-base);
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 8px 18px rgba(31, 184, 219, 0.32);
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
-.btn-dar-icone {
-  display: inline-flex;
-  font-size: 14px;
-  line-height: 1;
-}
-
-.btn-dar-texto {
-  line-height: 1;
-}
-
 .btn-dar:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.06);
   transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(31, 184, 219, 0.4);
 }
 
 .btn-dar:active {
@@ -899,152 +847,84 @@ body {
   filter: none;
 }
 
-/* ---- Estado: TOMADO (rosa, no lugar do verde) ---- */
+/* ---- Cores por status ---- */
 
 .medicamento-card.badge-tomado {
-  border-left-color: var(--sucesso-azul);
-  background: var(--sucesso-azul-suave);
+  border-left-color: var(--salvia);
+  background: linear-gradient(135deg, var(--salvia-suave), var(--branco) 60%);
 }
 .medicamento-card.badge-tomado .icone-medicamento {
-  background: #bbf0d1;
-  animation: brilhoTomado 3.2s ease-in-out infinite;
+  background: #d3e5d6;
 }
 .medicamento-card.badge-tomado .medicamento-badge {
-  background: var(--sucesso-azul);
+  background: var(--salvia);
 }
 .medicamento-card.badge-tomado .btn-dar {
-  background: var(--sucesso-azul);
-  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.28);
-  border-radius: 999px;
-  min-width: 0;
-  padding: 0 16px 0 12px;
-  gap: 7px;
+  background: linear-gradient(135deg, var(--salvia), var(--salvia-escura));
+  box-shadow: 0 8px 18px rgba(75, 122, 87, 0.28);
+  font-size: 0;
 }
-.medicamento-card.badge-tomado .btn-dar .btn-dar-texto {
-  display: inline;
-  font-size: 12px;
-  letter-spacing: 0.2px;
+.medicamento-card.badge-tomado .btn-dar::before {
+  content: "✓";
+  font-size: 18px;
 }
-.medicamento-card.badge-tomado .btn-dar .btn-dar-icone {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.28);
-  font-size: 11px;
-}
-
-/* ---- Estado: PRÓXIMO — vira card hero, ocupa a linha toda ---- */
 
 .medicamento-card.badge-proximo {
-  grid-column: 1 / -1;
-  border-left: none;
-  padding: 18px 20px;
-  background: var(--petroleo);
-  box-shadow: var(--sombra-forte);
+  border-left-color: var(--petroleo);
+  background: linear-gradient(135deg, #e7f0fb, var(--branco) 60%);
+  box-shadow: 0 16px 32px rgba(18, 63, 148, 0.14);
 }
 .medicamento-card.badge-proximo .icone-medicamento {
-  width: 52px;
-  height: 52px;
-  font-size: 24px;
-  background: rgba(255, 255, 255, 0.16);
-  animation: brilhoProximo 2.6s ease-in-out infinite;
+  background: #dce9fa;
 }
 .medicamento-card.badge-proximo .medicamento-badge {
-  background: var(--ciano);
-  color: var(--petroleo-escuro);
+  background: var(--petroleo);
 }
-.medicamento-card.badge-proximo .medicamento-horario {
-  color: var(--branco);
-  font-size: 22px;
-}
-.medicamento-card.badge-proximo .status {
-  color: #cfe3fb;
-}
-.medicamento-card.badge-proximo .btn-dar {
-  background: var(--branco);
-  color: var(--petroleo);
-  min-width: 80px;
-}
-
-/* ---- Estado: AGORA — hero mais urgente, ciano pulsante ---- */
 
 .medicamento-card.badge-agora {
-  grid-column: 1 / -1;
-  border-left: none;
-  padding: 18px 20px;
-  background: var(--ambar-escuro);
-  box-shadow: var(--sombra-ciano);
-  animation: entradaCartao 0.5s ease both, pulsarAmbar 2.2s ease-in-out infinite;
+  border-left-color: var(--ambar-escuro);
+  background: linear-gradient(135deg, var(--ambar-suave), var(--branco) 60%);
+  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.2);
 }
 .medicamento-card.badge-agora .icone-medicamento {
-  width: 52px;
-  height: 52px;
-  font-size: 24px;
-  background: rgba(255, 255, 255, 0.18);
+  background: #c9f1f9;
 }
 .medicamento-card.badge-agora .medicamento-badge {
-  background: var(--branco);
-  color: var(--ambar-escuro);
+  background: var(--ambar-escuro);
 }
-.medicamento-card.badge-agora .medicamento-horario {
-  color: var(--branco);
-  font-size: 22px;
-}
-.medicamento-card.badge-agora .status {
-  color: #d8f5fb;
-}
-.medicamento-card.badge-agora .btn-dar {
-  background: var(--branco);
-  color: var(--ambar-escuro);
-  min-width: 80px;
-}
-
-/* ---- Estado: ATRASADO ---- */
 
 .medicamento-card.badge-atrasado {
   border-left-color: var(--rust);
-  background: var(--rust-suave);
-  animation: entradaCartao 0.5s ease both, pulsarAtrasado 2.2s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--rust-suave), var(--branco) 60%);
+  animation: entradaCartao 0.5s ease both, anelAcender 2.4s ease-in-out infinite;
 }
 .medicamento-card.badge-atrasado .icone-medicamento {
-  background: #f7d2cd;
+  background: #e9c7ba;
 }
 .medicamento-card.badge-atrasado .medicamento-badge {
   background: var(--rust);
 }
 .medicamento-card.badge-atrasado .btn-dar {
-  background: var(--rust);
+  background: linear-gradient(135deg, var(--rust), var(--rust-escuro));
+  box-shadow: 0 8px 18px rgba(166, 71, 43, 0.32);
 }
 
-/* ---- Cores por período (cheias de vida, uma por turno) ---- */
+/* ---- Cores por período (quando não é próximo/agora/tomado/atrasado) ---- */
 
-.medicamento-card.periodo-manha .icone-medicamento { background: var(--ciano-suave); }
-.medicamento-card.periodo-manha .medicamento-badge { background: var(--ciano-escuro); }
-.medicamento-card.periodo-manha { border-left-color: var(--ciano); }
-.medicamento-card.periodo-manha .icone-medicamento { animation: brilhoSol 3.4s ease-in-out infinite; }
+.medicamento-card.periodo-manha .icone-medicamento { background: #dce9fa; }
+.medicamento-card.periodo-manha .medicamento-badge { background: var(--petroleo-claro); }
 
-.medicamento-card.periodo-almoco .icone-medicamento { background: var(--teal-suave); }
-.medicamento-card.periodo-almoco .medicamento-badge { background: var(--teal); }
-.medicamento-card.periodo-almoco { border-left-color: var(--teal); }
-.medicamento-card.periodo-almoco .icone-medicamento { animation: vaporAlmoco 3s ease-in-out infinite; }
+.medicamento-card.periodo-almoco .icone-medicamento { background: var(--salvia-suave); }
+.medicamento-card.periodo-almoco .medicamento-badge { background: var(--salvia); }
 
-.medicamento-card.periodo-tarde .icone-medicamento { background: var(--amarelo-suave); }
-.medicamento-card.periodo-tarde .medicamento-badge { background: var(--amarelo); }
-.medicamento-card.periodo-tarde { border-left-color: var(--amarelo); }
-.medicamento-card.periodo-tarde .icone-medicamento { animation: brilhoSol 3.4s ease-in-out infinite; }
+.medicamento-card.periodo-tarde .icone-medicamento { background: var(--ambar-suave); }
+.medicamento-card.periodo-tarde .medicamento-badge { background: var(--ambar-escuro); }
 
 .medicamento-card.periodo-noite .icone-medicamento { background: var(--roxo-suave); }
 .medicamento-card.periodo-noite .medicamento-badge { background: var(--roxo); }
-.medicamento-card.periodo-noite { border-left-color: var(--roxo); }
-.medicamento-card.periodo-noite .icone-medicamento { animation: brilhoLua 3.6s ease-in-out infinite; }
 
-.medicamento-card.periodo-madrugada .icone-medicamento { background: var(--creme-forte); }
+.medicamento-card.periodo-madrugada .icone-medicamento { background: #d7e3f7; }
 .medicamento-card.periodo-madrugada .medicamento-badge { background: var(--petroleo-escuro); }
-.medicamento-card.periodo-madrugada { border-left-color: var(--petroleo-escuro); }
-.medicamento-card.periodo-madrugada .icone-medicamento { animation: brilhoLua 3.6s ease-in-out infinite; }
 
 /* =========================================================
    HISTÓRICO
@@ -1065,9 +945,10 @@ body {
 
 .historico-cabecalho h2 {
   font-family: var(--fonte-titulo);
-  color: var(--carvao);
-  font-size: 21px;
+  color: var(--petroleo);
+  font-size: 22px;
   font-weight: 700;
+  font-style: italic;
 }
 
 .historico-cabecalho p {
@@ -1078,7 +959,7 @@ body {
 }
 
 #data-historico {
-  min-height: 44px;
+  min-height: 45px;
   padding: 0 14px;
   border: 1.5px solid var(--linha);
   border-radius: 13px;
@@ -1097,15 +978,16 @@ body {
   gap: 14px;
   padding: 18px 20px;
   background: var(--branco);
+  border: 1px solid var(--linha);
   border-radius: var(--raio);
   box-shadow: var(--sombra);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .historico-resumo-card strong {
   display: block;
   font-family: var(--fonte-titulo);
-  color: var(--carvao);
+  color: var(--petroleo);
   font-size: 16px;
   font-weight: 700;
 }
@@ -1121,7 +1003,7 @@ body {
 #lista-historico {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .historico-item {
@@ -1129,19 +1011,20 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
+  padding: 15px 17px;
   background: var(--branco);
-  border-left: 4px solid var(--linha);
-  border-radius: 15px;
-  box-shadow: 0 5px 16px rgba(43, 76, 140, 0.06);
+  border: 1px solid var(--linha);
+  border-left: 5px solid #c7d6ee;
+  border-radius: 17px;
+  box-shadow: 0 6px 18px rgba(18, 63, 148, 0.06);
   animation: subir 0.5s ease;
 }
 
 .historico-item .icone-medicamento {
-  width: 42px;
-  height: 42px;
-  font-size: 19px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  border-radius: 13px;
 }
 
 .historico-item-detalhes {
@@ -1152,8 +1035,8 @@ body {
 .historico-item-detalhes strong {
   display: block;
   font-family: var(--fonte-titulo);
-  color: var(--carvao);
-  font-size: 15px;
+  color: var(--petroleo);
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -1177,9 +1060,9 @@ body {
   letter-spacing: 0.3px;
 }
 
-.historico-item.tomado { border-left-color: var(--sucesso-azul); }
-.historico-item.tomado .icone-medicamento { background: var(--sucesso-azul-suave); }
-.historico-item.tomado .historico-status-chip { background: var(--sucesso-azul); }
+.historico-item.tomado { border-left-color: var(--salvia); }
+.historico-item.tomado .icone-medicamento { background: var(--salvia-suave); }
+.historico-item.tomado .historico-status-chip { background: var(--salvia); }
 
 .historico-item.nao-registrado { border-left-color: var(--linha); opacity: 0.75; }
 .historico-item.nao-registrado .icone-medicamento { background: var(--creme-forte); }
@@ -1230,7 +1113,7 @@ body {
   display: flex;
   background: rgba(255, 255, 255, 0.97);
   border-top: 1px solid var(--linha);
-  box-shadow: 0 -8px 22px rgba(43, 76, 140, 0.08);
+  box-shadow: 0 -10px 26px rgba(18, 63, 148, 0.1);
   backdrop-filter: blur(10px);
   padding: 8px max(10px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));
 }
@@ -1259,7 +1142,12 @@ body {
   transition: transform 0.2s ease;
 }
 
-.btn-navegacao.ativo,
+.btn-navegacao.ativo {
+  color: var(--branco);
+  background: var(--petroleo);
+  box-shadow: 0 6px 16px rgba(18, 63, 148, 0.35);
+}
+
 .btn-navegacao:hover {
   color: var(--petroleo);
   background: var(--creme-forte);
@@ -1276,7 +1164,7 @@ body {
   width: 22px;
   height: 3px;
   border-radius: 3px;
-  background: var(--ciano);
+  background: var(--ambar);
 }
 
 .btn-navegacao:active {
@@ -1287,8 +1175,7 @@ body {
    MODAL DE CONFIRMAÇÃO / SUCESSO
 ========================================================= */
 
-#modal-confirmacao,
-#modal-sair {
+#modal-confirmacao {
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -1296,7 +1183,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 22px;
-  background: rgba(27, 47, 92, 0.55);
+  background: rgba(11, 44, 110, 0.6);
   backdrop-filter: blur(8px);
   animation: aparecer 0.25s ease;
 }
@@ -1307,21 +1194,21 @@ body {
   padding: 32px 26px;
   text-align: center;
   background: var(--branco);
-  border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(27, 47, 92, 0.28);
+  border-radius: 26px;
+  box-shadow: 0 28px 70px rgba(11, 44, 110, 0.3);
   animation: subir 0.35s ease;
 }
 
 .modal-icone {
-  width: 62px;
-  height: 62px;
+  width: 64px;
+  height: 64px;
   margin: 0 auto 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--creme-forte);
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .modal-badge {
@@ -1339,9 +1226,10 @@ body {
 
 .modal-conteudo h2 {
   font-family: var(--fonte-titulo);
-  color: var(--carvao);
-  font-size: 22px;
+  color: var(--petroleo);
+  font-size: 23px;
   font-weight: 700;
+  font-style: italic;
   margin-bottom: 10px;
 }
 
@@ -1365,9 +1253,9 @@ body {
   gap: 10px;
 }
 
-.btn-cancelar,
-.btn-confirmar,
-.btn-fechar-sucesso {
+#btn-cancelar,
+#btn-confirmar,
+#btn-fechar-sucesso {
   flex: 1;
   min-height: 50px;
   border: none;
@@ -1376,77 +1264,58 @@ body {
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.18s ease, filter 0.18s ease;
 }
 
-.btn-cancelar {
+#btn-cancelar {
   color: var(--carvao);
   background: var(--creme-forte);
 }
 
-.btn-cancelar:hover {
+#btn-cancelar:hover {
   background: var(--linha);
+}
+
+#btn-confirmar,
+#btn-fechar-sucesso {
+  color: var(--branco);
+  background: linear-gradient(135deg, var(--salvia), var(--salvia-escura));
+  box-shadow: 0 8px 18px rgba(75, 122, 87, 0.28);
+}
+
+#btn-confirmar:hover,
+#btn-fechar-sucesso:hover {
+  filter: brightness(1.07);
   transform: translateY(-2px);
 }
 
-.btn-confirmar {
-  color: var(--branco);
-  background: var(--sucesso-azul);
-  box-shadow: var(--sombra-sucesso);
-}
-
-.btn-perigo {
-  background: var(--rust);
-  box-shadow: 0 8px 18px rgba(226, 84, 74, 0.28);
-}
-
-#btn-fechar-sucesso {
-  width: 100%;
-  min-height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 15px;
-  letter-spacing: 0.2px;
-}
-
-.btn-confirmar:hover {
-  filter: brightness(1.1);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 26px rgba(22, 163, 74, 0.32);
-}
-
-.btn-perigo:hover {
-  box-shadow: 0 14px 26px rgba(226, 84, 74, 0.35);
-}
-
-.btn-cancelar:active,
-.btn-confirmar:active {
-  transform: scale(0.95) translateY(0);
+#btn-cancelar:active,
+#btn-confirmar:active,
+#btn-fechar-sucesso:active {
+  transform: scale(0.96);
 }
 
 /* ---- Etapa de sucesso ---- */
 
 .sucesso-check-area {
   position: relative;
-  width: 88px;
-  height: 88px;
+  width: 90px;
+  height: 90px;
   margin: 0 auto 18px;
 }
 
 .sucesso-check {
-  width: 88px;
-  height: 88px;
+  width: 90px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--sucesso-azul);
+  background: linear-gradient(135deg, var(--salvia), var(--salvia-escura));
   color: var(--branco);
-  font-size: 40px;
+  font-size: 42px;
   font-weight: 900;
-  box-shadow: var(--sombra-sucesso);
+  box-shadow: 0 16px 32px rgba(75, 122, 87, 0.32);
   animation: checkPop 0.5s ease;
 }
 
@@ -1461,12 +1330,12 @@ body {
   animation: confeteCair 0.9s ease forwards;
 }
 
-.confete.c1 { background: var(--ciano); transform: translateX(-55px); animation-delay: 0.05s; }
+.confete.c1 { background: var(--ambar); transform: translateX(-55px); animation-delay: 0.05s; }
 .confete.c2 { background: var(--petroleo); transform: translateX(-25px); animation-delay: 0.12s; }
-.confete.c3 { background: var(--sucesso-azul); transform: translateX(5px); animation-delay: 0.02s; }
+.confete.c3 { background: var(--salvia); transform: translateX(5px); animation-delay: 0.02s; }
 .confete.c4 { background: var(--roxo); transform: translateX(30px); animation-delay: 0.18s; }
-.confete.c5 { background: var(--amarelo); transform: translateX(55px); animation-delay: 0.08s; }
-.confete.c6 { background: var(--teal); transform: translateX(-8px); animation-delay: 0.22s; }
+.confete.c5 { background: var(--rust); transform: translateX(55px); animation-delay: 0.08s; }
+.confete.c6 { background: var(--petroleo-claro); transform: translateX(-8px); animation-delay: 0.22s; }
 
 .sucesso-detalhes {
   display: flex;
@@ -1502,7 +1371,7 @@ button {
 
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid rgba(59, 147, 176, 0.5);
+  outline: 3px solid rgba(31, 184, 219, 0.5);
   outline-offset: 3px;
 }
 
@@ -1525,48 +1394,44 @@ button:disabled {
   }
 
   .cabecalho {
-    padding: 15px;
-    border-radius: 0 0 20px 20px;
+    padding: 16px 15px;
+    border-radius: 0 0 24px 24px;
   }
 
   .logo-app {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
   }
 
   .marca-texto h1 {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   .marca-texto p {
     font-size: 10px;
   }
 
-  #btn-baixar-apk,
+  #btn-instalar,
   #btn-notificacao,
   #btn-sair {
-    width: 37px;
-    height: 37px;
-    border-radius: 11px;
-    font-size: 15px;
-  }
-
-  .acoes-cabecalho {
-    gap: 7px;
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    font-size: 16px;
   }
 
   .resumo-dia-card {
-    padding: 16px;
+    padding: 18px;
     gap: 12px;
   }
 
   .resumo-titulo {
-    font-size: 18px;
+    font-size: 19px;
   }
 
   .anel-progresso-area {
-    width: 70px;
-    height: 70px;
+    width: 72px;
+    height: 72px;
   }
 
   .anel-texto strong {
@@ -1575,25 +1440,25 @@ button:disabled {
 
   .lista-medicamentos {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 11px;
   }
 
   .medicamento-card {
-    padding: 13px;
+    padding: 14px;
   }
 
   .icone-medicamento {
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
   }
 
   .medicamento-horario {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   .titulo-secao h2 {
-    font-size: 17px;
+    font-size: 18px;
   }
 }
 
