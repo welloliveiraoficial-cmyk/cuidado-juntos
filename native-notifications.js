@@ -92,7 +92,7 @@ async function configurarNotificacoesNativas() {
     await LocalNotifications.schedule({
       notifications: HORARIOS.map(([horario, hora, minuto], indice) => ({
         id: 1000 + indice,
-        title: "Cuidado Juntos ❤️",
+        title: "Cuidando Juntos ❤️",
         body: `Está na hora do medicamento das ${horario}.`,
         channelId: CHANNEL_ID,
         smallIcon: "notificacao",
