@@ -1,6 +1,6 @@
 {
   "appId": "com.cuidadojuntos.app",
-  "appName": "Cuidado Juntos",
+  "appName": "Cuidando Juntos",
   "webDir": "www",
   "plugins": {
     "LocalNotifications": {
