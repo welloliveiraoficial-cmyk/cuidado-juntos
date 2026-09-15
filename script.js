@@ -1,7 +1,7 @@
 /* =========================================================
    CUIDADO JUNTOS
    SCRIPT PRINCIPAL
-   VERSÃO PREMIUM (v18 — push instantâneo via Vercel)
+   VERSÃO PREMIUM (v19 — push nativo Android + Vercel)
 ========================================================= */
 
 
@@ -1383,6 +1383,150 @@ function avisarFamiliaSobreRegistro(registro) {
 }
 
 /* =========================================================
+   PUSH NATIVO (dentro do APK Android)
+   O SDK Web do Firebase Messaging (getMessaging/getToken,
+   logo acima) não funciona dentro da WebView do Capacitor.
+   Usamos o plugin @capacitor/push-notifications, que fala
+   com o FCM nativo do Android e devolve um token do mesmo
+   jeito — salvo na mesma coleção "dispositivos", então o
+   restante do sistema (Vercel, Firestore) não muda nada.
+========================================================= */
+
+function ehPlataformaNativa() {
+
+  return Boolean(
+    window.Capacitor &&
+    window.Capacitor.isNativePlatform &&
+    window.Capacitor.isNativePlatform()
+  );
+
+}
+
+async function registrarTokenPushNativo() {
+
+  const PushNotifications = window.Capacitor.Plugins.PushNotifications;
+
+  if (!PushNotifications) {
+    console.error("Plugin PushNotifications não está disponível.");
+    return;
+  }
+
+  try {
+
+    const permissaoAtual = await PushNotifications.checkPermissions();
+
+    let permissaoConcedida = permissaoAtual.receive === "granted";
+
+    if (!permissaoConcedida && permissaoAtual.receive !== "denied") {
+
+      const resultado = await PushNotifications.requestPermissions();
+
+      permissaoConcedida = resultado.receive === "granted";
+
+    }
+
+    if (!permissaoConcedida) {
+      console.log("Permissão de push nativo não concedida.");
+      return;
+    }
+
+    await PushNotifications.register();
+
+  } catch (erro) {
+
+    console.error("Erro ao registrar push nativo:", erro);
+
+  }
+
+}
+
+function configurarListenersPushNativo() {
+
+  const PushNotifications = window.Capacitor.Plugins.PushNotifications;
+
+  if (!PushNotifications) {
+    return;
+  }
+
+  // Token gerado pelo FCM nativo — salva igual ao caminho Web.
+  PushNotifications.addListener("registration", async function (token) {
+
+    if (!token || !token.value) {
+      return;
+    }
+
+    meuTokenPush = token.value;
+
+    if (!db) {
+      return;
+    }
+
+    try {
+
+      await setDoc(
+        doc(db, "dispositivos", token.value),
+        {
+          nome: nomeUsuario || "Família",
+          atualizadoEm: serverTimestamp(),
+          plataforma: "android"
+        },
+        { merge: true }
+      );
+
+    } catch (erro) {
+
+      console.error("Erro ao salvar token do push nativo:", erro);
+
+    }
+
+  });
+
+  PushNotifications.addListener("registrationError", function (erro) {
+
+    console.error("Erro no registro do push nativo:", erro);
+
+  });
+
+  /*
+   * Com o app aberto (primeiro plano), o Android NÃO mostra
+   * a notificação sozinho — o aviso chega aqui como dado e
+   * nós exibimos manualmente pelo canal "avisos_familia",
+   * pra manter a mesma cara do aviso em qualquer situação.
+   * Com o app fechado/em segundo plano, o próprio Android já
+   * mostra sozinho (configurado no workflow do APK), sem
+   * passar por este código — por isso não duplica.
+   */
+
+  PushNotifications.addListener("pushNotificationReceived", function (notificacao) {
+
+    const dados = notificacao.data || {};
+
+    const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
+
+    if (!LocalNotifications) {
+      return;
+    }
+
+    LocalNotifications.schedule({
+      notifications: [{
+        id: Date.now() % 100000,
+        title: dados.title || notificacao.title || "Cuidado Juntos ❤️",
+        body: dados.body || notificacao.body || "",
+        channelId: "avisos_familia",
+        smallIcon: "notificacao"
+      }]
+    }).catch(function (erro) {
+
+      console.error("Erro ao exibir push nativo em primeiro plano:", erro);
+
+    });
+
+  });
+
+}
+
+
+/* =========================================================
    REGISTRAR NOTIFICAÇÃO PUSH DE VERDADE (FCM)
    Salva no Firestore o "endereço" deste aparelho, para
    que a Cloud Function consiga mandar notificação pra ele
@@ -1390,6 +1534,21 @@ function avisarFamiliaSobreRegistro(registro) {
 ========================================================= */
 
 async function registrarTokenPush() {
+
+  // Dentro do APK, o caminho é totalmente diferente do Web.
+  if (ehPlataformaNativa()) {
+
+    notificacaoAtiva = true;
+
+    localStorage.setItem(CHAVE_NOTIFICACAO, "true");
+
+    atualizarBotaoNotificacao();
+
+    await registrarTokenPushNativo();
+
+    return;
+
+  }
 
   if (!notificacaoAtiva) {
     return;
@@ -1533,6 +1692,32 @@ function mostrarNotificacaoLocal(titulo, corpo) {
 if (botaoNotificacao) {
 
   botaoNotificacao.addEventListener("click", async function () {
+
+    // Dentro do APK não existe a API Web "Notification" —
+    // usamos o plugin nativo e paramos por aqui.
+    if (ehPlataformaNativa()) {
+
+      await registrarTokenPushNativo();
+
+      const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
+
+      if (LocalNotifications) {
+
+        LocalNotifications.schedule({
+          notifications: [{
+            id: 999999,
+            title: "Cuidado Juntos",
+            body: "As notificações estão ativas neste aparelho.",
+            channelId: "avisos_familia",
+            smallIcon: "notificacao"
+          }]
+        }).catch(function () {});
+
+      }
+
+      return;
+
+    }
 
     if (!("Notification" in window)) {
 
@@ -2040,6 +2225,10 @@ function renderizarHistorico() {
    INICIALIZAÇÃO DO FIREBASE
    (acontece em paralelo, sem travar o login)
 ========================================================= */
+
+if (ehPlataformaNativa()) {
+  configurarListenersPushNativo();
+}
 
 const firebaseApp = initializeApp(firebaseConfig);
 
