@@ -104,6 +104,15 @@
             <path d="M4 19h16"></path>
           </svg>
         </button>
+        <a
+          href="https://github.com/welloliveiraoficial-cmyk/cuidado-juntos/releases/latest/download/cuidado-juntos.apk"
+          id="btn-baixar-apk"
+          class="btn-icone"
+          aria-label="Baixar aplicativo Android (APK)"
+          title="Baixar app Android"
+        >
+          <span aria-hidden="true">📥</span>
+        </a>
         <button type="button" id="btn-notificacao" class="btn-icone" aria-label="Notificações">
           🔔
         </button>
@@ -377,6 +386,23 @@
 <!-- SCRIPTS -->
 <script type="module" src="script.js?v=24"></script>
 <script src="native-notifications.js?v=18"></script>
+
+<!-- ESCONDE O BOTÃO DE BAIXAR APK QUANDO JÁ ESTAMOS DENTRO DO APK NATIVO -->
+<script>
+  (function () {
+    var dentroDoApkNativo =
+      typeof window.Capacitor !== "undefined" &&
+      window.Capacitor.isNativePlatform &&
+      window.Capacitor.isNativePlatform();
+
+    if (dentroDoApkNativo) {
+      var botaoApk = document.getElementById("btn-baixar-apk");
+      if (botaoApk) {
+        botaoApk.style.display = "none";
+      }
+    }
+  })();
+</script>
 
 <!-- REGISTRO DO SERVICE WORKER (PWA instalável) -->
 <script>
