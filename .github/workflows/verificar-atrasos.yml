@@ -11,5 +11,6 @@ jobs:
     steps:
       - name: Chamar endpoint de verificação de atrasos
         run: |
-          curl -s -X POST "https://cuidado-juntos-api.vercel.app/api/verificar-atrasos" \
+          echo "Resposta da API:"
+          curl -s -w "\nStatus HTTP: %{http_code}\n" -X POST "https://cuidado-juntos-api.vercel.app/api/verificar-atrasos" \
             -H "x-api-key: ${{ secrets.API_SECRET }}"
