@@ -144,8 +144,7 @@ const HORARIOS = [
   "20:00",
   "21:00",
   "22:00",
-  "00:00",
-  "19:40"
+  "00:00"
 ];
 
 
@@ -164,8 +163,7 @@ const MEDICAMENTOS = {
   "20:00": ["Atorvastatina"],
   "21:00": ["Losartana", "Quetiapina"],
   "22:00": ["Clonazepam"],
-  "00:00": ["Levetiracetam"],
-  "19:40": ["Teste"]
+  "00:00": ["Levetiracetam"]
 };
 
 
@@ -184,8 +182,7 @@ const PERIODOS = {
   "20:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "21:00": { rotulo: "Noturno", classe: "periodo-noite" },
   "22:00": { rotulo: "Noturno", classe: "periodo-noite" },
-  "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" },
-  "19:40": { rotulo: "Teste", classe: "periodo-madrugada" }
+  "00:00": { rotulo: "Madrugada", classe: "periodo-madrugada" }
 };
 
 const TODAS_CLASSES_BADGE = [
@@ -422,36 +419,12 @@ function proximaOcorrencia(horario, agora) {
 }
 
 
-/* =========================================================
-   HORÁRIO DE TESTE
-   O horário "19:40" (Teste) some sozinho da lista de
-   "Tomado" depois de alguns minutos, para permitir repetir
-   o teste de notificação quantas vezes for preciso, sem
-   precisar apagar nada manualmente no Firestore.
-========================================================= */
-
-const HORARIO_TESTE = "19:40";
-
-const EXPIRACAO_TESTE_MS = 1 * 60 * 1000; // 1 minuto
-
-let avisoAtrasoTesteEnviado = false;
-
 function obterRegistroAtivo(horario, agora) {
 
   const registro = registros[horario];
 
   if (!registro) {
     return null;
-  }
-
-  if (horario === HORARIO_TESTE) {
-
-    const registradoEm = new Date(registro.dataCompleta).getTime();
-
-    if (agora.getTime() - registradoEm > EXPIRACAO_TESTE_MS) {
-      return null;
-    }
-
   }
 
   return registro;
@@ -1222,13 +1195,6 @@ if (botaoConfirmar) {
       registros[horario] = registro;
 
 
-      if (horario === HORARIO_TESTE) {
-
-        avisoAtrasoTesteEnviado = false;
-
-      }
-
-
       notificarPushInstantaneo(registro);
 
 
@@ -1870,44 +1836,6 @@ function atualizarTela() {
   }
 
 
-  /*
-   * TESTE: AVISO DE ATRASO
-   * Só para o horário de teste (19:40) — dispara uma
-   * notificação local 1 minuto depois do horário passar,
-   * caso ainda não tenha sido registrado. Serve para testar
-   * o alerta de atraso sem precisar esperar um horário real.
-   * Zera sozinho quando o teste é registrado de novo.
-   */
-
-  if (!obterRegistroAtivo(HORARIO_TESTE, agora)) {
-
-    const ocorrenciaTeste = proximaOcorrencia(HORARIO_TESTE, agora);
-
-    const diferencaTeste = Math.round(
-      (ocorrenciaTeste.getTime() - agora.getTime()) / 60000
-    );
-
-    if (diferencaTeste <= -1 && !avisoAtrasoTesteEnviado) {
-
-      avisoAtrasoTesteEnviado = true;
-
-      if (
-        notificacaoAtiva &&
-        "Notification" in window &&
-        Notification.permission === "granted"
-      ) {
-
-        mostrarNotificacaoLocal(
-          "Cuidado Juntos 🧪",
-          "Teste: o medicamento das 19:40 ficou atrasado."
-        );
-
-      }
-
-    }
-
-  }
-
 
   /*
    * Cartões de cada horário.
@@ -2152,8 +2080,7 @@ const ICONES_HORARIO = {
   "20:00": "🌙",
   "21:00": "🌙",
   "22:00": "🌙",
-  "00:00": "🌌",
-  "19:40": "🧪"
+  "00:00": "🌌"
 };
 
 
