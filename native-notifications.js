@@ -1,5 +1,12 @@
-import { Capacitor } from "@capacitor/core";
-import { LocalNotifications } from "@capacitor/local-notifications";
+/*
+ * IMPORTANTE: este arquivo é carregado como <script> comum
+ * (sem type="module"), então NÃO pode usar "import". Dentro
+ * do APK nativo, o próprio Capacitor injeta automaticamente
+ * "window.Capacitor" com os plugins prontos em
+ * "window.Capacitor.Plugins". No GitHub Pages (PWA no
+ * navegador), "window.Capacitor" simplesmente não existe, e
+ * o código abaixo sai sem fazer nada.
+ */
 
 const HORARIOS = [
   ["08:00", 8, 0],
@@ -18,7 +25,18 @@ const CHANNEL_ID = "medicamentos";
 async function configurarNotificacoesNativas() {
   // No GitHub Pages continua funcionando normalmente.
   // Este código só será executado dentro do APK.
-  if (!Capacitor.isNativePlatform()) {
+  if (
+    typeof window.Capacitor === "undefined" ||
+    !window.Capacitor.isNativePlatform ||
+    !window.Capacitor.isNativePlatform()
+  ) {
+    return;
+  }
+
+  const LocalNotifications = window.Capacitor.Plugins.LocalNotifications;
+
+  if (!LocalNotifications) {
+    console.error("Plugin LocalNotifications não está disponível.");
     return;
   }
 
