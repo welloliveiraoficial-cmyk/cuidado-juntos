@@ -18,11 +18,10 @@
   href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
   rel="stylesheet"
 >
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=31">
 <link rel="icon" type="image/png" href="img/logo.png">
 
 <!-- PWA: app instalável -->
-<link rel="manifest" href="manifest.json?v=1">
 <link rel="apple-touch-icon" href="img/logo.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -97,13 +96,6 @@
       </div>
 
       <div class="acoes-cabecalho">
-        <button type="button" id="btn-instalar" class="btn-icone" aria-label="Instalar aplicativo" style="display: none;">
-          <svg class="icone-download" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3v12"></path>
-            <path d="M7 10l5 5 5-5"></path>
-            <path d="M4 19h16"></path>
-          </svg>
-        </button>
         <a
           href="https://github.com/welloliveiraoficial-cmyk/cuidado-juntos/releases/latest/download/cuidado-juntos.apk"
           id="btn-baixar-apk"
@@ -111,7 +103,11 @@
           aria-label="Baixar aplicativo Android (APK)"
           title="Baixar app Android"
         >
-          <span aria-hidden="true">📥</span>
+          <svg class="icone-download" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12"></path>
+            <path d="M7 10l5 5 5-5"></path>
+            <path d="M4 19h16"></path>
+          </svg>
         </a>
         <button type="button" id="btn-notificacao" class="btn-icone" aria-label="Notificações">
           🔔
@@ -384,7 +380,7 @@
 </div>
 
 <!-- SCRIPTS -->
-<script type="module" src="script.js?v=24"></script>
+<script type="module" src="script.js?v=25"></script>
 <script src="native-notifications.js?v=18"></script>
 
 <!-- ESCONDE O BOTÃO DE BAIXAR APK QUANDO JÁ ESTAMOS DENTRO DO APK NATIVO -->
@@ -404,17 +400,36 @@
   })();
 </script>
 
-<!-- REGISTRO DO SERVICE WORKER (PWA instalável) -->
+<!-- LIMPA O SERVICE WORKER ANTIGO (PWA descontinuado) —
+     quem já tinha instalado antes some sozinho, sem precisar
+     desinstalar manualmente. -->
 <script>
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker
-        .register("sw.js?v=8")
-        .catch(function (erro) {
-          console.error("Erro ao registrar o service worker:", erro);
-        });
+    navigator.serviceWorker.getRegistrations().then(function (registros) {
+      registros.forEach(function (registro) {
+        registro.unregister();
+      });
     });
   }
+</script>
+
+<!-- SÓ MOSTRA O SINO DE NOTIFICAÇÃO DENTRO DO APK NATIVO —
+     o site (navegador/PWA) não envia mais notificação nenhuma,
+     só o app Android instalado. -->
+<script>
+  (function () {
+    var dentroDoApkNativo =
+      typeof window.Capacitor !== "undefined" &&
+      window.Capacitor.isNativePlatform &&
+      window.Capacitor.isNativePlatform();
+
+    if (!dentroDoApkNativo) {
+      var botaoSino = document.getElementById("btn-notificacao");
+      if (botaoSino) {
+        botaoSino.style.display = "none";
+      }
+    }
+  })();
 </script>
 </body>
 </html>
