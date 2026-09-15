@@ -2,7 +2,7 @@
   "name": "cuidado-juntos",
   "version": "1.0.0",
   "private": true,
-  "description": "Cuidado Juntos — PWA e app Android (Capacitor) para controle de medicamentos em família",
+  "description": "Cuidando Juntos — PWA e app Android (Capacitor) para controle de medicamentos em família",
   "scripts": {
     "build": "node build-www.js"
   },
