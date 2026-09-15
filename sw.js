@@ -39,7 +39,7 @@ messaging.onBackgroundMessage(function (payload) {
    */
 
   const titulo =
-    (payload.data && payload.data.title) || "Cuidado Juntos";
+    (payload.data && payload.data.title) || "Cuidando Juntos";
 
   const corpo =
     (payload.data && payload.data.body) || "";
