@@ -108,11 +108,11 @@ jobs:
           echo ""
           echo "===== NOTIFICAÇÃO ====="
 
-          if [ -f "img/notificacao.png" ]; then
+          if [ -f "img/icone-notificacao.png" ]; then
             echo "Ícone de notificação encontrado."
-            file img/notificacao.png
+            file img/icone-notificacao.png
           else
-            echo "ERRO: img/notificacao.png não encontrada."
+            echo "ERRO: img/icone-notificacao.png não encontrada."
             exit 1
           fi
 
@@ -175,7 +175,7 @@ jobs:
           mkdir -p \
             android/app/src/main/res/drawable
 
-          cp img/notificacao.png \
+          cp img/icone-notificacao.png \
             android/app/src/main/res/drawable/notificacao.png
 
           echo "Ícone de notificação instalado."
