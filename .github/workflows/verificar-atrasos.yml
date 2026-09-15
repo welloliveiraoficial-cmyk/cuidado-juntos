@@ -9,6 +9,12 @@ jobs:
   verificar:
     runs-on: ubuntu-latest
     steps:
+      - name: Chamar endpoint de lembrete de horário
+        run: |
+          echo "Resposta da API:"
+          curl -s -w "\nStatus HTTP: %{http_code}\n" -X POST "https://cuidado-juntos-api.vercel.app/api/lembrar-horario" \
+            -H "x-api-key: ${{ secrets.API_SECRET }}"
+
       - name: Chamar endpoint de verificação de atrasos
         run: |
           echo "Resposta da API:"
