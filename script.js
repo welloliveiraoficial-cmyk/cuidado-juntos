@@ -118,6 +118,15 @@ let nomeUsuario =
 let notificacaoAtiva =
   localStorage.getItem(CHAVE_NOTIFICACAO) === "true";
 
+/*
+ * O site (navegador/PWA) não envia mais notificação nenhuma —
+ * só o app Android nativo instalado. Isso zera qualquer valor
+ * salvo antigo de quem usava o navegador antes desta mudança.
+ */
+if (!ehPlataformaNativa()) {
+  notificacaoAtiva = false;
+}
+
 let ultimoAviso =
   localStorage.getItem(CHAVE_ULTIMO_AVISO) || "";
 
@@ -239,9 +248,6 @@ const botaoConfirmarSair =
 
 const botaoNotificacao =
   document.getElementById("btn-notificacao");
-
-const botaoInstalar =
-  document.getElementById("btn-instalar");
 
 const modalConfirmacao =
   document.getElementById("modal-confirmacao");
@@ -1360,6 +1366,12 @@ function avisarFamiliaSobreRegistro(registro) {
     return;
   }
 
+  /* Só o app Android nativo avisa a família — o site não. */
+
+  if (!ehPlataformaNativa()) {
+    return;
+  }
+
   /* Quem acabou de registrar já viu a confirmação na tela. */
 
   if (registro.nome && registro.nome === nomeUsuario) {
@@ -1959,7 +1971,9 @@ function atualizarTela() {
 
         botaoDar.disabled = true;
 
-        botaoDar.textContent = "Registrado";
+        botaoDar.innerHTML =
+          '<span class="btn-dar-icone" aria-hidden="true">✓</span>' +
+          '<span class="btn-dar-texto">Registrado</span>';
 
       }
 
@@ -1971,7 +1985,9 @@ function atualizarTela() {
 
         botaoDar.disabled = false;
 
-        botaoDar.textContent = "Dar";
+        botaoDar.innerHTML =
+          '<span class="btn-dar-icone" aria-hidden="true">✓</span>' +
+          '<span class="btn-dar-texto">Dar</span>';
 
       }
 
@@ -2267,62 +2283,6 @@ signInAnonymously(auth)
     console.error("Erro ao conectar ao Firebase:", erro);
 
   });
-
-
-/* =========================================================
-   INSTALAR APLICATIVO (PWA)
-   O navegador dispara "beforeinstallprompt" quando o app
-   cumpre os requisitos (manifest + service worker + https).
-   Guardamos o evento e só mostramos o botão nesse momento.
-========================================================= */
-
-let eventoInstalacaoAdiado = null;
-
-window.addEventListener("beforeinstallprompt", function (evento) {
-
-  evento.preventDefault();
-
-  eventoInstalacaoAdiado = evento;
-
-  if (botaoInstalar) {
-
-    botaoInstalar.style.display = "inline-flex";
-
-  }
-
-});
-
-if (botaoInstalar) {
-
-  botaoInstalar.addEventListener("click", async function () {
-
-    if (!eventoInstalacaoAdiado) {
-      return;
-    }
-
-    botaoInstalar.style.display = "none";
-
-    eventoInstalacaoAdiado.prompt();
-
-    await eventoInstalacaoAdiado.userChoice;
-
-    eventoInstalacaoAdiado = null;
-
-  });
-
-}
-
-window.addEventListener("appinstalled", function () {
-
-  if (botaoInstalar) {
-
-    botaoInstalar.style.display = "none";
-
-  }
-
-  eventoInstalacaoAdiado = null;
-
-});
 
 
 /* =========================================================
