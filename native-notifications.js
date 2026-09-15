@@ -21,6 +21,7 @@ const HORARIOS = [
 ];
 
 const CHANNEL_ID = "medicamentos";
+const CHANNEL_AVISOS_FAMILIA = "avisos_familia";
 
 async function configurarNotificacoesNativas() {
   // No GitHub Pages continua funcionando normalmente.
@@ -63,11 +64,22 @@ async function configurarNotificacoesNativas() {
       return;
     }
 
-    // Cria o canal de notificações do Android
+    // Cria o canal de notificações do Android (horários fixos)
     await LocalNotifications.createChannel({
       id: CHANNEL_ID,
       name: "Medicamentos",
       description: "Lembretes dos horários dos medicamentos",
+      importance: 4,
+      visibility: 1,
+      vibration: true
+    });
+
+    // Cria o canal usado pelo aviso "fulano registrou o remédio"
+    // e pelo aviso de atraso (push da família via FCM nativo).
+    await LocalNotifications.createChannel({
+      id: CHANNEL_AVISOS_FAMILIA,
+      name: "Avisos da família",
+      description: "Avisos de registro e atraso de medicamentos",
       importance: 4,
       visibility: 1,
       vibration: true
