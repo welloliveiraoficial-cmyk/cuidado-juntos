@@ -1352,7 +1352,7 @@ function avisarFamiliaSobreRegistro(registro) {
     return;
   }
 
-  const titulo = "Cuidado Juntos";
+  const titulo = "Cuidando Juntos";
 
   const corpo = `${registro.nome || "Alguém"} deu o remédio das ${registro.horario}.`;
 
@@ -1488,7 +1488,7 @@ function configurarListenersPushNativo() {
     LocalNotifications.schedule({
       notifications: [{
         id: Date.now() % 100000,
-        title: dados.title || notificacao.title || "Cuidado Juntos ❤️",
+        title: dados.title || notificacao.title || "Cuidando Juntos ❤️",
         body: dados.body || notificacao.body || "",
         channelId: "avisos_familia",
         smallIcon: "notificacao"
@@ -1684,7 +1684,7 @@ if (botaoNotificacao) {
         LocalNotifications.schedule({
           notifications: [{
             id: 999999,
-            title: "Cuidado Juntos",
+            title: "Cuidando Juntos",
             body: "As notificações estão ativas neste aparelho.",
             channelId: "avisos_familia",
             smallIcon: "notificacao"
@@ -1743,7 +1743,7 @@ if (botaoNotificacao) {
 
           try {
 
-            new Notification("Cuidado Juntos", {
+            new Notification("Cuidando Juntos", {
               body: "As notificações foram ativadas.",
               icon: "img/logo.png",
               badge: "img/icone-notificacao.png"
