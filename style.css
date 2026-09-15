@@ -117,6 +117,14 @@ body {
   50% { box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4), 0 0 0 8px rgba(59, 147, 176, 0); }
 }
 
+@keyframes balancarBaixar {
+  0%, 80%, 100% { transform: translateY(0) rotate(0deg); }
+  84% { transform: translateY(-3px) rotate(-10deg); }
+  88% { transform: translateY(0) rotate(8deg); }
+  92% { transform: translateY(-2px) rotate(-6deg); }
+  96% { transform: translateY(0) rotate(0deg); }
+}
+
 @keyframes pulsarAtrasado {
   0%, 100% { box-shadow: 0 0 0 0 rgba(226, 84, 74, 0.35); }
   50% { box-shadow: 0 0 0 9px rgba(226, 84, 74, 0); }
@@ -175,6 +183,27 @@ body {
     opacity: 0.88;
     transform: scale(1.05);
   }
+}
+
+@keyframes vaporAlmoco {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-6deg); }
+}
+
+@keyframes brilhoTomado {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(22, 163, 74, 0));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 7px rgba(22, 163, 74, 0.55));
+    transform: scale(1.06);
+  }
+}
+
+@keyframes brilhoProximo {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0)); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.55)); }
 }
 
 /* =========================================================
@@ -435,7 +464,7 @@ body {
 
 #tela-app {
   min-height: 100vh;
-  padding-bottom: 94px;
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
   animation: aparecer 0.6s ease;
 }
 
@@ -508,7 +537,7 @@ body {
 
 /* ---- Botões redondos do cabeçalho ---- */
 
-#btn-instalar,
+#btn-baixar-apk,
 #btn-notificacao,
 #btn-sair {
   position: relative;
@@ -524,30 +553,31 @@ body {
   font-size: 17px;
   cursor: pointer;
   transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  text-decoration: none;
 }
 
 .icone-download {
   flex-shrink: 0;
 }
 
-#btn-instalar:hover,
+#btn-baixar-apk:hover,
 #btn-notificacao:hover,
 #btn-sair:hover {
   background: rgba(255, 255, 255, 0.24);
   transform: translateY(-2px);
 }
 
-#btn-instalar:active,
+#btn-baixar-apk:active,
 #btn-notificacao:active,
 #btn-sair:active {
   transform: scale(0.92);
 }
 
-#btn-instalar {
+#btn-baixar-apk {
   background: var(--ciano);
   color: var(--petroleo-escuro);
   box-shadow: 0 4px 14px rgba(59, 147, 176, 0.4);
-  animation: pulsarInstalar 2.8s ease-in-out infinite;
+  animation: pulsarInstalar 2.8s ease-in-out infinite, balancarBaixar 4.5s ease-in-out infinite;
 }
 
 #btn-notificacao.ativo {
@@ -877,20 +907,33 @@ body {
 }
 .medicamento-card.badge-tomado .icone-medicamento {
   background: #bbf0d1;
+  animation: brilhoTomado 3.2s ease-in-out infinite;
 }
 .medicamento-card.badge-tomado .medicamento-badge {
   background: var(--sucesso-azul);
 }
 .medicamento-card.badge-tomado .btn-dar {
   background: var(--sucesso-azul);
-  min-width: 40px;
-  padding: 0;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.28);
+  border-radius: 999px;
+  min-width: 0;
+  padding: 0 16px 0 12px;
+  gap: 7px;
 }
 .medicamento-card.badge-tomado .btn-dar .btn-dar-texto {
-  display: none;
+  display: inline;
+  font-size: 12px;
+  letter-spacing: 0.2px;
 }
 .medicamento-card.badge-tomado .btn-dar .btn-dar-icone {
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  font-size: 11px;
 }
 
 /* ---- Estado: PRÓXIMO — vira card hero, ocupa a linha toda ---- */
@@ -907,6 +950,7 @@ body {
   height: 52px;
   font-size: 24px;
   background: rgba(255, 255, 255, 0.16);
+  animation: brilhoProximo 2.6s ease-in-out infinite;
 }
 .medicamento-card.badge-proximo .medicamento-badge {
   background: var(--ciano);
@@ -985,6 +1029,7 @@ body {
 .medicamento-card.periodo-almoco .icone-medicamento { background: var(--teal-suave); }
 .medicamento-card.periodo-almoco .medicamento-badge { background: var(--teal); }
 .medicamento-card.periodo-almoco { border-left-color: var(--teal); }
+.medicamento-card.periodo-almoco .icone-medicamento { animation: vaporAlmoco 3s ease-in-out infinite; }
 
 .medicamento-card.periodo-tarde .icone-medicamento { background: var(--amarelo-suave); }
 .medicamento-card.periodo-tarde .medicamento-badge { background: var(--amarelo); }
@@ -1497,7 +1542,7 @@ button:disabled {
     font-size: 10px;
   }
 
-  #btn-instalar,
+  #btn-baixar-apk,
   #btn-notificacao,
   #btn-sair {
     width: 37px;
