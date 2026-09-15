@@ -182,8 +182,113 @@ jobs:
 
 
       # =====================================================
-      # 13. CONFIGURAR PERMISSÃO DE NOTIFICAÇÕES
+      # 13. COPIAR GOOGLE-SERVICES.JSON
       # =====================================================
+      # Baixado do Firebase Console (app Android com pacote
+      # com.cuidadojuntos.app) e já commitado na raiz do repo.
+      # O plugin do Google Services só o encontra dentro de
+      # "android/app/".
+
+      - name: Copiar google-services.json
+        run: |
+          if [ ! -f "google-services.json" ]; then
+            echo "ERRO: google-services.json não encontrado na raiz do repositório."
+            exit 1
+          fi
+
+          cp google-services.json android/app/google-services.json
+
+          echo "google-services.json copiado para android/app/."
+
+
+      # =====================================================
+      # 14. APLICAR PLUGIN DO GOOGLE SERVICES (GRADLE)
+      # =====================================================
+      # Necessário para o FCM nativo funcionar de verdade.
+      # Se o Capacitor mudar o texto padrão que ele gera nesses
+      # arquivos, este passo falha com uma mensagem clara (em
+      # vez de aplicar o plugin errado silenciosamente).
+
+      - name: Aplicar plugin do Google Services
+        run: |
+
+          python3 - <<'PY'
+
+          from pathlib import Path
+
+          # ---- android/build.gradle (nível do projeto) ----
+
+          build_gradle = Path("android/build.gradle")
+
+          texto = build_gradle.read_text()
+
+          ancora = "classpath 'com.android.tools.build:gradle"
+
+          if ancora not in texto:
+              raise SystemExit(
+                  "Não encontrei a linha do classpath do Android Gradle "
+                  "Plugin em android/build.gradle. O Capacitor deve ter "
+                  "mudado o formato do arquivo gerado — cole o conteúdo "
+                  "atual desse arquivo na conversa para eu ajustar este "
+                  "passo."
+              )
+
+          if "com.google.gms:google-services" not in texto:
+
+              linhas = texto.split("\n")
+
+              novas_linhas = []
+
+              for linha in linhas:
+                  novas_linhas.append(linha)
+                  if ancora in linha:
+                      novas_linhas.append(
+                          "        classpath 'com.google.gms:google-services:4.4.2'"
+                      )
+
+              build_gradle.write_text("\n".join(novas_linhas))
+
+          print("Classpath do Google Services adicionado em android/build.gradle.")
+
+          # ---- android/app/build.gradle (módulo do app) ----
+
+          app_gradle = Path("android/app/build.gradle")
+
+          texto_app = app_gradle.read_text()
+
+          ancora_app = "apply plugin: 'com.android.application'"
+
+          if ancora_app not in texto_app:
+              raise SystemExit(
+                  "Não encontrei \"apply plugin: 'com.android.application'\" "
+                  "em android/app/build.gradle. O Capacitor deve ter mudado "
+                  "o formato do arquivo gerado — cole o conteúdo atual desse "
+                  "arquivo na conversa para eu ajustar este passo."
+              )
+
+          if "com.google.gms.google-services" not in texto_app:
+
+              texto_app = texto_app.replace(
+                  ancora_app,
+                  ancora_app + "\napply plugin: 'com.google.gms.google-services'"
+              )
+
+              app_gradle.write_text(texto_app)
+
+          print("Plugin do Google Services aplicado em android/app/build.gradle.")
+
+          PY
+
+
+      # =====================================================
+      # 15. CONFIGURAR NOTIFICAÇÕES ANDROID
+      # =====================================================
+      # 1) Permissão de notificações (Android 13+)
+      # 2) Ícone/canal padrão que o Android usa pra mostrar
+      #    sozinho o aviso "fulano registrou o remédio" quando
+      #    o app estiver fechado (ver android.notification em
+      #    notificar-registro.js / verificar-atrasos.js, no
+      #    repositório cuidado-juntos-api).
 
       - name: Configurar notificações Android
         run: |
@@ -197,6 +302,8 @@ jobs:
           )
 
           texto = manifest.read_text()
+
+          # ---- Permissão ----
 
           permissao = (
               '    <uses-permission '
@@ -217,20 +324,46 @@ jobs:
                   permissao + "\n" + marcador
               )
 
-              manifest.write_text(texto)
+          # ---- Ícone e canal padrão usados quando o FCM mostra
+          #      o aviso sozinho, com o app fechado ----
+
+          meta_dados = (
+              '        <meta-data\n'
+              '            android:name="com.google.firebase.messaging.default_notification_icon"\n'
+              '            android:resource="@drawable/notificacao" />\n'
+              '        <meta-data\n'
+              '            android:name="com.google.firebase.messaging.default_notification_channel_id"\n'
+              '            android:value="avisos_familia" />'
+          )
+
+          if "default_notification_icon" not in texto:
+
+              marcador_app = "</application>"
+
+              if marcador_app not in texto:
+                  raise SystemExit(
+                      "AndroidManifest.xml não possui </application>"
+                  )
+
+              texto = texto.replace(
+                  marcador_app,
+                  meta_dados + "\n    " + marcador_app
+              )
+
+          manifest.write_text(texto)
 
           print(
-              "Permissão de notificações configurada."
+              "Permissão e configuração padrão de notificações prontas."
           )
 
           PY
 
 
       # =====================================================
-      # 14. VERIFICAR MANIFEST
+      # 16. VERIFICAR MANIFEST, GRADLE E GOOGLE-SERVICES
       # =====================================================
 
-      - name: Verificar AndroidManifest
+      - name: Verificar configuração Android
         run: |
 
           echo "========================================"
@@ -245,9 +378,32 @@ jobs:
 
           cat capacitor.config.json
 
+          echo "========================================"
+          echo "ANDROID/BUILD.GRADLE (projeto)"
+          echo "========================================"
+
+          cat android/build.gradle
+
+          echo "========================================"
+          echo "ANDROID/APP/BUILD.GRADLE (app)"
+          echo "========================================"
+
+          cat android/app/build.gradle
+
+          echo "========================================"
+          echo "GOOGLE-SERVICES.JSON"
+          echo "========================================"
+
+          if [ -f "android/app/google-services.json" ]; then
+            echo "Presente em android/app/google-services.json."
+          else
+            echo "ERRO: google-services.json não está em android/app/."
+            exit 1
+          fi
+
 
       # =====================================================
-      # 15. PERMITIR EXECUÇÃO DO GRADLE
+      # 17. PERMITIR EXECUÇÃO DO GRADLE
       # =====================================================
 
       - name: Permitir execução do Gradle
@@ -257,7 +413,7 @@ jobs:
 
 
       # =====================================================
-      # 16. LIMPAR BUILD ANTERIOR
+      # 18. LIMPAR BUILD ANTERIOR
       # =====================================================
 
       - name: Limpar projeto Android
@@ -268,7 +424,7 @@ jobs:
 
 
       # =====================================================
-      # 17. GERAR APK
+      # 19. GERAR APK
       # =====================================================
 
       - name: Gerar APK Debug
@@ -279,7 +435,7 @@ jobs:
 
 
       # =====================================================
-      # 18. VERIFICAR APK
+      # 20. VERIFICAR APK
       # =====================================================
 
       - name: Verificar APK gerado
@@ -294,7 +450,7 @@ jobs:
 
 
       # =====================================================
-      # 19. PUBLICAR APK (artefato interno do workflow)
+      # 21. PUBLICAR APK (artefato interno do workflow)
       # =====================================================
 
       - name: Publicar APK como artefato
@@ -309,7 +465,7 @@ jobs:
 
 
       # =====================================================
-      # 20. RENOMEAR APK COM NOME FIXO
+      # 22. RENOMEAR APK COM NOME FIXO
       # =====================================================
       # O nome fixo garante que o link de download no site
       # nunca muda, mesmo quando um novo APK é gerado.
@@ -322,13 +478,13 @@ jobs:
 
 
       # =====================================================
-      # 21. PUBLICAR APK EM UM GITHUB RELEASE
+      # 23. PUBLICAR APK EM UM GITHUB RELEASE
       # =====================================================
       # Isso cria (ou atualiza) um Release chamado "apk-latest"
       # com o APK anexado. Como o Release é público, qualquer
       # pessoa consegue baixar o arquivo direto pelo link,
       # sem precisar de login no GitHub — diferente do artefato
-      # do passo 19, que exige estar logado.
+      # do passo 21, que exige estar logado.
       #
       # Link fixo de download (usar no botão do site):
       # https://github.com/welloliveiraoficial-cmyk/cuidado-juntos/releases/latest/download/cuidado-juntos.apk
