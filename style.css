@@ -133,6 +133,19 @@ body {
   100% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
 }
 
+/* Borda piscando: azul = faltam 30 min | vermelha = atrasado
+   (usa box-shadow em vez de border-color para não alterar
+   a cor fixa da borda lateral de cada status) */
+@keyframes bordaPiscarAzul {
+  0%, 100% { box-shadow: var(--sombra), 0 0 0 0 rgba(18, 63, 148, 0); }
+  50% { box-shadow: var(--sombra), 0 0 0 3px rgba(18, 63, 148, 0.45); }
+}
+
+@keyframes bordaPiscarVermelha {
+  0%, 100% { box-shadow: var(--sombra), 0 0 0 0 rgba(166, 71, 43, 0); }
+  50% { box-shadow: var(--sombra), 0 0 0 3px rgba(166, 71, 43, 0.5); }
+}
+
 /* =========================================================
    TELA DE SPLASH
 ========================================================= */
@@ -914,7 +927,7 @@ body {
 .medicamento-card.badge-agora {
   border-left-color: var(--ambar-escuro);
   background: linear-gradient(135deg, var(--ambar-suave), var(--branco) 60%);
-  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.2);
+  animation: entradaCartao 0.5s ease both, bordaPiscarAzul 1.2s ease-in-out infinite;
 }
 .medicamento-card.badge-agora .icone-medicamento {
   background: #c9f1f9;
@@ -927,7 +940,7 @@ body {
 .medicamento-card.badge-atrasado {
   border-left-color: var(--rust);
   background: linear-gradient(135deg, var(--rust-suave), var(--branco) 60%);
-  animation: entradaCartao 0.5s ease both, anelAcender 2.4s ease-in-out infinite;
+  animation: entradaCartao 0.5s ease both, bordaPiscarVermelha 1.2s ease-in-out infinite;
 }
 .medicamento-card.badge-atrasado .icone-medicamento {
   background: #e9c7ba;
@@ -1180,9 +1193,11 @@ body {
   box-shadow: 0 6px 16px rgba(18, 63, 148, 0.35);
 }
 
-.btn-navegacao:hover {
-  color: var(--petroleo);
-  background: var(--creme-forte);
+@media (hover: hover) and (pointer: fine) {
+  .btn-navegacao:hover {
+    color: var(--petroleo);
+    background: var(--creme-forte);
+  }
 }
 
 .btn-navegacao.ativo::before {
@@ -1285,14 +1300,24 @@ body {
 #btn-confirmar,
 #btn-fechar-sucesso {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 50px;
+  padding: 0 18px;
   border: none;
   border-radius: 14px;
   font-family: var(--fonte-base);
   font-size: 14px;
   font-weight: 800;
+  white-space: nowrap;
   cursor: pointer;
   transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+#btn-fechar-sucesso {
+  width: 100%;
 }
 
 #btn-cancelar {
