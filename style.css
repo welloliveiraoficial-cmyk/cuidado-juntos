@@ -774,6 +774,34 @@ body {
   border-radius: 16px;
   background: var(--creme-forte);
   font-size: 24px;
+  animation: iconeFlutuar 3.6s ease-in-out infinite;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+@keyframes iconeFlutuar {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(-3deg); }
+}
+
+@keyframes iconeGlowSuave {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(18, 63, 148, 0.22); }
+  50% { box-shadow: 0 0 0 7px rgba(18, 63, 148, 0); }
+}
+
+@keyframes iconeGlowForte {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.45); }
+  50% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
+}
+
+@keyframes iconePopIn {
+  0% { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+  65% { transform: scale(1.14) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes iconeAlerta {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.09) rotate(2deg); }
 }
 
 .medicamento-detalhes {
@@ -855,6 +883,7 @@ body {
 }
 .medicamento-card.badge-tomado .icone-medicamento {
   background: #d3e5d6;
+  animation: iconePopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 .medicamento-card.badge-tomado .medicamento-badge {
   background: var(--salvia);
@@ -876,6 +905,7 @@ body {
 }
 .medicamento-card.badge-proximo .icone-medicamento {
   background: #dce9fa;
+  animation: iconeFlutuar 3.6s ease-in-out infinite, iconeGlowSuave 2.6s ease-in-out infinite;
 }
 .medicamento-card.badge-proximo .medicamento-badge {
   background: var(--petroleo);
@@ -888,6 +918,7 @@ body {
 }
 .medicamento-card.badge-agora .icone-medicamento {
   background: #c9f1f9;
+  animation: iconeFlutuar 2.2s ease-in-out infinite, iconeGlowForte 1.7s ease-in-out infinite;
 }
 .medicamento-card.badge-agora .medicamento-badge {
   background: var(--ambar-escuro);
@@ -900,6 +931,7 @@ body {
 }
 .medicamento-card.badge-atrasado .icone-medicamento {
   background: #e9c7ba;
+  animation: iconeAlerta 1.3s ease-in-out infinite;
 }
 .medicamento-card.badge-atrasado .medicamento-badge {
   background: var(--rust);
@@ -1124,6 +1156,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 3px;
   min-height: 54px;
   border: none;
@@ -1138,8 +1171,7 @@ body {
 }
 
 .btn-navegacao .nav-icone {
-  font-size: 20px;
-  transition: transform 0.2s ease;
+  display: none;
 }
 
 .btn-navegacao.ativo {
@@ -1151,10 +1183,6 @@ body {
 .btn-navegacao:hover {
   color: var(--petroleo);
   background: var(--creme-forte);
-}
-
-.btn-navegacao.ativo .nav-icone {
-  transform: translateY(-2px);
 }
 
 .btn-navegacao.ativo::before {
