@@ -19,7 +19,8 @@ const ARQUIVOS = [
   "script.js",
   "native-notifications.js",
   "manifest.json",
-  "sw.js"
+  "sw.js",
+  "versao.json"
 ];
 
 const PASTAS = ["img"];
