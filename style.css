@@ -1540,6 +1540,72 @@ button:disabled {
 }
 
 /* =========================================================
+   TELA DE ATUALIZAÇÃO OBRIGATÓRIA (Android nativo)
+========================================================= */
+
+.tela-atualizacao {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(160deg, var(--petroleo-escuro), var(--petroleo) 60%);
+}
+
+.atualizacao-conteudo {
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  color: var(--branco);
+}
+
+.atualizacao-icone {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.atualizacao-conteudo h1 {
+  font-family: var(--fonte-titulo);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.atualizacao-conteudo p {
+  font-family: var(--fonte-base);
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.92;
+  margin-bottom: 28px;
+}
+
+.btn-atualizar-agora {
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 16px;
+  color: var(--petroleo-escuro);
+  background: var(--branco);
+  font-family: var(--fonte-base);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-atualizar-agora:hover {
+  filter: brightness(0.97);
+  transform: translateY(-3px);
+}
+
+.btn-atualizar-agora:active {
+  transform: scale(0.97);
+}
+
+/* =========================================================
    REDUZIR ANIMAÇÕES SE O CELULAR SOLICITAR
 ========================================================= */
 
