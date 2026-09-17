@@ -136,9 +136,14 @@ body {
   100% { transform: rotate(0deg); }
 }
 
-@keyframes anelAcender {
-  0% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.55); }
-  100% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
+@keyframes anelAcenderVermelho {
+  0%, 100% { box-shadow: var(--sombra), 0 0 0 0 rgba(166, 71, 43, 0.6); }
+  50% { box-shadow: var(--sombra), 0 0 0 9px rgba(166, 71, 43, 0); }
+}
+
+@keyframes bordaPulsarAzul {
+  0%, 100% { box-shadow: var(--sombra), 0 0 0 0 rgba(18, 63, 148, 0.55); }
+  50% { box-shadow: var(--sombra), 0 0 0 9px rgba(18, 63, 148, 0); }
 }
 
 /* =========================================================
@@ -910,7 +915,7 @@ body {
 .medicamento-card.badge-proximo {
   border-left-color: var(--petroleo);
   background: linear-gradient(135deg, #e7f0fb, var(--branco) 60%);
-  box-shadow: 0 16px 32px rgba(18, 63, 148, 0.14);
+  animation: entradaCartao 0.5s ease both, bordaPulsarAzul 1.8s ease-in-out infinite;
 }
 .medicamento-card.badge-proximo .icone-medicamento {
   background: #dce9fa;
@@ -923,7 +928,7 @@ body {
 .medicamento-card.badge-agora {
   border-left-color: var(--ambar-escuro);
   background: linear-gradient(135deg, var(--ambar-suave), var(--branco) 60%);
-  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.2);
+  animation: entradaCartao 0.5s ease both, bordaPulsarAzul 1.2s ease-in-out infinite;
 }
 .medicamento-card.badge-agora .icone-medicamento {
   background: #c9f1f9;
@@ -936,7 +941,7 @@ body {
 .medicamento-card.badge-atrasado {
   border-left-color: var(--rust);
   background: linear-gradient(135deg, var(--rust-suave), var(--branco) 60%);
-  animation: entradaCartao 0.5s ease both, anelAcender 2.4s ease-in-out infinite;
+  animation: entradaCartao 0.5s ease both, anelAcenderVermelho 1.4s ease-in-out infinite;
 }
 .medicamento-card.badge-atrasado .icone-medicamento {
   background: #e9c7ba;
@@ -1293,10 +1298,19 @@ body {
 #btn-cancelar,
 #btn-confirmar,
 #btn-fechar-sucesso {
+  box-sizing: border-box;
+  width: 100%;
   flex: 1;
   min-height: 50px;
+  padding: 0 16px;
   border: none;
   border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: visible;
   font-family: var(--fonte-base);
   font-size: 14px;
   font-weight: 800;
