@@ -30,29 +30,6 @@ jobs:
 
 
       # =====================================================
-      # GERAR VERSAO.JSON (checagem de atualização obrigatória)
-      # =====================================================
-      # Usa o hash do commit como identificador único de versão.
-      # Este arquivo fica empacotado dentro do próprio APK (via
-      # build-www.js) — é o "RG" da versão instalada. O app
-      # compara esse commit com o commit mais recente da branch
-      # main (via API do GitHub) pra saber se saiu versão nova.
-      # Também é publicado como arquivo do Release só como
-      # registro/debug de qual commit gerou aquele APK.
-
-      - name: Gerar versao.json
-        run: |
-          cat > versao.json << EOF
-          {
-            "commit": "${{ github.sha }}",
-            "gerado_em": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          }
-          EOF
-
-          cat versao.json
-
-
-      # =====================================================
       # 2. CONFIGURAR NODE.JS
       # =====================================================
 
@@ -426,7 +403,32 @@ jobs:
 
 
       # =====================================================
-      # 17. PERMITIR EXECUÇÃO DO GRADLE
+      # 17. USAR CHAVE DE ASSINATURA FIXA
+      # =====================================================
+      # Sem isso, cada execução do workflow gera uma chave de
+      # debug ALEATÓRIA (a máquina do GitHub Actions é nova a
+      # cada vez), e o Android recusa "atualizar" o app porque
+      # a assinatura mudou — dá erro de "conflito com um
+      # pacote já existente". Usando sempre o mesmo arquivo
+      # (android-debug.keystore, commitado na raiz do repo),
+      # a assinatura fica igual em todo APK gerado a partir de
+      # agora, e as atualizações passam a funcionar.
+
+      - name: Usar chave de assinatura fixa
+        run: |
+          if [ ! -f "android-debug.keystore" ]; then
+            echo "ERRO: android-debug.keystore não encontrado na raiz do repositório."
+            exit 1
+          fi
+
+          mkdir -p ~/.android
+          cp android-debug.keystore ~/.android/debug.keystore
+
+          echo "Chave de assinatura fixa instalada."
+
+
+      # =====================================================
+      # 18. PERMITIR EXECUÇÃO DO GRADLE
       # =====================================================
 
       - name: Permitir execução do Gradle
@@ -436,7 +438,7 @@ jobs:
 
 
       # =====================================================
-      # 18. LIMPAR BUILD ANTERIOR
+      # 19. LIMPAR BUILD ANTERIOR
       # =====================================================
 
       - name: Limpar projeto Android
@@ -447,7 +449,7 @@ jobs:
 
 
       # =====================================================
-      # 19. GERAR APK
+      # 20. GERAR APK
       # =====================================================
 
       - name: Gerar APK Debug
@@ -458,7 +460,7 @@ jobs:
 
 
       # =====================================================
-      # 20. VERIFICAR APK
+      # 21. VERIFICAR APK
       # =====================================================
 
       - name: Verificar APK gerado
@@ -473,7 +475,7 @@ jobs:
 
 
       # =====================================================
-      # 21. PUBLICAR APK (artefato interno do workflow)
+      # 22. PUBLICAR APK (artefato interno do workflow)
       # =====================================================
 
       - name: Publicar APK como artefato
@@ -488,7 +490,7 @@ jobs:
 
 
       # =====================================================
-      # 22. RENOMEAR APK COM NOME FIXO
+      # 23. RENOMEAR APK COM NOME FIXO
       # =====================================================
       # O nome fixo garante que o link de download no site
       # nunca muda, mesmo quando um novo APK é gerado.
@@ -501,7 +503,7 @@ jobs:
 
 
       # =====================================================
-      # 23. PUBLICAR APK EM UM GITHUB RELEASE
+      # 24. PUBLICAR APK EM UM GITHUB RELEASE
       # =====================================================
       # Isso cria (ou atualiza) um Release chamado "apk-latest"
       # com o APK anexado. Como o Release é público, qualquer
@@ -521,6 +523,4 @@ jobs:
             APK gerado automaticamente a partir do commit ${{ github.sha }}.
             Este Release é atualizado a cada nova versão publicada na branch main.
           make_latest: true
-          files: |
-            android/app/build/outputs/apk/debug/cuidado-juntos.apk
-            versao.json
+          files: android/app/build/outputs/apk/debug/cuidado-juntos.apk
