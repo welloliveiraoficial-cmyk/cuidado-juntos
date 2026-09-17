@@ -98,6 +98,14 @@ body {
   50% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
 }
 
+@keyframes balancarBaixar {
+  0%, 80%, 100% { transform: translateY(0) rotate(0deg); }
+  84% { transform: translateY(-3px) rotate(-10deg); }
+  88% { transform: translateY(0) rotate(8deg); }
+  92% { transform: translateY(-2px) rotate(-6deg); }
+  96% { transform: translateY(0) rotate(0deg); }
+}
+
 @keyframes checkPop {
   0% { transform: scale(0.4); opacity: 0; }
   60% { transform: scale(1.15); }
@@ -131,19 +139,6 @@ body {
 @keyframes anelAcender {
   0% { box-shadow: 0 0 0 0 rgba(31, 184, 219, 0.55); }
   100% { box-shadow: 0 0 0 10px rgba(31, 184, 219, 0); }
-}
-
-/* Borda piscando: azul = faltam 30 min | vermelha = atrasado
-   (usa box-shadow em vez de border-color para não alterar
-   a cor fixa da borda lateral de cada status) */
-@keyframes bordaPiscarAzul {
-  0%, 100% { box-shadow: var(--sombra), 0 0 0 0 rgba(18, 63, 148, 0); }
-  50% { box-shadow: var(--sombra), 0 0 0 3px rgba(18, 63, 148, 0.45); }
-}
-
-@keyframes bordaPiscarVermelha {
-  0%, 100% { box-shadow: var(--sombra), 0 0 0 0 rgba(166, 71, 43, 0); }
-  50% { box-shadow: var(--sombra), 0 0 0 3px rgba(166, 71, 43, 0.5); }
 }
 
 /* =========================================================
@@ -502,7 +497,7 @@ body {
 
 /* ---- Botões redondos do cabeçalho ---- */
 
-#btn-instalar,
+#btn-baixar-apk,
 #btn-notificacao,
 #btn-sair {
   position: relative;
@@ -515,9 +510,10 @@ body {
   font-size: 19px;
   cursor: pointer;
   transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  text-decoration: none;
 }
 
-#btn-instalar:hover,
+#btn-baixar-apk:hover,
 #btn-notificacao:hover,
 #btn-sair:hover {
   background: rgba(255, 255, 255, 0.22);
@@ -525,17 +521,17 @@ body {
   transform: translateY(-2px);
 }
 
-#btn-instalar:active,
+#btn-baixar-apk:active,
 #btn-notificacao:active,
 #btn-sair:active {
   transform: scale(0.92);
 }
 
-#btn-instalar {
+#btn-baixar-apk {
   border-color: var(--ambar);
   background: var(--ambar);
   color: var(--petroleo-escuro);
-  animation: pulsarAmbar 2.6s infinite;
+  animation: pulsarAmbar 2.6s infinite, balancarBaixar 4.5s ease-in-out infinite;
 }
 
 /*
@@ -927,7 +923,7 @@ body {
 .medicamento-card.badge-agora {
   border-left-color: var(--ambar-escuro);
   background: linear-gradient(135deg, var(--ambar-suave), var(--branco) 60%);
-  animation: entradaCartao 0.5s ease both, bordaPiscarAzul 1.2s ease-in-out infinite;
+  box-shadow: 0 16px 32px rgba(31, 184, 219, 0.2);
 }
 .medicamento-card.badge-agora .icone-medicamento {
   background: #c9f1f9;
@@ -940,7 +936,7 @@ body {
 .medicamento-card.badge-atrasado {
   border-left-color: var(--rust);
   background: linear-gradient(135deg, var(--rust-suave), var(--branco) 60%);
-  animation: entradaCartao 0.5s ease both, bordaPiscarVermelha 1.2s ease-in-out infinite;
+  animation: entradaCartao 0.5s ease both, anelAcender 2.4s ease-in-out infinite;
 }
 .medicamento-card.badge-atrasado .icone-medicamento {
   background: #e9c7ba;
@@ -1193,11 +1189,9 @@ body {
   box-shadow: 0 6px 16px rgba(18, 63, 148, 0.35);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .btn-navegacao:hover {
-    color: var(--petroleo);
-    background: var(--creme-forte);
-  }
+.btn-navegacao:hover {
+  color: var(--petroleo);
+  background: var(--creme-forte);
 }
 
 .btn-navegacao.ativo::before {
@@ -1300,24 +1294,14 @@ body {
 #btn-confirmar,
 #btn-fechar-sucesso {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   min-height: 50px;
-  padding: 0 18px;
   border: none;
   border-radius: 14px;
   font-family: var(--fonte-base);
   font-size: 14px;
   font-weight: 800;
-  white-space: nowrap;
   cursor: pointer;
   transition: transform 0.18s ease, filter 0.18s ease;
-}
-
-#btn-fechar-sucesso {
-  width: 100%;
 }
 
 #btn-cancelar {
@@ -1464,7 +1448,7 @@ button:disabled {
     font-size: 10px;
   }
 
-  #btn-instalar,
+  #btn-baixar-apk,
   #btn-notificacao,
   #btn-sair {
     width: 39px;
@@ -1537,72 +1521,6 @@ button:disabled {
   .anel-progresso-area {
     align-self: center;
   }
-}
-
-/* =========================================================
-   TELA DE ATUALIZAÇÃO OBRIGATÓRIA (Android nativo)
-========================================================= */
-
-.tela-atualizacao {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: linear-gradient(160deg, var(--petroleo-escuro), var(--petroleo) 60%);
-}
-
-.atualizacao-conteudo {
-  width: 100%;
-  max-width: 340px;
-  text-align: center;
-  color: var(--branco);
-}
-
-.atualizacao-icone {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.atualizacao-conteudo h1 {
-  font-family: var(--fonte-titulo);
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.atualizacao-conteudo p {
-  font-family: var(--fonte-base);
-  font-size: 14px;
-  line-height: 1.6;
-  opacity: 0.92;
-  margin-bottom: 28px;
-}
-
-.btn-atualizar-agora {
-  width: 100%;
-  min-height: 56px;
-  border: none;
-  border-radius: 16px;
-  color: var(--petroleo-escuro);
-  background: var(--branco);
-  font-family: var(--fonte-base);
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-}
-
-.btn-atualizar-agora:hover {
-  filter: brightness(0.97);
-  transform: translateY(-3px);
-}
-
-.btn-atualizar-agora:active {
-  transform: scale(0.97);
 }
 
 /* =========================================================
