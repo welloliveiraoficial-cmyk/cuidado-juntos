@@ -69,6 +69,23 @@ const URL_NOTIFICAR_PUSH =
 
 const CHAVE_API_PUSH = "c4f933a7091095cc81043ee3e5b96ef4bfba700fbbf4eb005c067a299f66ee99";
 
+/*
+ * ATUALIZAÇÃO OBRIGATÓRIA DO APP (só no Android nativo).
+ * "versao.json" é gerado a cada build pelo workflow do GitHub
+ * Actions e empacotado dentro do próprio APK — é o "RG" da
+ * versão instalada. Pra saber qual é a versão mais recente,
+ * consultamos a API do GitHub (que permite fetch() direto do
+ * app), e não o link de download do Release: esse link não
+ * permite fetch() de dentro de um app por causa de bloqueio
+ * de CORS do próprio GitHub — o navegador rejeita a resposta.
+ */
+
+const URL_VERSAO_MAIS_RECENTE =
+  "https://api.github.com/repos/welloliveiraoficial-cmyk/cuidado-juntos/commits/main";
+
+const URL_APK_ATUALIZACAO =
+  "https://github.com/welloliveiraoficial-cmyk/cuidado-juntos/releases/latest/download/cuidado-juntos.apk";
+
 
 /* =========================================================
    VARIÁVEIS
@@ -212,6 +229,12 @@ const PERIMETRO_ANEL = 263.9;
 
 const telaSplash =
   document.getElementById("tela-splash");
+
+const telaAtualizacao =
+  document.getElementById("tela-atualizacao");
+
+const botaoAtualizarAgora =
+  document.getElementById("btn-atualizar-agora");
 
 const telaLogin =
   document.getElementById("tela-login");
@@ -2165,6 +2188,101 @@ function renderizarHistorico() {
 
 
 /* =========================================================
+   ATUALIZAÇÃO OBRIGATÓRIA DO APP (só Android nativo)
+   Compara a versão empacotada dentro deste APK com a versão
+   mais recente publicada no Release. Se forem diferentes,
+   trava o app numa tela de atualização — sem gate nenhum
+   liberando por engano.
+
+   Se não der pra checar (sem internet, GitHub fora do ar,
+   etc.), NÃO trava o app: mais vale deixar a família usar
+   o app normalmente do que travar por causa da checagem.
+========================================================= */
+
+function buscarJsonComLimite(url, limiteMs) {
+
+  return Promise.race([
+
+    fetch(url, { cache: "no-store" }).then(function (resposta) {
+
+      if (!resposta.ok) {
+        throw new Error("Resposta HTTP " + resposta.status);
+      }
+
+      return resposta.json();
+
+    }),
+
+    new Promise(function (_, rejeitar) {
+
+      setTimeout(function () {
+        rejeitar(new Error("Tempo esgotado ao checar versão"));
+      }, limiteMs);
+
+    })
+
+  ]);
+
+}
+
+function verificarAtualizacaoNativa() {
+
+  if (!ehPlataformaNativa()) {
+    return Promise.resolve(false);
+  }
+
+  return Promise.all([
+    buscarJsonComLimite("versao.json", 4000),
+    buscarJsonComLimite(URL_VERSAO_MAIS_RECENTE, 4000)
+  ])
+    .then(function (resultados) {
+
+      const versaoLocal = resultados[0];
+      const commitMain = resultados[1];
+
+      return Boolean(
+        versaoLocal &&
+        commitMain &&
+        versaoLocal.commit &&
+        commitMain.sha &&
+        versaoLocal.commit !== commitMain.sha
+      );
+
+    })
+    .catch(function (erro) {
+
+      console.error("Não foi possível checar atualização:", erro);
+
+      return false;
+
+    });
+
+}
+
+function mostrarTelaAtualizacaoObrigatoria() {
+
+  if (telaAtualizacao) {
+    telaAtualizacao.style.display = "flex";
+  }
+
+}
+
+if (botaoAtualizarAgora) {
+
+  botaoAtualizarAgora.addEventListener("click", function () {
+
+    // Abre no navegador do aparelho (não dentro da WebView do
+    // app), pra Android baixar o APK e oferecer a instalação.
+    window.open(URL_APK_ATUALIZACAO, "_system");
+
+  });
+
+}
+
+const verificacaoAtualizacaoPromise = verificarAtualizacaoNativa();
+
+
+/* =========================================================
    INICIALIZAÇÃO DO FIREBASE
    (acontece em paralelo, sem travar o login)
 ========================================================= */
@@ -2216,7 +2334,15 @@ signInAnonymously(auth)
    TELA INICIAL (COM SPLASH)
 ========================================================= */
 
-function iniciarAposSplash() {
+function iniciarAposSplash(atualizacaoDisponivel) {
+
+  if (atualizacaoDisponivel) {
+
+    mostrarTelaAtualizacaoObrigatoria();
+
+    return;
+
+  }
 
   if (nomeUsuario) {
 
@@ -2244,6 +2370,6 @@ setTimeout(function () {
 
   }
 
-  iniciarAposSplash();
+  verificacaoAtualizacaoPromise.then(iniciarAposSplash);
 
 }, 1400);
