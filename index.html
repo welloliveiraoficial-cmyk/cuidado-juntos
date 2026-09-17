@@ -18,7 +18,7 @@
   href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
   rel="stylesheet"
 >
-<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="style.css?v=33">
 <link rel="icon" type="image/png" href="img/logo.png">
 
 <!-- PWA: app instalável -->
@@ -40,6 +40,22 @@
     <div class="splash-carregando">
       <span></span><span></span><span></span>
     </div>
+  </div>
+</div>
+
+<!-- TELA DE ATUALIZAÇÃO OBRIGATÓRIA (só aparece no app Android
+     nativo, quando existe uma versão mais nova publicada) -->
+<div id="tela-atualizacao" class="tela-atualizacao" style="display: none;">
+  <div class="atualizacao-conteudo">
+    <div class="atualizacao-icone">⬆️</div>
+    <h1>Nova versão disponível</h1>
+    <p>
+      Uma atualização do Cuidando Juntos está disponível.
+      Atualize para continuar usando o aplicativo.
+    </p>
+    <button type="button" id="btn-atualizar-agora" class="btn-atualizar-agora">
+      Atualizar agora
+    </button>
   </div>
 </div>
 
@@ -369,7 +385,7 @@
 </div>
 
 <!-- SCRIPTS -->
-<script type="module" src="script.js?v=25"></script>
+<script type="module" src="script.js?v=26"></script>
 <script src="native-notifications.js?v=18"></script>
 
 <!-- ESCONDE O BOTÃO DE BAIXAR APK QUANDO JÁ ESTAMOS DENTRO DO APK NATIVO -->
