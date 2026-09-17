@@ -1194,7 +1194,7 @@ body {
   box-shadow: 0 6px 16px rgba(18, 63, 148, 0.35);
 }
 
-.btn-navegacao:hover {
+.btn-navegacao:hover:not(.ativo) {
   color: var(--petroleo);
   background: var(--creme-forte);
 }
