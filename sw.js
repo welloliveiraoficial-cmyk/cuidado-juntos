@@ -86,12 +86,12 @@ self.addEventListener("notificationclick", function (evento) {
 
 });
 
-const CACHE_NAME = "cuidado-juntos-v10";
+const CACHE_NAME = "cuidado-juntos-v11";
 
 const ARQUIVOS_ESSENCIAIS = [
   "./",
   "./index.html",
-  "./style.css?v=33",
+  "./style.css?v=34",
   "./script.js?v=26",
   "./native-notifications.js?v=18",
   "./manifest.json",
