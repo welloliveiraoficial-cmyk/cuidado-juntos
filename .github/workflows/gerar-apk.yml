@@ -30,6 +30,29 @@ jobs:
 
 
       # =====================================================
+      # GERAR VERSAO.JSON (checagem de atualização obrigatória)
+      # =====================================================
+      # Usa o hash do commit como identificador único de versão.
+      # Este arquivo fica empacotado dentro do próprio APK (via
+      # build-www.js) — é o "RG" da versão instalada. O app
+      # compara esse commit com o commit mais recente da branch
+      # main (via API do GitHub) pra saber se saiu versão nova.
+      # Também é publicado como arquivo do Release só como
+      # registro/debug de qual commit gerou aquele APK.
+
+      - name: Gerar versao.json
+        run: |
+          cat > versao.json << EOF
+          {
+            "commit": "${{ github.sha }}",
+            "gerado_em": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+          cat versao.json
+
+
+      # =====================================================
       # 2. CONFIGURAR NODE.JS
       # =====================================================
 
@@ -498,4 +521,6 @@ jobs:
             APK gerado automaticamente a partir do commit ${{ github.sha }}.
             Este Release é atualizado a cada nova versão publicada na branch main.
           make_latest: true
-          files: android/app/build/outputs/apk/debug/cuidado-juntos.apk
+          files: |
+            android/app/build/outputs/apk/debug/cuidado-juntos.apk
+            versao.json
